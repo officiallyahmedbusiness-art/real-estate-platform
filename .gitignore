@@ -24,6 +24,15 @@
 .DS_Store
 *.pem
 .cursor/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+/.venv/
+real-estate-platform@0.1.0
+next
+.cursor/
 real-estate-platform@0.1.0
 next
 
