@@ -28,7 +28,7 @@ export function LanguageSwitcher({ locale, labels }: LanguageSwitcherProps) {
     <button
       type="button"
       onClick={() => setLocale(nextLocale)}
-      className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1.5 text-xs font-semibold text-[var(--text)] shadow-sm transition hover:-translate-y-px md:text-sm"
+      className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1 text-[10px] font-semibold text-[var(--text)] shadow-sm transition hover:-translate-y-px sm:px-3 sm:text-xs md:py-1.5 md:text-sm"
       aria-label={label}
     >
       {label}

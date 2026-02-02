@@ -15,7 +15,7 @@ export async function SiteFooter({ showFloating = false }: { showFloating?: bool
 
   return (
     <footer className="border-t border-[var(--border)] bg-[var(--surface)]">
-      <div className="mx-auto grid w-full max-w-7xl gap-8 px-6 py-10 text-sm text-[var(--muted)] md:grid-cols-[1.4fr,1fr,1fr]">
+      <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-8 text-xs text-[var(--muted)] sm:px-6 sm:py-10 sm:text-sm lg:px-8 md:grid-cols-[1.4fr,1fr,1fr]">
         <div className="space-y-3">
           <Logo name={t("brand.name")} className="text-[var(--text)]" imageClassName="h-10 md:h-12" />
           <p className="max-w-md">{t("brand.tagline")}</p>
@@ -62,7 +62,7 @@ export async function SiteFooter({ showFloating = false }: { showFloating?: bool
         </div>
       </div>
       <div className="border-t border-[var(--border)]">
-        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-4 text-xs text-[var(--muted)]">
+        <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-4 text-[11px] text-[var(--muted)] sm:px-6 sm:text-xs lg:px-8">
           <p>
             (c) {year} {t("brand.name")} - {t("brand.domain")}
           </p>
@@ -74,7 +74,7 @@ export async function SiteFooter({ showFloating = false }: { showFloating?: bool
           href={whatsappLink}
           target="_blank"
           rel="noreferrer"
-          className="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-xs font-semibold text-white shadow-[var(--shadow-strong)] transition hover:-translate-y-1"
+          className="fixed bottom-4 right-4 z-50 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-xs font-semibold text-white shadow-[var(--shadow-strong)] transition hover:-translate-y-1 sm:bottom-6 sm:right-6"
         >
           <svg
             aria-hidden="true"

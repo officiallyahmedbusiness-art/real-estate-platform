@@ -6,6 +6,7 @@ import { formatPrice } from "@/lib/format";
 import { isUuid } from "@/lib/validators";
 import { createT, getPropertyTypeLabelKey, getPurposeLabelKey } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
+import { getPublicBaseUrl } from "@/lib/paths";
 
 export default async function StaffPrintPage({
   params,
@@ -52,7 +53,7 @@ export default async function StaffPrintPage({
     })
   );
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+  const baseUrl = getPublicBaseUrl() || "https://hrtaj.com";
   const shareUrl = `${baseUrl}/share/${listing.id}`;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(
     shareUrl

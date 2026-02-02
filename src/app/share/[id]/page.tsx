@@ -65,7 +65,7 @@ export default async function PublicSharePage({
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <SiteHeader />
-      <main className="mx-auto w-full max-w-6xl space-y-8 px-6 py-10">
+      <main className="mx-auto w-full max-w-6xl space-y-8 px-4 py-8 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-10 lg:px-8">
         <div className="space-y-2">
           <h1 className="text-3xl font-semibold">{t("share.title")}</h1>
           <p className="text-sm text-[var(--muted)]">{t("share.subtitle")}</p>

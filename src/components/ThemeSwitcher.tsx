@@ -52,7 +52,7 @@ export function ThemeSwitcher({ labels }: { labels: ThemeLabels }) {
         setTheme(nextTheme);
         applyTheme(nextTheme);
       }}
-      className="flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] shadow-[var(--shadow)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-strong)]"
+      className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] shadow-[var(--shadow)] transition hover:-translate-y-0.5 hover:shadow-[var(--shadow-strong)] sm:h-9 sm:w-9"
       aria-label={label}
       title={label}
     >

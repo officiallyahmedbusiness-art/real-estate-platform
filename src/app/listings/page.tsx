@@ -95,7 +95,7 @@ export default async function ListingsPage({
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <SiteHeader />
-      <main className="mx-auto w-full max-w-7xl space-y-8 px-6 py-10">
+      <main className="mx-auto w-full max-w-7xl space-y-8 px-4 py-8 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-10 lg:px-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="space-y-1">
             <h1 className="text-2xl font-semibold">{t("listings.title")}</h1>

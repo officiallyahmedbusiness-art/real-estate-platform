@@ -168,10 +168,10 @@ export default async function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+    <div className="min-h-screen overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
       <SiteHeader />
-      <main className="mx-auto w-full max-w-7xl space-y-14 px-6 py-10">
-        <section className="relative overflow-hidden rounded-[32px] border border-[var(--border)] bg-[var(--surface)]/90 p-8 shadow-[var(--shadow)] fade-up md:p-10 hero-shell">
+      <main className="mx-auto w-full max-w-7xl space-y-12 px-4 py-8 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:space-y-14 sm:px-6 sm:py-10 lg:px-8">
+        <section className="relative overflow-hidden rounded-[32px] border border-[var(--border)] bg-[var(--surface)]/90 p-5 shadow-[var(--shadow)] fade-up sm:p-8 md:p-10 hero-shell">
           <div className="absolute inset-0">
             {heroVideo ? (
               <video
@@ -197,37 +197,41 @@ export default async function Home() {
             ) : null}
             <div className="hero-overlay" />
           </div>
-          <div className="relative z-10 grid gap-10 lg:grid-cols-[1.1fr,0.9fr]">
-            <div className="space-y-6">
+          <div className="relative z-10 grid gap-6 sm:gap-10 lg:grid-cols-[1.1fr,0.9fr]">
+            <div className="space-y-4 sm:space-y-6">
               <Badge>{t("home.hero.badge")}</Badge>
-              <h1 className="text-3xl font-semibold leading-relaxed md:text-4xl lg:text-5xl">
+              <h1 className="max-w-[22ch] text-2xl font-semibold leading-tight text-balance sm:text-4xl lg:text-5xl">
                 {t("home.hero.title")}
               </h1>
-              <p className="text-sm text-[var(--muted)] md:text-base">{t("home.hero.subtitle")}</p>
-              <div className="flex flex-wrap gap-3">
+              <p className="max-w-xl text-sm leading-relaxed text-[var(--muted)] sm:text-base">
+                {t("home.hero.subtitle")}
+              </p>
+              <div className="flex flex-col gap-3 sm:flex-row">
                 <Link href="/listings">
-                  <Button size="lg">{t("home.hero.ctaPrimary")}</Button>
+                  <Button size="lg" className="w-full sm:w-auto">
+                    {t("home.hero.ctaPrimary")}
+                  </Button>
                 </Link>
                 <Link href="/developer">
-                  <Button size="lg" variant="secondary">
+                  <Button size="lg" variant="secondary" className="w-full sm:w-auto">
                     {t("home.hero.ctaSecondary")}
                   </Button>
                 </Link>
               </div>
-              <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--muted)]">
+              <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap pb-1 text-xs text-[var(--muted)]">
                 <span className="font-semibold text-[var(--text)]">{t("home.hero.quick")}</span>
                 {FEATURE_CATEGORIES.map((cat) => (
                   <Link
                     key={cat.purpose}
                     href={`/listings?purpose=${cat.purpose}`}
-                    className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-[var(--text)] transition hover:border-[var(--accent)]"
+                    className="shrink-0 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-[var(--text)] transition hover:border-[var(--accent)]"
                   >
                     {t(cat.titleKey)}
                   </Link>
                 ))}
               </div>
             </div>
-            <Card className="space-y-4 bg-[var(--surface-elevated)]/90 backdrop-blur">
+            <Card className="space-y-4 bg-[var(--surface-elevated)]/90 p-4 backdrop-blur sm:p-5">
               <h2 className="text-lg font-semibold">{t("home.callback.title")}</h2>
               <p className="text-sm text-[var(--muted)]">{t("home.callback.subtitle")}</p>
               <form action={createPublicRequestAction} className="space-y-3">

@@ -81,17 +81,54 @@ export async function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--surface)]/90 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 py-4">
-        <div className="flex items-center gap-4">
-          <Link href="/">
-            <Logo name={t("brand.name")} imageClassName="h-10 md:h-12" />
-          </Link>
-          <span className="hidden rounded-full border border-[var(--border)] bg-[var(--accent-soft)] px-3 py-1 text-xs font-semibold text-[var(--accent)] lg:inline-flex">
-            {t("brand.tagline")}
-          </span>
+      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between gap-3 py-3 lg:py-4">
+          <div className="flex items-center gap-3">
+            <Link href="/">
+              <Logo name={t("brand.name")} imageClassName="h-8 sm:h-10 md:h-12" />
+            </Link>
+            <span className="hidden rounded-full border border-[var(--border)] bg-[var(--accent-soft)] px-3 py-1 text-xs font-semibold text-[var(--accent)] lg:inline-flex">
+              {t("brand.tagline")}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 md:hidden">
+            <LanguageSwitcher locale={locale} labels={langLabels} />
+            <ThemeSwitcher labels={themeLabels} />
+          </div>
+
+          <div className="hidden items-center gap-2 md:flex">
+            <details className="group relative">
+              <summary className="flex cursor-pointer items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--text)] shadow-[var(--shadow)]">
+                <span className="text-[var(--muted)]">{t("layer.current")}</span>
+                <span>{currentLayer}</span>
+              </summary>
+              <div className="absolute right-0 mt-2 min-w-[180px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2 shadow-[var(--shadow)]">
+                {layerOptions.map((option) => (
+                  <Link
+                    key={option.href}
+                    href={option.href}
+                    className="block rounded-lg px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
+                  >
+                    {option.label}
+                  </Link>
+                ))}
+              </div>
+            </details>
+            <LanguageSwitcher locale={locale} labels={langLabels} />
+            <ThemeSwitcher labels={themeLabels} />
+            {isAuthed ? (
+              <Link
+                href="/dashboard"
+                className="text-sm font-medium text-[var(--muted)] hover:text-[var(--text)]"
+              >
+                {t("nav.dashboard")}
+              </Link>
+            ) : null}
+          </div>
         </div>
 
-        <nav className="hidden items-center gap-5 text-sm font-medium text-[var(--muted)] lg:flex">
+        <nav className="hidden items-center gap-5 pb-4 text-sm font-medium text-[var(--muted)] lg:flex">
           <Link href="/listings" className="hover:text-[var(--text)]">
             {t("nav.listings")}
           </Link>
@@ -147,42 +184,11 @@ export async function SiteHeader() {
             </Link>
           ) : null}
         </nav>
-
-        <div className="flex items-center gap-2">
-          <details className="group relative">
-            <summary className="flex cursor-pointer items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--text)] shadow-[var(--shadow)]">
-              <span className="text-[var(--muted)]">{t("layer.current")}</span>
-              <span>{currentLayer}</span>
-              <span className="text-[var(--muted)]">menu</span>
-            </summary>
-            <div className="absolute right-0 mt-2 min-w-[180px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2 shadow-[var(--shadow)]">
-              {layerOptions.map((option) => (
-                <Link
-                  key={option.href}
-                  href={option.href}
-                  className="block rounded-lg px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
-                >
-                  {option.label}
-                </Link>
-              ))}
-            </div>
-          </details>
-          <LanguageSwitcher locale={locale} labels={langLabels} />
-          <ThemeSwitcher labels={themeLabels} />
-          {isAuthed ? (
-            <Link
-              href="/dashboard"
-              className="text-sm font-medium text-[var(--muted)] hover:text-[var(--text)]"
-            >
-              {t("nav.dashboard")}
-            </Link>
-          ) : null}
-        </div>
       </div>
 
-      <div className="mx-auto w-full max-w-7xl px-6 pb-4 lg:hidden">
-        <details className="group rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3">
-          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-[var(--text)]">
+      <div className="mx-auto w-full max-w-7xl px-4 pb-4 sm:px-6 lg:px-8 lg:hidden">
+        <details className="group rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2">
+          <summary className="flex cursor-pointer items-center justify-between text-xs font-semibold text-[var(--text)] sm:text-sm">
             {t("nav.menu")}
             <span className="transition group-open:rotate-180">v</span>
           </summary>

@@ -24,7 +24,7 @@ export default async function CareersPage() {
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <SiteHeader />
-      <main className="mx-auto w-full max-w-7xl space-y-10 px-6 py-10">
+      <main className="mx-auto w-full max-w-7xl space-y-10 px-4 py-8 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-10 lg:px-8">
         <section className="space-y-3">
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
             {t("careers.kicker")}

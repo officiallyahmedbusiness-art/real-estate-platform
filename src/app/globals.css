@@ -90,6 +90,7 @@ body {
   line-height: var(--line-body);
   font-weight: 500;
   cursor: default;
+  overflow-x: hidden;
 }
 
 [data-theme="light"] body {

@@ -43,7 +43,7 @@ export function Card({
 }: ComponentPropsWithoutRef<"div">) {
   return (
     <div
-      className={`rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-[var(--shadow)] ${className}`}
+      className={`rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-[var(--shadow)] sm:p-5 ${className}`}
       {...props}
     />
   );
@@ -73,8 +73,10 @@ export function Section({
               {kicker}
             </p>
           ) : null}
-          <h2 className="text-xl font-semibold text-[var(--text)]">{title}</h2>
-          {subtitle ? <p className="text-sm text-[var(--muted)]">{subtitle}</p> : null}
+          <h2 className="text-lg font-semibold text-[var(--text)] sm:text-xl">{title}</h2>
+          {subtitle ? (
+            <p className="text-xs text-[var(--muted)] sm:text-sm">{subtitle}</p>
+          ) : null}
         </div>
         {action ? <div>{action}</div> : null}
       </div>

@@ -11,6 +11,7 @@ import { createLeadAction } from "@/app/actions/marketplace";
 import { isUuid } from "@/lib/validators";
 import { createT, getPropertyTypeLabelKey, getPurposeLabelKey } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
+import { getPublicBaseUrl } from "@/lib/paths";
 
 export async function generateMetadata({
   params,
@@ -95,7 +96,7 @@ export default async function ListingDetailPage({
 
   const whatsappNumber = (process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "").replace(/\D/g, "");
   const sharePath = `/share/${listing.id}`;
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+  const siteUrl = getPublicBaseUrl();
   const shareUrl = siteUrl ? `${siteUrl}${sharePath}` : "";
   const whatsappText = shareUrl ? `${listing.title} - ${shareUrl}` : listing.title;
   const whatsappLink = whatsappNumber
@@ -136,7 +137,7 @@ export default async function ListingDetailPage({
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <SiteHeader />
-      <main className="mx-auto w-full max-w-7xl space-y-8 px-6 py-10">
+      <main className="mx-auto w-full max-w-7xl space-y-8 px-4 py-8 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-10 lg:px-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2">

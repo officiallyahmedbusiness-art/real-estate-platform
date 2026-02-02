@@ -6,6 +6,7 @@ import { formatPrice } from "@/lib/format";
 import { getPublicImageUrl } from "@/lib/storage";
 import { isUuid } from "@/lib/validators";
 import { Logo } from "@/components/Logo";
+import { getPublicBaseUrl } from "@/lib/paths";
 
 export default async function ListingPrintPage({
   params,
@@ -32,7 +33,7 @@ export default async function ListingPrintPage({
   const images = (listing.listing_images ?? []).sort((a, b) => a.sort - b.sort);
   const coverUrl = getPublicImageUrl(images[0]?.path);
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "";
+  const siteUrl = getPublicBaseUrl();
   const shareUrl = siteUrl ? `${siteUrl}/share/${listing.id}` : `/share/${listing.id}`;
 
   return (
