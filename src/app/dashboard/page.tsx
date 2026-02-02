@@ -1,180 +1,137 @@
-// src/app/dashboard/page.tsx
-import type { CSSProperties } from "react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
+import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
+import { Badge, Button, Card } from "@/components/ui";
 import { logoutAction } from "./actions";
+import { createT } from "@/lib/i18n";
+import { getServerLocale } from "@/lib/i18n.server";
 
-// عشان ما ندوّخش Turbopack/Edge caching مع sessions أثناء التطوير
 export const dynamic = "force-dynamic";
 
 function isAuthSessionMissing(msg?: string | null) {
   return (msg ?? "").toLowerCase().includes("auth session missing");
 }
 
-function prettyError(err: unknown) {
-  if (!err) return "Unknown error";
-  if (typeof err === "string") return err;
-  if (err instanceof Error) return err.message;
-  try {
-    return JSON.stringify(err, null, 2);
-  } catch {
-    return String(err);
-  }
-}
-
 export default async function DashboardPage() {
   const nextPath = "/dashboard";
   const authUrl = `/auth?next=${encodeURIComponent(nextPath)}`;
 
-  const supabase = await createSupabaseServerClient();
+  const locale = await getServerLocale();
+  const t = createT(locale);
 
-  // Get user (server-side)
+  const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.getUser();
 
-  // Redirect if session missing
   if (error) {
     if (isAuthSessionMissing(error.message)) {
       redirect(authUrl);
     }
 
     return (
-      <main style={styles.page}>
-        <h1 style={styles.h1}>Dashboard</h1>
-
-        <div style={styles.card}>
-          <p style={{ ...styles.badge, ...styles.badgeDanger }}>Supabase Error</p>
-          <p style={styles.muted}>
-            حصل خطأ غير متوقع وإحنا بنقرأ بيانات المستخدم من السيرفر.
-          </p>
-
-          <pre style={styles.pre}>{prettyError(error.message)}</pre>
-
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-            <a href={authUrl} style={{ ...styles.btn, ...styles.btnPrimary }}>
-              رجوع لتسجيل الدخول
-            </a>
-            <a href="/" style={{ ...styles.btn, ...styles.btnGhost }}>
-              الصفحة الرئيسية
-            </a>
-          </div>
-        </div>
-      </main>
+      <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+        <SiteHeader />
+        <main className="mx-auto w-full max-w-3xl px-6 py-16">
+          <Card className="space-y-4">
+            <Badge>{t("dashboard.session.error")}</Badge>
+            <p className="text-sm text-[var(--muted)]">{t("dashboard.session.help")}</p>
+            <div className="flex flex-wrap gap-3">
+              <a href={authUrl} className="text-sm text-[var(--accent)]">
+                {t("dashboard.session.login")}
+              </a>
+              <Link href="/" className="text-sm text-[var(--muted)]">
+                {t("dashboard.session.home")}
+              </Link>
+            </div>
+          </Card>
+        </main>
+        <SiteFooter />
+      </div>
     );
   }
 
   const user = data.user;
-
   if (!user) {
     redirect(authUrl);
   }
 
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("role, full_name, phone")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  const roleLabelMap: Record<string, string> = {
+    owner: "role.owner",
+    developer: "role.developer",
+    admin: "role.admin",
+    ops: "role.ops",
+    staff: "role.staff",
+    agent: "role.agent",
+  };
+
+  const roleLabel = t(roleLabelMap[profile?.role ?? "staff"] ?? "role.staff");
+
   return (
-    <main style={styles.page}>
-      <h1 style={styles.h1}>Dashboard</h1>
+    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+      <SiteHeader />
+      <main className="mx-auto w-full max-w-3xl space-y-6 px-6 py-16">
+        <Card className="space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h1 className="text-2xl font-semibold">{t("dashboard.title")}</h1>
+              <p className="text-sm text-[var(--muted)]">
+                {profile?.full_name ?? user.email ?? user.phone ?? "-"}
+              </p>
+            </div>
+            <Badge>{roleLabel}</Badge>
+          </div>
 
-      <div style={styles.card}>
-        <p style={{ ...styles.badge, ...styles.badgeOk }}>Authenticated</p>
+          <div className="grid gap-3 md:grid-cols-2">
+            <Card className="space-y-2">
+              <p className="text-xs text-[var(--muted)]">{t("dashboard.email")}</p>
+              <p className="text-sm font-semibold">{user.email ?? "-"}</p>
+            </Card>
+            <Card className="space-y-2">
+              <p className="text-xs text-[var(--muted)]">{t("dashboard.phone")}</p>
+              <p className="text-sm font-semibold">{user.phone ?? profile?.phone ?? "-"}</p>
+            </Card>
+          </div>
 
-        <p style={styles.line}>
-          أنت داخل كـ: <b>{user.email ?? user.phone ?? "unknown"}</b>
-        </p>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/account">
+              <Button>{t("dashboard.account")}</Button>
+            </Link>
+            {profile?.role === "developer" || profile?.role === "admin" || profile?.role === "owner" ? (
+              <Link href="/developer">
+                <Button variant="secondary">{t("dashboard.partner")}</Button>
+              </Link>
+            ) : null}
+            {profile?.role === "admin" || profile?.role === "owner" ? (
+              <Link href="/admin">
+                <Button variant="secondary">{t("dashboard.admin")}</Button>
+              </Link>
+            ) : null}
+            {profile?.role === "ops" || profile?.role === "staff" || profile?.role === "admin" || profile?.role === "owner" ? (
+              <Link href="/staff">
+                <Button variant="secondary">{t("nav.staff")}</Button>
+              </Link>
+            ) : null}
+          </div>
 
-        <pre style={styles.pre}>
-          {JSON.stringify(
-            {
-              id: user.id,
-              email: user.email,
-              phone: user.phone,
-              role: user.role,
-              last_sign_in_at: user.last_sign_in_at,
-              created_at: user.created_at,
-            },
-            null,
-            2
-          )}
-        </pre>
-
-        {/* ✅ Logout via actions.ts + next sent reliably via hidden input */}
-        <form action={logoutAction}>
-          <input type="hidden" name="next" value="/dashboard" />
-          <button type="submit" style={{ ...styles.btn, ...styles.btnDanger }}>
-            Logout
-          </button>
-        </form>
-
-        <p style={styles.muted}>
-          ملاحظة: لو فتحت الصفحة دي من Incognito من غير تسجيل دخول، لازم يحولك على{" "}
-          <code>/auth</code>.
-        </p>
-      </div>
-    </main>
+          <form action={logoutAction}>
+            <input type="hidden" name="next" value="/dashboard" />
+            <Button type="submit" variant="danger">
+              {t("dashboard.logout")}
+            </Button>
+          </form>
+        </Card>
+      </main>
+      <SiteFooter />
+    </div>
   );
 }
 
-const styles: Record<string, CSSProperties> = {
-  page: {
-    minHeight: "100vh",
-    padding: 24,
-    fontFamily: "system-ui",
-    background: "#0b0b0b",
-    color: "#fff",
-  },
-  h1: { margin: 0, marginBottom: 14, fontSize: 28 },
-  card: {
-    width: "min(760px, 100%)",
-    border: "1px solid rgba(255,255,255,0.12)",
-    borderRadius: 16,
-    padding: 18,
-    background: "rgba(255,255,255,0.04)",
-    backdropFilter: "blur(8px)",
-  },
-  badge: {
-    display: "inline-block",
-    padding: "6px 10px",
-    borderRadius: 999,
-    fontSize: 12,
-    fontWeight: 800,
-    marginBottom: 10,
-  },
-  badgeOk: {
-    border: "1px solid rgba(0,255,140,0.25)",
-    background: "rgba(0,255,140,0.08)",
-  },
-  badgeDanger: {
-    border: "1px solid rgba(255,80,80,0.35)",
-    background: "rgba(255,80,80,0.12)",
-  },
-  line: { margin: "10px 0 12px" },
-  pre: {
-    whiteSpace: "pre-wrap",
-    background: "rgba(0,0,0,0.35)",
-    border: "1px solid rgba(255,255,255,0.12)",
-    borderRadius: 12,
-    padding: 12,
-    overflowX: "auto",
-    margin: "0 0 14px",
-  },
-  muted: { opacity: 0.75, marginTop: 12, fontSize: 12 },
-  btn: {
-    padding: "10px 14px",
-    borderRadius: 10,
-    border: "1px solid rgba(255,255,255,0.18)",
-    cursor: "pointer",
-    fontWeight: 800,
-    textDecoration: "none",
-    display: "inline-block",
-  },
-  btnPrimary: {
-    background: "#ffffff",
-    color: "#0b0b0b",
-  },
-  btnGhost: {
-    background: "transparent",
-    color: "#fff",
-  },
-  btnDanger: {
-    background: "rgba(255,80,80,0.12)",
-    color: "#fff",
-    border: "1px solid rgba(255,80,80,0.35)",
-  },
-};
+
+

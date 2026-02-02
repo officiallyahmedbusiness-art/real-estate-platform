@@ -25,7 +25,6 @@ const DEBUG =
 
 function debugLog(message: string, meta?: Record<string, unknown>) {
   if (!DEBUG) return;
-  // eslint-disable-next-line no-console
   console.log(`[supabaseClient] ${message}`, meta ?? "");
 }
 

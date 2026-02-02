@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -9,6 +9,13 @@ const BUCKET = "property-images";
 type ImageUploaderProps = {
   listingId: string;
   existingCount: number;
+  labels: {
+    title: string;
+    hint: string;
+    uploading: string;
+    error: string;
+    pathLabel: string;
+  };
 };
 
 function getExtension(name: string) {
@@ -16,7 +23,7 @@ function getExtension(name: string) {
   return parts.length > 1 ? parts.pop()!.toLowerCase() : "jpg";
 }
 
-export function ImageUploader({ listingId, existingCount }: ImageUploaderProps) {
+export function ImageUploader({ listingId, existingCount, labels }: ImageUploaderProps) {
   const router = useRouter();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -38,13 +45,11 @@ export function ImageUploader({ listingId, existingCount }: ImageUploaderProps) 
 
         if (uploadError) throw uploadError;
 
-        const { error: insertError } = await supabase
-          .from("listing_images")
-          .insert({
-            listing_id: listingId,
-            path,
-            sort,
-          });
+        const { error: insertError } = await supabase.from("listing_images").insert({
+          listing_id: listingId,
+          path,
+          sort,
+        });
 
         if (insertError) throw insertError;
         sort += 1;
@@ -52,7 +57,7 @@ export function ImageUploader({ listingId, existingCount }: ImageUploaderProps) 
 
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "تعذر رفع الصور.");
+      setError(err instanceof Error ? err.message : labels.error);
     } finally {
       setUploading(false);
     }
@@ -60,20 +65,22 @@ export function ImageUploader({ listingId, existingCount }: ImageUploaderProps) 
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-3">
+      <label className="flex cursor-pointer flex-col gap-2 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-4 py-4 text-sm text-[var(--muted)]">
+        <span className="font-semibold text-[var(--text)]">{labels.title}</span>
+        <span>{labels.hint}</span>
         <input
           type="file"
           accept="image/*"
           multiple
           disabled={uploading}
           onChange={(event) => handleFiles(event.target.files)}
-          className="text-sm text-white/70"
+          className="sr-only"
         />
-        {uploading ? <span className="text-xs text-white/50">جارٍ الرفع...</span> : null}
-      </div>
-      {error ? <p className="text-sm text-rose-200">{error}</p> : null}
-      <p className="text-xs text-white/50">
-        المسار: <span className="text-white/70">listings/{listingId}/...</span>
+        {uploading ? <span className="text-xs">{labels.uploading}</span> : null}
+      </label>
+      {error ? <p className="text-sm text-[var(--danger)]">{error}</p> : null}
+      <p className="text-xs text-[var(--muted)]">
+        {labels.pathLabel}: <span className="text-[var(--text)]">listings/{listingId}/...</span>
       </p>
     </div>
   );

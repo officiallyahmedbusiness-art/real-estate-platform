@@ -1,30 +1,9 @@
--- Add partner role to profiles check + allow users to read their own leads
+-- 0002 minimal + safe
+-- Ensures:
+-- 1) lead owner can read their own leads
+-- 2) (re)apply non-admin publish restriction via listing insert/update policies
 
-do $$
-declare
-  constraint_name text;
-begin
-  select conname
-    into constraint_name
-  from pg_constraint
-  where conrelid = 'public.profiles'::regclass
-    and contype = 'c'
-    and pg_get_constraintdef(oid) like '%role in%';
-
-  if constraint_name is not null then
-    execute format('alter table public.profiles drop constraint %I', constraint_name);
-  end if;
-
-  begin
-    alter table public.profiles
-      add constraint profiles_role_check
-      check (role in ('user','developer','partner','admin'));
-  exception
-    when duplicate_object then
-      null;
-  end;
-end $$;
-
+-- (A) Leads: lead owner can read own leads (idempotent)
 do $$
 begin
   if not exists (
@@ -38,13 +17,16 @@ begin
   end if;
 end $$;
 
+-- (B) Listings policies: enforce publish restriction
 drop policy if exists "Listings insert by owner or admin" on public.listings;
 drop policy if exists "Listings update by owner or admin" on public.listings;
 
 create policy "Listings insert by owner or admin"
 on public.listings for insert
 with check (
-  (public.is_admin() or owner_user_id = auth.uid()
+  (
+    public.is_admin()
+    or owner_user_id = auth.uid()
     or (
       developer_id is not null
       and public.is_developer_member(developer_id)
@@ -62,7 +44,8 @@ using (
   or (developer_id is not null and public.is_developer_member(developer_id))
 )
 with check (
-  (public.is_admin()
+  (
+    public.is_admin()
     or owner_user_id = auth.uid()
     or (developer_id is not null and public.is_developer_member(developer_id))
   )

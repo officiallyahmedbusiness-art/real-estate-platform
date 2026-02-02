@@ -5,12 +5,13 @@ type ButtonSize = "sm" | "md" | "lg";
 
 const buttonVariants: Record<ButtonVariant, string> = {
   primary:
-    "bg-amber-300 text-zinc-950 hover:bg-amber-200 border border-amber-200/60",
+    "bg-[var(--primary)] text-[var(--primary-contrast)] shadow-[var(--shadow)] hover:brightness-105 border border-transparent",
   secondary:
-    "bg-zinc-900 text-white hover:bg-zinc-800 border border-white/10",
-  ghost: "bg-transparent text-white hover:bg-white/5 border border-white/10",
+    "bg-[var(--surface-elevated)] text-[var(--text)] hover:bg-[var(--surface)] border border-[var(--border)]",
+  ghost:
+    "bg-transparent text-[var(--text)] hover:bg-[var(--accent-soft)] border border-transparent",
   danger:
-    "bg-rose-500/20 text-rose-100 hover:bg-rose-500/30 border border-rose-400/30",
+    "bg-[rgba(244,63,94,0.15)] text-[var(--danger)] hover:bg-[rgba(244,63,94,0.25)] border border-[rgba(244,63,94,0.35)]",
 };
 
 const buttonSizes: Record<ButtonSize, string> = {
@@ -30,7 +31,7 @@ export function Button({
 }) {
   return (
     <button
-      className={`inline-flex items-center justify-center gap-2 rounded-full font-semibold transition ${buttonSizes[size]} ${buttonVariants[variant]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60 ${buttonSizes[size]} ${buttonVariants[variant]} ${className}`}
       {...props}
     />
   );
@@ -42,7 +43,7 @@ export function Card({
 }: ComponentPropsWithoutRef<"div">) {
   return (
     <div
-      className={`rounded-2xl border border-white/10 bg-zinc-950/60 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.35)] ${className}`}
+      className={`rounded-2xl border border-[var(--border)] bg-[var(--card)] p-5 shadow-[var(--shadow)] ${className}`}
       {...props}
     />
   );
@@ -51,19 +52,31 @@ export function Card({
 export function Section({
   title,
   subtitle,
+  kicker,
+  action,
+  className = "",
   children,
 }: {
   title: string;
   subtitle?: string;
+  kicker?: string;
+  action?: ReactNode;
+  className?: string;
   children: ReactNode;
 }) {
   return (
-    <section className="space-y-4">
-      <div className="space-y-1">
-        <h2 className="text-xl font-semibold text-white">{title}</h2>
-        {subtitle ? (
-          <p className="text-sm text-white/60">{subtitle}</p>
-        ) : null}
+    <section className={`space-y-4 ${className}`}>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="space-y-2">
+          {kicker ? (
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)]">
+              {kicker}
+            </p>
+          ) : null}
+          <h2 className="text-xl font-semibold text-[var(--text)]">{title}</h2>
+          {subtitle ? <p className="text-sm text-[var(--muted)]">{subtitle}</p> : null}
+        </div>
+        {action ? <div>{action}</div> : null}
       </div>
       {children}
     </section>
@@ -76,7 +89,7 @@ export function Input({
 }: ComponentPropsWithoutRef<"input">) {
   return (
     <input
-      className={`h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-amber-300/40 ${className}`}
+      className={`h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 text-sm text-[var(--text)] placeholder:text-[var(--muted)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition focus:outline-none focus:ring-2 focus:ring-[var(--focus)] ${className}`}
       {...props}
     />
   );
@@ -88,7 +101,7 @@ export function Select({
 }: ComponentPropsWithoutRef<"select">) {
   return (
     <select
-      className={`h-11 w-full rounded-xl border border-white/10 bg-white/5 px-4 text-sm text-white focus:outline-none focus:ring-2 focus:ring-amber-300/40 ${className}`}
+      className={`h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 text-sm text-[var(--text)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition focus:outline-none focus:ring-2 focus:ring-[var(--focus)] ${className}`}
       {...props}
     />
   );
@@ -100,7 +113,7 @@ export function Textarea({
 }: ComponentPropsWithoutRef<"textarea">) {
   return (
     <textarea
-      className={`min-h-[120px] w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-amber-300/40 ${className}`}
+      className={`min-h-[120px] w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] placeholder:text-[var(--muted)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition focus:outline-none focus:ring-2 focus:ring-[var(--focus)] ${className}`}
       {...props}
     />
   );
@@ -108,8 +121,26 @@ export function Textarea({
 
 export function Badge({ children }: { children: ReactNode }) {
   return (
-    <span className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/80">
+    <span className="inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-xs font-semibold text-[var(--muted)]">
       {children}
     </span>
+  );
+}
+
+export function Stat({
+  label,
+  value,
+  hint,
+}: {
+  label: string;
+  value: ReactNode;
+  hint?: string;
+}) {
+  return (
+    <Card className="space-y-2">
+      <p className="text-xs uppercase tracking-wide text-[var(--muted)]">{label}</p>
+      <p className="text-2xl font-semibold text-[var(--text)]">{value}</p>
+      {hint ? <p className="text-xs text-[var(--muted)]">{hint}</p> : null}
+    </Card>
   );
 }

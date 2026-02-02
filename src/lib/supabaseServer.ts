@@ -22,7 +22,6 @@ const DEBUG =
 
 function logDebug(message: string, meta?: Record<string, unknown>) {
   if (!DEBUG) return;
-  // eslint-disable-next-line no-console
   console.log(`[supabaseServer] ${message}`, meta ?? "");
 }
 
@@ -62,7 +61,9 @@ function toSupabaseCookies(entries: CookieKV[]) {
 function safeGetAllCookies(
   cookieStore: Awaited<ReturnType<typeof cookies>>
 ): CookieKV[] {
-  const anyStore = cookieStore as any;
+  const anyStore = cookieStore as unknown as {
+    getAll?: () => Array<{ name: string; value: string }>;
+  };
 
   if (typeof anyStore.getAll !== "function") {
     const hint =
@@ -78,7 +79,8 @@ function safeGetAllCookies(
   }
 
   try {
-    const all = anyStore.getAll() as Array<{ name: string; value: string }>;
+    const all = anyStore.getAll();
+    if (!all) return [];
     return all.map(({ name, value }) => ({ name, value }));
   } catch (err) {
     // If the runtime behaves unexpectedly, raise a clearer message than "Auth session missing!"
@@ -98,10 +100,13 @@ function safeSetCookies(
   cookieStore: Awaited<ReturnType<typeof cookies>>,
   cookiesToSet: Array<{ name: string; value: string; options?: CookieOptions }>
 ) {
+  const anyStore = cookieStore as unknown as {
+    set?: (name: string, value: string, options?: CookieOptions) => void;
+  };
   try {
     for (const { name, value, options } of cookiesToSet) {
       // In RSC, cookieStore can be read-only, this may throw.
-      (cookieStore as any).set?.(name, value, options);
+      anyStore.set?.(name, value, options);
     }
   } catch (err) {
     logDebug("Cookie set blocked by runtime context (ignored).", {

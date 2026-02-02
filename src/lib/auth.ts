@@ -3,7 +3,7 @@ import type { User } from "@supabase/supabase-js";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { safeNextPath } from "@/lib/paths";
 
-export type AppRole = "user" | "developer" | "partner" | "admin";
+export type AppRole = "owner" | "admin" | "ops" | "staff" | "agent" | "developer";
 
 export type ProfileRow = {
   id: string;
@@ -50,9 +50,9 @@ export async function requireRole(
 }> {
   const { user, profile } = await requireAuth(nextPath);
   const allowed = Array.isArray(roles) ? roles : [roles];
-  const role = (profile?.role ?? "user") as AppRole;
+  const role = profile?.role as AppRole | undefined;
 
-  if (!allowed.includes(role)) {
+  if (!role || !allowed.includes(role)) {
     redirect("/dashboard?unauthorized=1");
   }
 

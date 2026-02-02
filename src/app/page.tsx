@@ -2,13 +2,55 @@ import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Button, Card, Input, Select, Badge, Section } from "@/components/ui";
+import { Button, Card, Input, Select, Badge, Section, Textarea } from "@/components/ui";
 import { formatPrice } from "@/lib/format";
-import { FEATURE_CATEGORIES, PURPOSE_OPTIONS } from "@/lib/constants";
+import { FEATURE_CATEGORIES, PROPERTY_TYPE_OPTIONS, PURPOSE_OPTIONS } from "@/lib/constants";
 import { getPublicImageUrl } from "@/lib/storage";
+import { createT, getPropertyTypeLabelKey, getPurposeLabelKey } from "@/lib/i18n";
+import { getServerLocale } from "@/lib/i18n.server";
+import { createPublicRequestAction } from "@/app/actions/marketplace";
+import { PartnerMarquee } from "@/components/PartnerMarquee";
+import { AdsCarousel, type AdCampaignCard } from "@/components/AdsCarousel";
 
 export default async function Home() {
+  const locale = await getServerLocale();
+  const t = createT(locale);
+
   const supabase = await createSupabaseServerClient();
+  const { data: mediaData } = await supabase
+    .from("site_media")
+    .select("id, media_type, url, poster_url, title, sort_order")
+    .eq("placement", "hero")
+    .eq("is_published", true)
+    .order("sort_order", { ascending: true });
+  const heroMedia = mediaData ?? [];
+  const heroVideo = heroMedia.find((item) => item.media_type === "video") ?? null;
+  const heroImages = heroMedia.filter((item) => item.media_type === "image");
+
+  type MetricRow = {
+    id: string;
+    label_ar: string | null;
+    label_en: string | null;
+    value: string | null;
+  };
+
+  const { data: metricsData } = await supabase
+    .from("site_metrics")
+    .select("id, label_ar, label_en, value, sort_order")
+    .eq("is_published", true)
+    .order("sort_order", { ascending: true });
+  const metrics = (metricsData ?? []) as MetricRow[];
+
+  const { data: featuredProjectsData } = await supabase
+    .from("featured_projects")
+    .select(
+      "id, title_ar, title_en, location_ar, location_en, starting_price, currency, image_url, cta_url, sort_order"
+    )
+    .eq("is_published", true)
+    .order("sort_order", { ascending: true })
+    .limit(6);
+  const featuredProjects = featuredProjectsData ?? [];
+
   const { data } = await supabase
     .from("listings")
     .select(
@@ -19,126 +61,518 @@ export default async function Home() {
     .limit(6);
   const listings = data ?? [];
 
+  type FallbackMetric = { label: string; value: string };
+  const fallbackStats: FallbackMetric[] = [
+    { label: t("home.stats.listings"), value: "1,200+" },
+    { label: t("home.stats.developers"), value: "45+" },
+    { label: t("home.stats.leads"), value: "300+" },
+  ];
+  const displayMetrics: Array<MetricRow | FallbackMetric> =
+    metrics.length > 0 ? metrics : fallbackStats;
+  const whyCards = [
+    {
+      title: t("home.why.item1.title"),
+      body: t("home.why.item1.body"),
+    },
+    {
+      title: t("home.why.item2.title"),
+      body: t("home.why.item2.body"),
+    },
+    {
+      title: t("home.why.item3.title"),
+      body: t("home.why.item3.body"),
+    },
+  ];
+  const processSteps = [
+    {
+      title: t("home.process.step1.title"),
+      body: t("home.process.step1.body"),
+    },
+    {
+      title: t("home.process.step2.title"),
+      body: t("home.process.step2.body"),
+    },
+    {
+      title: t("home.process.step3.title"),
+      body: t("home.process.step3.body"),
+    },
+  ];
+
+  const { data: partnersData } = await supabase
+    .from("marketing_partners")
+    .select("id, name_ar, name_en, logo_url, sort_order")
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+  const partners = partnersData ?? [];
+
+  type AdCampaignRow = {
+    id: string;
+    title_ar: string | null;
+    title_en: string | null;
+    body_ar: string | null;
+    body_en: string | null;
+    cta_label_ar: string | null;
+    cta_label_en: string | null;
+    cta_url: string | null;
+    ad_assets: Array<{
+      id: string;
+      media_type: string;
+      url: string;
+      poster_url: string | null;
+      sort_order: number;
+      is_primary: boolean;
+    }> | null;
+  };
+
+  const { data: campaignsData } = await supabase
+    .from("ad_campaigns")
+    .select(
+      "id, title_ar, title_en, body_ar, body_en, cta_label_ar, cta_label_en, cta_url, ad_assets(id, media_type, url, poster_url, sort_order, is_primary)"
+    )
+    .eq("status", "published")
+    .order("created_at", { ascending: false })
+    .limit(6);
+  const campaigns = (campaignsData ?? []) as AdCampaignRow[];
+
+  const campaignCards: AdCampaignCard[] = campaigns.map((campaign) => {
+    const assets = campaign.ad_assets ?? [];
+    const sorted = [...assets].sort((a, b) => {
+      if (a.is_primary && !b.is_primary) return -1;
+      if (!a.is_primary && b.is_primary) return 1;
+      return a.sort_order - b.sort_order;
+    });
+    const cover = sorted[0] ?? null;
+    return {
+      id: campaign.id,
+      title: (locale === "ar" ? campaign.title_ar : campaign.title_en) ?? t("home.ads.title"),
+      body: (locale === "ar" ? campaign.body_ar : campaign.body_en) ?? "",
+      ctaLabel:
+        (locale === "ar" ? campaign.cta_label_ar : campaign.cta_label_en) ??
+        t("home.ads.cta"),
+      ctaUrl: campaign.cta_url || "/listings?purpose=new-development",
+      coverUrl: cover?.url ?? null,
+      coverType: cover?.media_type === "video" ? "video" : "image",
+      posterUrl: cover?.poster_url ?? null,
+    };
+  });
+  const intentOptions = [
+    { value: "buy", label: t("home.request.intent.buy") },
+    { value: "rent", label: t("home.request.intent.rent") },
+    { value: "invest", label: t("home.request.intent.invest") },
+  ];
+  const contactOptions = [
+    { value: "morning", label: t("home.request.contact.morning") },
+    { value: "afternoon", label: t("home.request.contact.afternoon") },
+    { value: "evening", label: t("home.request.contact.evening") },
+    { value: "any", label: t("home.request.contact.any") },
+  ];
+
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <SiteHeader />
-      <main dir="rtl" className="mx-auto w-full max-w-6xl px-6 py-10 space-y-12">
-        <section className="relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-zinc-950 via-zinc-900 to-amber-950 p-10">
-          <div className="absolute inset-0 opacity-30">
-            <div className="absolute -top-32 left-10 h-64 w-64 rounded-full bg-amber-400/20 blur-3xl" />
-            <div className="absolute -bottom-40 right-10 h-72 w-72 rounded-full bg-amber-200/10 blur-3xl" />
+      <main className="mx-auto w-full max-w-7xl space-y-14 px-6 py-10">
+        <section className="relative overflow-hidden rounded-[32px] border border-[var(--border)] bg-[var(--surface)]/90 p-8 shadow-[var(--shadow)] fade-up md:p-10 hero-shell">
+          <div className="absolute inset-0">
+            {heroVideo ? (
+              <video
+                className="hero-video"
+                autoPlay
+                muted
+                loop
+                playsInline
+                poster={heroVideo.poster_url ?? undefined}
+              >
+                <source src={heroVideo.url} />
+              </video>
+            ) : heroImages.length > 0 ? (
+              <div className="hero-carousel">
+                <div className="hero-track">
+                  {[...heroImages, ...heroImages].map((item, index) => (
+                    <div className="hero-slide" key={`${item.id}-${index}`}>
+                      <img src={item.url} alt={item.title ?? t("home.hero.badge")} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+            <div className="hero-overlay" />
           </div>
-          <div className="relative z-10 grid gap-8 lg:grid-cols-[1.2fr,0.8fr]">
-            <div className="space-y-4">
-              <Badge>سوق العقارات الذكي</Badge>
-              <h1 className="text-3xl font-semibold leading-relaxed">
-                اعثر على وحدتك القادمة بسهولة، من الشقق الحديثة إلى المشاريع الجديدة.
+          <div className="relative z-10 grid gap-10 lg:grid-cols-[1.1fr,0.9fr]">
+            <div className="space-y-6">
+              <Badge>{t("home.hero.badge")}</Badge>
+              <h1 className="text-3xl font-semibold leading-relaxed md:text-4xl lg:text-5xl">
+                {t("home.hero.title")}
               </h1>
-              <p className="text-sm text-white/60">
-                منصة تجمع الإعلانات الموثقة، تواصل مباشر، وإدارة كاملة للمطورين والشركاء.
-              </p>
+              <p className="text-sm text-[var(--muted)] md:text-base">{t("home.hero.subtitle")}</p>
               <div className="flex flex-wrap gap-3">
                 <Link href="/listings">
-                  <Button size="lg">استعرض الإعلانات</Button>
+                  <Button size="lg">{t("home.hero.ctaPrimary")}</Button>
                 </Link>
                 <Link href="/developer">
-                  <Button size="lg" variant="ghost">
-                    بوابة المطور
+                  <Button size="lg" variant="secondary">
+                    {t("home.hero.ctaSecondary")}
                   </Button>
                 </Link>
               </div>
+              <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--muted)]">
+                <span className="font-semibold text-[var(--text)]">{t("home.hero.quick")}</span>
+                {FEATURE_CATEGORIES.map((cat) => (
+                  <Link
+                    key={cat.purpose}
+                    href={`/listings?purpose=${cat.purpose}`}
+                    className="rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-[var(--text)] transition hover:border-[var(--accent)]"
+                  >
+                    {t(cat.titleKey)}
+                  </Link>
+                ))}
+              </div>
             </div>
-            <Card className="space-y-4">
-              <h2 className="text-lg font-semibold">ابحث سريعًا</h2>
-              <form action="/listings" className="space-y-3">
-                <Input name="city" placeholder="المدينة" />
-                <Input name="area" placeholder="الحي / المنطقة" />
-                <Select name="purpose" defaultValue="">
-                  <option value="">الغرض</option>
-                  {PURPOSE_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </Select>
-                <div className="grid grid-cols-2 gap-3">
-                  <Input name="minPrice" placeholder="السعر الأدنى" />
-                  <Input name="maxPrice" placeholder="السعر الأعلى" />
+            <Card className="space-y-4 bg-[var(--surface-elevated)]/90 backdrop-blur">
+              <h2 className="text-lg font-semibold">{t("home.callback.title")}</h2>
+              <p className="text-sm text-[var(--muted)]">{t("home.callback.subtitle")}</p>
+              <form action={createPublicRequestAction} className="space-y-3">
+                <input
+                  type="text"
+                  name="company"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  className="sr-only"
+                  aria-hidden="true"
+                />
+                <input type="hidden" name="source" value="web" />
+                <input type="hidden" name="intent" value="buy" />
+                <div className="grid gap-3 md:grid-cols-2">
+                  <Input name="name" placeholder={t("home.callback.name")} required />
+                  <Input name="email" placeholder={t("home.callback.email")} type="email" />
                 </div>
+                <Input name="phone" placeholder={t("home.callback.phone")} required type="tel" />
                 <Button type="submit" className="w-full">
-                  ابحث الآن
+                  {t("home.callback.submit")}
                 </Button>
               </form>
             </Card>
           </div>
         </section>
 
-        <Section title="الأقسام" subtitle="تصفح حسب نوع الإعلان">
+        <Section title={t("home.search.title")} subtitle={t("home.search.subtitle")}>
+          <Card className="space-y-4 bg-[var(--surface-elevated)]/90">
+            <form action="/listings" className="space-y-3">
+              <div className="grid gap-3 md:grid-cols-2">
+                <Input name="city" placeholder={t("home.search.city")} />
+                <Input name="area" placeholder={t("home.search.area")} />
+              </div>
+              <div className="grid gap-3 md:grid-cols-2">
+                <Select name="purpose" defaultValue="">
+                  <option value="">{t("home.search.purpose")}</option>
+                  {PURPOSE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {t(option.labelKey)}
+                    </option>
+                  ))}
+                </Select>
+                <Select name="type" defaultValue="">
+                  <option value="">{t("filters.type")}</option>
+                  {PROPERTY_TYPE_OPTIONS.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {t(option.labelKey)}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <Input name="minPrice" placeholder={t("home.search.minPrice")} />
+                <Input name="maxPrice" placeholder={t("home.search.maxPrice")} />
+              </div>
+              <Button type="submit" className="w-full">
+                {t("home.search.submit")}
+              </Button>
+            </form>
+          </Card>
+        </Section>
+
+        <Section title={t("home.categories.title")} subtitle={t("home.categories.subtitle")}>
           <div className="grid gap-4 md:grid-cols-3">
-            {FEATURE_CATEGORIES.map((cat) => (
+            {FEATURE_CATEGORIES.map((cat, index) => (
               <Link key={cat.purpose} href={`/listings?purpose=${cat.purpose}`}>
-                <Card className="hover:border-amber-200/30">
-                  <h3 className="text-lg font-semibold">{cat.title}</h3>
-                  <p className="text-sm text-white/60">
-                    إعلانات محدثة ومناسبة لاحتياجاتك.
-                  </p>
+                <Card
+                  className="hrtaj-card transition hover:-translate-y-1 hover:border-[var(--accent)] fade-up"
+                  style={{ animationDelay: `${index * 80}ms` }}
+                >
+                  <h3 className="text-lg font-semibold">{t(cat.titleKey)}</h3>
+                  <p className="text-sm text-[var(--muted)]">{t(cat.descKey)}</p>
                 </Card>
               </Link>
             ))}
           </div>
         </Section>
 
-        <Section title="إعلانات مميزة" subtitle="أحدث الإعلانات المنشورة">
-          <div className="grid gap-6 md:grid-cols-3">
-            {listings.map((listing) => {
-              const cover =
-                listing.listing_images?.sort((a, b) => a.sort - b.sort)[0]?.path ?? null;
-              const coverUrl = getPublicImageUrl(cover);
+        <Section title={t("home.proof.title")} subtitle={t("home.proof.subtitle")}>
+          <div className="grid gap-4 md:grid-cols-3">
+            {displayMetrics.map((metric) => {
+              const label =
+                "label_ar" in metric
+                  ? locale === "ar"
+                    ? metric.label_ar
+                    : metric.label_en
+                  : metric.label;
+              const value = metric.value ?? "-";
+              const key = "id" in metric ? metric.id : metric.label;
               return (
-                <Card key={listing.id} className="flex flex-col gap-4">
-                  <Link href={`/listing/${listing.id}`}>
-                    <div className="aspect-[4/3] overflow-hidden rounded-xl bg-white/5">
-                      {coverUrl ? (
-                        <img
-                          src={coverUrl}
-                          alt={listing.title}
-                          className="h-full w-full object-cover"
-                        />
-                      ) : (
-                        <div className="flex h-full items-center justify-center text-sm text-white/40">
-                          لا توجد صورة
-                        </div>
-                      )}
-                    </div>
-                  </Link>
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Badge>{listing.purpose}</Badge>
-                      <Badge>{listing.type}</Badge>
-                      <Badge>
-                        {listing.beds} غرف • {listing.baths} حمام
-                      </Badge>
-                    </div>
-                    <Link href={`/listing/${listing.id}`}>
-                      <h3 className="text-lg font-semibold hover:text-amber-200">
-                        {listing.title}
-                      </h3>
-                    </Link>
-                    <p className="text-sm text-white/60">
-                      {listing.city}
-                      {listing.area ? ` • ${listing.area}` : ""}
-                    </p>
-                    <p className="text-lg font-semibold text-amber-200">
-                      {formatPrice(listing.price, listing.currency)}
-                    </p>
-                  </div>
+                <Card key={key} className="space-y-2 hrtaj-card">
+                  <p className="text-xs text-[var(--muted)]">{label}</p>
+                  <p className="text-2xl font-semibold">{value}</p>
                 </Card>
               );
             })}
           </div>
         </Section>
+
+        <Section title={t("home.why.title")} subtitle={t("home.why.subtitle")}>
+          <div className="grid gap-4 md:grid-cols-3">
+            {whyCards.map((item, index) => (
+              <Card key={item.title} className="space-y-3 hrtaj-card">
+                <Badge>{`0${index + 1}`}</Badge>
+                <h3 className="text-lg font-semibold">{item.title}</h3>
+                <p className="text-sm text-[var(--muted)]">{item.body}</p>
+              </Card>
+            ))}
+          </div>
+        </Section>
+
+        <Section title={t("home.partners.title")} subtitle={t("home.partners.subtitle")}>
+          <PartnerMarquee locale={locale} partners={partners} />
+        </Section>
+
+        <Section title={t("home.ads.title")} subtitle={t("home.ads.subtitle")}>
+          {campaigns.length === 0 ? (
+            <Card>
+              <p className="text-sm text-[var(--muted)]">{t("home.ads.empty")}</p>
+            </Card>
+          ) : (
+            <AdsCarousel locale={locale} items={campaignCards} />
+          )}
+        </Section>
+
+        <Section title={t("home.projects.title")} subtitle={t("home.projects.subtitle")}>
+          {featuredProjects.length === 0 ? (
+            <Card>
+              <p className="text-sm text-[var(--muted)]">{t("home.projects.empty")}</p>
+            </Card>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-3">
+              {featuredProjects.map((project) => (
+                <Card key={project.id} className="space-y-3 hrtaj-card">
+                  <div className="aspect-[4/3] overflow-hidden rounded-xl bg-[var(--surface)]">
+                    {project.image_url ? (
+                      <img
+                        src={project.image_url}
+                        alt={locale === "ar" ? project.title_ar : project.title_en}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full items-center justify-center text-sm text-[var(--muted)]">
+                        {t("general.noImage")}
+                      </div>
+                    )}
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-lg font-semibold">
+                      {locale === "ar" ? project.title_ar : project.title_en}
+                    </p>
+                    <p className="text-sm text-[var(--muted)]">
+                      {locale === "ar" ? project.location_ar : project.location_en}
+                    </p>
+                    {project.starting_price ? (
+                      <p className="text-base font-semibold text-[var(--accent)]">
+                        {t("home.projects.starting")}{" "}
+                        {formatPrice(project.starting_price, project.currency ?? "EGP", locale)}
+                      </p>
+                    ) : null}
+                  </div>
+                  <Link href={project.cta_url || "/listings?purpose=new-development"}>
+                    <Button size="sm" variant="secondary">
+                      {t("home.projects.cta")}
+                    </Button>
+                  </Link>
+                </Card>
+              ))}
+            </div>
+          )}
+        </Section>
+
+        <Section title={t("home.featured.title")} subtitle={t("home.featured.subtitle")}>
+          {listings.length === 0 ? (
+            <Card>
+              <p className="text-sm text-[var(--muted)]">{t("home.featured.empty")}</p>
+            </Card>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-3">
+              {listings.map((listing, index) => {
+                const cover =
+                  listing.listing_images?.sort((a, b) => a.sort - b.sort)[0]?.path ?? null;
+                const coverUrl = getPublicImageUrl(cover);
+                return (
+                  <Card
+                    key={listing.id}
+                    className="group flex flex-col gap-4 fade-up hrtaj-card"
+                    style={{ animationDelay: `${index * 80}ms` }}
+                  >
+                    <Link href={`/listing/${listing.id}`}>
+                      <div className="aspect-[4/3] overflow-hidden rounded-xl bg-[var(--surface)]">
+                        {coverUrl ? (
+                          <img
+                            src={coverUrl}
+                            alt={listing.title}
+                            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                          />
+                        ) : (
+                          <div className="flex h-full items-center justify-center text-sm text-[var(--muted)]">
+                            {t("general.noImage")}
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge>{t(getPurposeLabelKey(listing.purpose))}</Badge>
+                        <Badge>{t(getPropertyTypeLabelKey(listing.type))}</Badge>
+                        <Badge>
+                          {listing.beds} {t("detail.stats.rooms")} - {listing.baths} {t("detail.stats.baths")}
+                        </Badge>
+                      </div>
+                      <Link href={`/listing/${listing.id}`}>
+                        <h3 className="text-lg font-semibold hover:text-[var(--accent)]">
+                          {listing.title}
+                        </h3>
+                      </Link>
+                      <p className="text-sm text-[var(--muted)]">
+                        {listing.city}
+                        {listing.area ? ` - ${listing.area}` : ""}
+                      </p>
+                      <p className="text-lg font-semibold text-[var(--accent)]">
+                        {formatPrice(listing.price, listing.currency, locale)}
+                      </p>
+                    </div>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </Section>
+
+        <Section title={t("home.process.title")} subtitle={t("home.process.subtitle")}>
+          <div className="grid gap-4 md:grid-cols-3">
+            {processSteps.map((step, index) => (
+              <Card key={step.title} className="space-y-3 hrtaj-card">
+                <Badge>{`0${index + 1}`}</Badge>
+                <h3 className="text-lg font-semibold">{step.title}</h3>
+                <p className="text-sm text-[var(--muted)]">{step.body}</p>
+              </Card>
+            ))}
+          </div>
+        </Section>
+
+        <Section
+          title={t("home.about.title")}
+          subtitle={t("home.about.subtitle")}
+          action={
+            <Link href="/about">
+              <Button size="sm" variant="secondary">
+                {t("home.about.cta")}
+              </Button>
+            </Link>
+          }
+        >
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card className="space-y-2 hrtaj-card">
+              <p className="text-xs text-[var(--muted)]">{t("home.about.card1.kicker")}</p>
+              <p className="text-lg font-semibold">{t("home.about.card1.title")}</p>
+              <p className="text-sm text-[var(--muted)]">{t("home.about.card1.body")}</p>
+            </Card>
+            <Card className="space-y-2 hrtaj-card">
+              <p className="text-xs text-[var(--muted)]">{t("home.about.card2.kicker")}</p>
+              <p className="text-lg font-semibold">{t("home.about.card2.title")}</p>
+              <p className="text-sm text-[var(--muted)]">{t("home.about.card2.body")}</p>
+            </Card>
+            <Card className="space-y-2 hrtaj-card">
+              <p className="text-xs text-[var(--muted)]">{t("home.about.card3.kicker")}</p>
+              <p className="text-lg font-semibold">{t("home.about.card3.title")}</p>
+              <p className="text-sm text-[var(--muted)]">{t("home.about.card3.body")}</p>
+            </Card>
+          </div>
+        </Section>
+
+        <Section title={t("home.request.title")} subtitle={t("home.request.subtitle")}>
+          <Card className="hrtaj-card">
+            <form action={createPublicRequestAction} className="grid gap-4 md:grid-cols-2">
+              <input
+                type="text"
+                name="company"
+                tabIndex={-1}
+                autoComplete="off"
+                className="sr-only"
+                aria-hidden="true"
+              />
+              <input type="hidden" name="source" value="web" />
+              <div className="space-y-2">
+                <label className="text-sm text-[var(--muted)]">{t("home.request.name")}</label>
+                <Input name="name" required placeholder={t("home.request.name")} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm text-[var(--muted)]">{t("home.request.phone")}</label>
+                <Input name="phone" required placeholder={t("home.request.phone")} type="tel" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm text-[var(--muted)]">{t("home.request.intent")}</label>
+                <Select name="intent" defaultValue="" required>
+                  <option value="">{t("home.request.intent")}</option>
+                  {intentOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm text-[var(--muted)]">{t("home.request.area")}</label>
+                <Input name="preferred_area" placeholder={t("home.request.area")} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm text-[var(--muted)]">{t("home.request.budgetMin")}</label>
+                <Input name="budget_min" placeholder={t("home.request.budgetMin")} type="number" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm text-[var(--muted)]">{t("home.request.budgetMax")}</label>
+                <Input name="budget_max" placeholder={t("home.request.budgetMax")} type="number" />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-sm text-[var(--muted)]">{t("home.request.contactTime")}</label>
+                <Select name="preferred_contact_time" defaultValue="">
+                  <option value="">{t("home.request.contactTime")}</option>
+                  {contactOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <label className="text-sm text-[var(--muted)]">{t("home.request.notes")}</label>
+                <Textarea name="notes" placeholder={t("home.request.notes")} className="min-h-[120px]" />
+              </div>
+              <div className="md:col-span-2">
+                <Button type="submit" className="w-full">
+                  {t("home.request.submit")}
+                </Button>
+              </div>
+            </form>
+          </Card>
+        </Section>
       </main>
-      <SiteFooter />
+      <SiteFooter showFloating />
     </div>
   );
 }
+
+
+

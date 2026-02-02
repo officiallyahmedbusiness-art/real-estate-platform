@@ -23,6 +23,9 @@
 # misc
 .DS_Store
 *.pem
+.cursor/
+real-estate-platform@0.1.0
+next
 
 # debug
 npm-debug.log*

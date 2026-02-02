@@ -1,18 +1,24 @@
 export function formatPrice(
   value: number | string | null | undefined,
-  currency = "EGP"
+  currency = "EGP",
+  locale: "ar" | "en" = "ar"
 ) {
   const num = typeof value === "string" ? Number(value) : value ?? NaN;
   if (!Number.isFinite(num)) return "-";
-  return new Intl.NumberFormat("ar-EG", {
+  const lang = locale === "en" ? "en-US" : "ar-EG";
+  return new Intl.NumberFormat(lang, {
     style: "currency",
     currency,
     maximumFractionDigits: 0,
   }).format(num);
 }
 
-export function formatNumber(value: number | string | null | undefined) {
+export function formatNumber(
+  value: number | string | null | undefined,
+  locale: "ar" | "en" = "ar"
+) {
   const num = typeof value === "string" ? Number(value) : value ?? NaN;
   if (!Number.isFinite(num)) return "-";
-  return new Intl.NumberFormat("ar-EG").format(num);
+  const lang = locale === "en" ? "en-US" : "ar-EG";
+  return new Intl.NumberFormat(lang).format(num);
 }

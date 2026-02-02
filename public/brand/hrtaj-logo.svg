@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="80" viewBox="0 0 240 80" role="img" aria-label="HRTAJ Real Estate">
+  <g fill="#c89a3a" stroke="#2f2f2f" stroke-width="2" stroke-linejoin="round">
+    <path d="M22 46 L56 24 L90 46 Z" />
+    <path d="M62 46 L120 16 L178 46 Z" />
+    <path d="M150 46 L184 26 L218 46 Z" />
+  </g>
+  <g stroke="#2f2f2f" stroke-width="2" stroke-linecap="round">
+    <line x1="16" y1="50" x2="224" y2="50" />
+  </g>
+  <g fill="#2f2f2f">
+    <rect x="52" y="34" width="6" height="6" />
+    <rect x="62" y="34" width="6" height="6" />
+    <rect x="112" y="30" width="7" height="7" />
+    <rect x="122" y="30" width="7" height="7" />
+    <rect x="178" y="36" width="6" height="6" />
+    <rect x="188" y="36" width="6" height="6" />
+  </g>
+  <g fill="#2f2f2f" font-family="Arial, sans-serif" font-weight="700">
+    <text x="120" y="68" text-anchor="middle" font-size="18" letter-spacing="4">HRTAJ</text>
+    <text x="120" y="78" text-anchor="middle" font-size="9" letter-spacing="3">REAL ESTATE</text>
+  </g>
+</svg>

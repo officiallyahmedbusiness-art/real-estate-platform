@@ -4,12 +4,15 @@ import { requireRole } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Button, Card, Input, Select, Section, Badge } from "@/components/ui";
-import { PROPERTY_TYPES, PURPOSE_OPTIONS } from "@/lib/constants";
+import { Button, Card, Input, Select, Section, Badge, Textarea } from "@/components/ui";
+import { PROPERTY_TYPE_OPTIONS } from "@/lib/constants";
 import { getPublicImageUrl } from "@/lib/storage";
 import { isUuid } from "@/lib/validators";
 import { ImageUploader } from "@/components/ImageUploader";
 import { deleteImageAction, deleteListingAction, updateListingAction } from "../../actions";
+import { createT, getSubmissionStatusLabelKey, getPurposeLabelKey } from "@/lib/i18n";
+import { getServerLocale } from "@/lib/i18n.server";
+import { pickLocalizedText } from "@/lib/localize";
 
 export default async function DeveloperListingEditPage({
   params,
@@ -19,17 +22,17 @@ export default async function DeveloperListingEditPage({
   const { id } = await params;
   if (!isUuid(id)) notFound();
 
-  const { role } = await requireRole(
-    ["developer", "partner", "admin"],
-    `/developer/listings/${id}`
-  );
+  const { role } = await requireRole(["owner", "developer", "admin"], `/developer/listings/${id}`);
   const supabase = await createSupabaseServerClient();
   const isAdmin = role === "admin";
+
+  const locale = await getServerLocale();
+  const t = createT(locale);
 
   const { data: listing } = await supabase
     .from("listings")
     .select(
-      "id, title, price, currency, city, area, address, beds, baths, size_m2, description, amenities, status, purpose, type, listing_images(path, sort)"
+      "id, title, title_ar, title_en, price, currency, city, area, address, beds, baths, size_m2, description, description_ar, description_en, amenities, status, submission_status, purpose, type, listing_code, unit_code, listing_images(path, sort)"
     )
     .eq("id", id)
     .maybeSingle();
@@ -37,96 +40,160 @@ export default async function DeveloperListingEditPage({
   if (!listing) notFound();
 
   const images = (listing.listing_images ?? []).sort((a, b) => a.sort - b.sort);
+  const canEdit = isAdmin || ["draft", "needs_changes"].includes(listing.submission_status ?? "");
+  const displayTitle = pickLocalizedText(
+    locale,
+    listing.title_ar,
+    listing.title_en,
+    listing.title
+  );
+  const submissionLabel = t(
+    getSubmissionStatusLabelKey(listing.submission_status ?? "draft")
+  );
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-white">
+    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <SiteHeader />
-      <main dir="rtl" className="mx-auto w-full max-w-6xl px-6 py-10 space-y-10">
+      <main className="mx-auto w-full max-w-6xl space-y-10 px-6 py-10">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold">إدارة الإعلان</h1>
-            <p className="text-sm text-white/60">{listing.title}</p>
+            <h1 className="text-2xl font-semibold">{t("developer.edit.title")}</h1>
+            <p className="text-sm text-[var(--muted)]">{displayTitle}</p>
           </div>
           <div className="flex items-center gap-3">
             <Link href="/developer">
               <Button size="sm" variant="ghost">
-                العودة للبوابة
+                {t("developer.edit.back")}
               </Button>
             </Link>
-            <Badge>{listing.status}</Badge>
+            <Badge>{submissionLabel}</Badge>
+            {listing.status === "published" ? <Badge>{t("status.published")}</Badge> : null}
           </div>
         </div>
 
-        <Section title="تفاصيل الإعلان" subtitle="قم بتحديث البيانات الأساسية">
+        <Section title={t("developer.edit.subtitle")} subtitle={t("developer.edit.subtitle")}>
+          {!canEdit ? (
+            <Card>
+              <p className="text-sm text-[var(--muted)]">{t("submission.locked")}</p>
+            </Card>
+          ) : null}
           <Card>
             <form action={updateListingAction} className="grid gap-4 md:grid-cols-3">
               <input type="hidden" name="listing_id" value={listing.id} />
-              <Input name="title" defaultValue={listing.title} required />
+              <Input name="title" defaultValue={listing.title} required disabled={!canEdit} />
+              <Input
+                name="title_ar"
+                defaultValue={listing.title_ar ?? ""}
+                placeholder={t("submission.field.title_ar")}
+                disabled={!canEdit}
+              />
+              <Input
+                name="title_en"
+                defaultValue={listing.title_en ?? ""}
+                placeholder={t("submission.field.title_en")}
+                disabled={!canEdit}
+              />
               <Select name="type" defaultValue={listing.type}>
-                {PROPERTY_TYPES.map((item) => (
-                  <option key={item} value={item}>
-                    {item}
+                {PROPERTY_TYPE_OPTIONS.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {t(item.labelKey)}
                   </option>
                 ))}
               </Select>
-              <Select name="purpose" defaultValue={listing.purpose}>
-                {PURPOSE_OPTIONS.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </Select>
-              <Input name="price" defaultValue={String(listing.price)} required />
-              <Input name="currency" defaultValue={listing.currency} />
-              <Input name="city" defaultValue={listing.city} required />
-              <Input name="area" defaultValue={listing.area ?? ""} />
-              <Input name="address" defaultValue={listing.address ?? ""} />
-              <Input name="beds" defaultValue={String(listing.beds)} />
-              <Input name="baths" defaultValue={String(listing.baths)} />
-              <Input name="size_m2" defaultValue={listing.size_m2 ? String(listing.size_m2) : ""} />
+              <input type="hidden" name="purpose" value="new-development" />
+              <div className="flex items-center rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--muted)]">
+                {t(getPurposeLabelKey("new-development"))}
+              </div>
+              <Input name="price" defaultValue={String(listing.price)} required disabled={!canEdit} />
+              <Input name="currency" defaultValue={listing.currency} disabled={!canEdit} />
+              <Input name="city" defaultValue={listing.city} required disabled={!canEdit} />
+              <Input name="area" defaultValue={listing.area ?? ""} disabled={!canEdit} />
+              <Input name="address" defaultValue={listing.address ?? ""} disabled={!canEdit} />
+              <Input name="beds" defaultValue={String(listing.beds)} disabled={!canEdit} />
+              <Input name="baths" defaultValue={String(listing.baths)} disabled={!canEdit} />
+              <Input
+                name="size_m2"
+                defaultValue={listing.size_m2 ? String(listing.size_m2) : ""}
+                disabled={!canEdit}
+              />
               <Input
                 name="amenities"
                 defaultValue={(listing.amenities as string[] | null | undefined)?.join(", ") ?? ""}
+                disabled={!canEdit}
+              />
+              <Input
+                name="listing_code"
+                defaultValue={listing.listing_code ?? ""}
+                placeholder={t("submission.field.listing_code")}
+                disabled={!isAdmin}
+              />
+              <Input
+                name="unit_code"
+                defaultValue={listing.unit_code ?? ""}
+                placeholder={t("submission.field.unit_code")}
+                disabled={!isAdmin}
               />
               <Select name="status" defaultValue={listing.status}>
-                <option value="draft">مسودة</option>
-                {isAdmin ? <option value="published">منشور</option> : null}
-                <option value="archived">مؤرشف</option>
+                <option value="draft">{t("status.draft")}</option>
+                {isAdmin ? <option value="published">{t("status.published")}</option> : null}
+                <option value="archived">{t("status.archived")}</option>
               </Select>
               <div className="md:col-span-3">
-                <textarea
-                  name="description"
-                  defaultValue={listing.description ?? ""}
-                  className="min-h-[120px] w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-amber-300/40"
+                <Textarea name="description" defaultValue={listing.description ?? ""} disabled={!canEdit} />
+              </div>
+              <div className="md:col-span-3 grid gap-3 md:grid-cols-2">
+                <Textarea
+                  name="description_ar"
+                  defaultValue={listing.description_ar ?? ""}
+                  placeholder={t("submission.field.desc_ar")}
+                  disabled={!canEdit}
+                />
+                <Textarea
+                  name="description_en"
+                  defaultValue={listing.description_en ?? ""}
+                  placeholder={t("submission.field.desc_en")}
+                  disabled={!canEdit}
                 />
               </div>
               <div className="md:col-span-3 flex justify-end gap-3">
-                <Button type="submit">تحديث الإعلان</Button>
+                <Button type="submit" disabled={!canEdit}>
+                  {t("developer.edit.save")}
+                </Button>
                 <Button type="submit" variant="danger" formAction={deleteListingAction}>
-                  حذف الإعلان
+                  {t("developer.edit.delete")}
                 </Button>
               </div>
             </form>
           </Card>
         </Section>
 
-        <Section title="صور الإعلان" subtitle="إدارة معرض الصور">
+        <Section title={t("developer.edit.images")} subtitle={t("developer.edit.images.subtitle")}>
           <Card className="space-y-4">
-            <ImageUploader listingId={listing.id} existingCount={images.length} />
+            <ImageUploader
+              listingId={listing.id}
+              existingCount={images.length}
+              labels={{
+                title: t("developer.edit.images"),
+                hint: t("developer.edit.images.subtitle"),
+                uploading: t("upload.uploading"),
+                error: t("upload.error"),
+                pathLabel: t("upload.path"),
+              }}
+            />
             <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
               {images.map((img) => {
                 const url = getPublicImageUrl(img.path);
                 if (!url) return null;
                 return (
                   <div key={img.path} className="space-y-2">
-                    <div className="aspect-[4/3] overflow-hidden rounded-xl bg-white/5">
-                      <img src={url} alt="صورة" className="h-full w-full object-cover" />
+                    <div className="aspect-[4/3] overflow-hidden rounded-xl bg-[var(--surface)]">
+                      <img src={url} alt={t("general.imageAlt")} className="h-full w-full object-cover" />
                     </div>
                     <form action={deleteImageAction}>
                       <input type="hidden" name="listing_id" value={listing.id} />
                       <input type="hidden" name="path" value={img.path} />
                       <Button type="submit" size="sm" variant="ghost" className="w-full">
-                        حذف الصورة
+                        {t("developer.edit.deleteImage")}
                       </Button>
                     </form>
                   </div>
@@ -140,3 +207,4 @@ export default async function DeveloperListingEditPage({
     </div>
   );
 }
+

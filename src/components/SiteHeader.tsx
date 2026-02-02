@@ -1,10 +1,25 @@
-import Link from "next/link";
-import { Button } from "@/components/ui";
+﻿import Link from "next/link";
+import { ThemeSwitcher } from "@/components/ThemeSwitcher";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { Logo } from "@/components/Logo";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
+import { getSiteSettings } from "@/lib/settings";
+import { createT } from "@/lib/i18n";
+import { getServerLocale } from "@/lib/i18n.server";
 
-type HeaderRole = "guest" | "user" | "developer" | "partner" | "admin";
+type HeaderRole =
+  | "guest"
+  | "developer"
+  | "owner"
+  | "admin"
+  | "ops"
+  | "staff"
+  | "agent";
 
 export async function SiteHeader() {
+  const locale = await getServerLocale();
+  const t = createT(locale);
+
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.getUser();
   const user = error ? null : data?.user ?? null;
@@ -16,57 +31,232 @@ export async function SiteHeader() {
       .select("role")
       .eq("id", user.id)
       .maybeSingle();
-    role = (profile?.role as HeaderRole) ?? "user";
+    role = (profile?.role as HeaderRole) ?? "guest";
   }
 
   const isAuthed = role !== "guest";
-  const isPartner = role === "developer" || role === "partner" || role === "admin";
-  const isAdmin = role === "admin";
+  const isDeveloperPortal =
+    role === "developer" || role === "admin" || role === "ops" || role === "staff" || role === "owner";
+  const isAdmin = role === "admin" || role === "owner";
+  const isStaff = role === "admin" || role === "ops" || role === "staff" || role === "owner";
+  const isAgent = role === "agent";
+  const isCrmUser = isStaff || isAgent;
+  const showDeveloperAds = role === "developer";
+  const showAdminAds = isAdmin;
+  const settings = await getSiteSettings();
+  const whatsappLink = settings.whatsapp_link || null;
+
+  const themeLabels = {
+    dark: t("theme.dark"),
+    light: t("theme.light"),
+  };
+
+  const langLabels = {
+    ar: t("lang.ar"),
+    en: t("lang.en"),
+  };
+
+  const currentLayer =
+    role === "owner"
+      ? t("layer.owner")
+      : role === "admin"
+        ? t("layer.admin")
+        : role === "developer"
+          ? t("layer.developer")
+          : role === "ops" || role === "staff" || role === "agent"
+            ? t("layer.staff")
+            : t("layer.public");
+
+  const layerOptions = [
+    { href: "/", label: t("layer.public") },
+    { href: "/listings", label: t("nav.listings") },
+    ...(isDeveloperPortal ? [{ href: "/developer", label: t("layer.developer") }] : []),
+    ...(showDeveloperAds ? [{ href: "/developer/ads", label: t("nav.ads") }] : []),
+    ...(isStaff ? [{ href: "/staff", label: t("layer.staff") }] : []),
+    ...(isCrmUser ? [{ href: "/crm", label: t("nav.crm") }] : []),
+    ...(isAdmin ? [{ href: "/admin", label: t("layer.admin") }] : []),
+    ...(showAdminAds ? [{ href: "/admin/ads", label: t("nav.ads") }] : []),
+    ...(isAdmin ? [{ href: "/admin/reports", label: t("nav.reports") }] : []),
+  ];
 
   return (
-    <header className="border-b border-white/10 bg-zinc-950/80 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-6 py-4">
-        <Link href="/" className="text-lg font-semibold text-white">
-          سوق العقارات
-        </Link>
-        <nav className="hidden items-center gap-5 text-sm text-white/70 md:flex">
-          <Link href="/listings" className="hover:text-white">
-            الإعلانات
+    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--surface)]/90 backdrop-blur">
+      <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 px-6 py-4">
+        <div className="flex items-center gap-4">
+          <Link href="/">
+            <Logo name={t("brand.name")} imageClassName="h-10 md:h-12" />
           </Link>
-          {isPartner ? (
-            <Link href="/developer" className="hover:text-white">
-              بوابة المطور
+          <span className="hidden rounded-full border border-[var(--border)] bg-[var(--accent-soft)] px-3 py-1 text-xs font-semibold text-[var(--accent)] lg:inline-flex">
+            {t("brand.tagline")}
+          </span>
+        </div>
+
+        <nav className="hidden items-center gap-5 text-sm font-medium text-[var(--muted)] lg:flex">
+          <Link href="/listings" className="hover:text-[var(--text)]">
+            {t("nav.listings")}
+          </Link>
+          <Link href="/about" className="hover:text-[var(--text)]">
+            {t("nav.about")}
+          </Link>
+          <Link href="/careers" className="hover:text-[var(--text)]">
+            {t("nav.careers")}
+          </Link>
+          {whatsappLink ? (
+            <a href={whatsappLink} target="_blank" rel="noreferrer" className="hover:text-[var(--text)]">
+              {t("nav.contact")}
+            </a>
+          ) : null}
+          {isDeveloperPortal ? (
+            <Link href="/developer" className="hover:text-[var(--text)]">
+              {t("nav.partners")}
+            </Link>
+          ) : null}
+          {showDeveloperAds ? (
+            <Link href="/developer/ads" className="hover:text-[var(--text)]">
+              {t("nav.ads")}
+            </Link>
+          ) : null}
+          {isStaff ? (
+            <Link href="/staff" className="hover:text-[var(--text)]">
+              {t("nav.staff")}
+            </Link>
+          ) : null}
+          {isCrmUser ? (
+            <Link href="/crm" className="hover:text-[var(--text)]">
+              {t("nav.crm")}
             </Link>
           ) : null}
           {isAdmin ? (
-            <Link href="/admin" className="hover:text-white">
-              الإدارة
+            <Link href="/admin" className="hover:text-[var(--text)]">
+              {t("nav.admin")}
+            </Link>
+          ) : null}
+          {showAdminAds ? (
+            <Link href="/admin/ads" className="hover:text-[var(--text)]">
+              {t("nav.ads")}
             </Link>
           ) : null}
           {isAdmin ? (
-            <Link href="/admin/reports" className="hover:text-white">
-              التقارير
+            <Link href="/admin/reports" className="hover:text-[var(--text)]">
+              {t("nav.reports")}
             </Link>
           ) : null}
           {isAuthed ? (
-            <Link href="/account" className="hover:text-white">
-              الحساب
+            <Link href="/account" className="hover:text-[var(--text)]">
+              {t("nav.account")}
             </Link>
           ) : null}
         </nav>
-        <div className="flex items-center gap-3">
+
+        <div className="flex items-center gap-2">
+          <details className="group relative">
+            <summary className="flex cursor-pointer items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--text)] shadow-[var(--shadow)]">
+              <span className="text-[var(--muted)]">{t("layer.current")}</span>
+              <span>{currentLayer}</span>
+              <span className="text-[var(--muted)]">menu</span>
+            </summary>
+            <div className="absolute right-0 mt-2 min-w-[180px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2 shadow-[var(--shadow)]">
+              {layerOptions.map((option) => (
+                <Link
+                  key={option.href}
+                  href={option.href}
+                  className="block rounded-lg px-3 py-2 text-sm text-[var(--muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
+                >
+                  {option.label}
+                </Link>
+              ))}
+            </div>
+          </details>
+          <LanguageSwitcher locale={locale} labels={langLabels} />
+          <ThemeSwitcher labels={themeLabels} />
           {isAuthed ? (
-            <Link href="/dashboard" className="text-sm text-white/70 hover:text-white">
-              لوحة التحكم
-            </Link>
-          ) : null}
-          {!isAuthed ? (
-            <Link href="/auth?next=/dashboard">
-              <Button size="sm">تسجيل الدخول</Button>
+            <Link
+              href="/dashboard"
+              className="text-sm font-medium text-[var(--muted)] hover:text-[var(--text)]"
+            >
+              {t("nav.dashboard")}
             </Link>
           ) : null}
         </div>
       </div>
+
+      <div className="mx-auto w-full max-w-7xl px-6 pb-4 lg:hidden">
+        <details className="group rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3">
+          <summary className="flex cursor-pointer items-center justify-between text-sm font-semibold text-[var(--text)]">
+            {t("nav.menu")}
+            <span className="transition group-open:rotate-180">v</span>
+          </summary>
+          <div className="mt-3 grid gap-2 text-sm text-[var(--muted)]">
+            <Link href="/listings" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+              {t("nav.listings")}
+            </Link>
+            <Link href="/about" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+              {t("nav.about")}
+            </Link>
+            <Link href="/careers" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+              {t("nav.careers")}
+            </Link>
+            {whatsappLink ? (
+              <a
+                href={whatsappLink}
+                target="_blank"
+                rel="noreferrer"
+                className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]"
+              >
+                {t("nav.contact")}
+              </a>
+            ) : null}
+            {isDeveloperPortal ? (
+              <Link href="/developer" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                {t("nav.partners")}
+              </Link>
+            ) : null}
+            {showDeveloperAds ? (
+              <Link href="/developer/ads" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                {t("nav.ads")}
+              </Link>
+            ) : null}
+            {isStaff ? (
+              <Link href="/staff" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                {t("nav.staff")}
+              </Link>
+            ) : null}
+            {isCrmUser ? (
+              <Link href="/crm" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                {t("nav.crm")}
+              </Link>
+            ) : null}
+            {isAdmin ? (
+              <Link href="/admin" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                {t("nav.admin")}
+              </Link>
+            ) : null}
+            {showAdminAds ? (
+              <Link href="/admin/ads" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                {t("nav.ads")}
+              </Link>
+            ) : null}
+            {isAdmin ? (
+              <Link href="/admin/reports" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                {t("nav.reports")}
+              </Link>
+            ) : null}
+            {isAuthed ? (
+              <Link href="/account" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                {t("nav.account")}
+              </Link>
+            ) : null}
+            <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-xs font-semibold text-[var(--muted)]">
+              {t("layer.current")}: {currentLayer}
+            </div>
+            <div className="flex items-center gap-2 pt-2">
+              <LanguageSwitcher locale={locale} labels={langLabels} />
+              <ThemeSwitcher labels={themeLabels} />
+            </div>
+          </div>
+        </details>
+      </div>
     </header>
   );
 }
+
