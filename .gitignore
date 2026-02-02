@@ -29,10 +29,8 @@ __pycache__/
 *.pyo
 *.pyd
 *.egg-info/
-/.venv/
-real-estate-platform@0.1.0
-next
-.cursor/
+.venv/
+services/hrtaj_api/.venv/
 real-estate-platform@0.1.0
 next
 
@@ -51,5 +49,3 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-
-.cursor/
