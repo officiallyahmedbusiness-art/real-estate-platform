@@ -2,6 +2,9 @@
   "name": "real-estate-platform",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "next dev",
     "dev:windows": "set NEXT_DISABLE_TURBOPACK=1&& next dev",
