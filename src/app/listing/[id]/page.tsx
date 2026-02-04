@@ -138,9 +138,9 @@ export default async function ListingDetailPage({
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <SiteHeader />
-      <main className="mx-auto w-full max-w-7xl space-y-8 px-4 py-8 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-10 lg:px-8">
+      <main className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:space-y-8 sm:px-6 sm:py-10 lg:px-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="space-y-2">
+          <div className="space-y-1 sm:space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <Badge>{t(getPurposeLabelKey(listing.purpose))}</Badge>
               <Badge>{t(getPropertyTypeLabelKey(listing.type))}</Badge>
@@ -148,7 +148,7 @@ export default async function ListingDetailPage({
                 {listing.beds} {t("detail.stats.rooms")} - {listing.baths} {t("detail.stats.baths")}
               </Badge>
             </div>
-            <h1 className="text-3xl font-semibold">{listing.title}</h1>
+            <h1 className="text-2xl font-semibold sm:text-3xl">{listing.title}</h1>
             <p className="text-[var(--muted)]">
               {listing.city}
               {listing.area ? ` - ${listing.area}` : ""}
@@ -156,7 +156,7 @@ export default async function ListingDetailPage({
             </p>
           </div>
           <div className="space-y-2 text-right">
-            <p className="text-3xl font-semibold text-[var(--accent)]">
+            <p className="text-2xl font-semibold text-[var(--accent)] sm:text-3xl">
               {formatPrice(listing.price, listing.currency, locale)}
             </p>
             <div className="flex flex-wrap items-center justify-end gap-3">
@@ -169,7 +169,7 @@ export default async function ListingDetailPage({
           </div>
         </div>
 
-        <Card className="space-y-6 hrtaj-card">
+        <Card className="space-y-3 hrtaj-card sm:space-y-6">
           <div className="grid gap-4 lg:grid-cols-[2fr,1fr]">
             <div className="space-y-4">
               <div className="aspect-[16/9] overflow-hidden rounded-2xl bg-[var(--surface)]">
@@ -181,7 +181,7 @@ export default async function ListingDetailPage({
                   </div>
                 )}
               </div>
-              <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+              <div className="grid grid-cols-2 gap-2 sm:gap-3 md:grid-cols-4">
                 {(imageAttachments.length ? imageAttachments : images.slice(0, 8)).map((img) => {
                   const url =
                     "signed_url" in img

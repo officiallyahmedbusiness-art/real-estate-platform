@@ -171,8 +171,8 @@ export default async function Home() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
       <SiteHeader />
-      <main className="mx-auto w-full max-w-7xl space-y-12 px-4 py-8 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:space-y-14 sm:px-6 sm:py-10 lg:px-8">
-        <section className="relative overflow-hidden rounded-[32px] border border-[var(--border)] bg-[var(--surface)]/90 p-5 shadow-[var(--shadow)] fade-up sm:p-8 md:p-10 hero-shell">
+      <main className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:space-y-12 sm:px-6 sm:py-10 lg:px-8">
+        <section className="relative overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface)]/90 p-4 shadow-[var(--shadow)] fade-up sm:rounded-[32px] sm:p-8 hero-shell">
           <div className="absolute inset-0">
             {heroVideo ? (
               <video
@@ -198,13 +198,13 @@ export default async function Home() {
             ) : null}
             <div className="hero-overlay" />
           </div>
-          <div className="relative z-10 grid gap-6 sm:gap-10 lg:grid-cols-[1.1fr,0.9fr]">
+          <div className="relative z-10 grid gap-5 sm:gap-10 lg:grid-cols-[1.1fr,0.9fr]">
             <div className="space-y-4 sm:space-y-6">
               <Badge>{t("home.hero.badge")}</Badge>
-              <h1 className="max-w-[22ch] text-2xl font-semibold leading-tight text-balance sm:text-4xl lg:text-5xl">
+              <h1 className="max-w-[18ch] text-3xl font-semibold leading-tight text-balance sm:max-w-[22ch] sm:text-5xl lg:text-5xl">
                 {t("home.hero.title")}
               </h1>
-              <p className="max-w-xl text-sm leading-relaxed text-[var(--muted)] sm:text-base">
+              <p className="max-w-lg text-sm leading-relaxed text-[var(--muted)] sm:text-base">
                 {t("home.hero.subtitle")}
               </p>
               <div className="flex flex-col gap-3 sm:flex-row">
@@ -232,7 +232,7 @@ export default async function Home() {
                 ))}
               </div>
             </div>
-            <Card className="space-y-4 bg-[var(--surface-elevated)]/90 p-4 backdrop-blur sm:p-5">
+            <Card className="space-y-3 bg-[var(--surface-elevated)]/90 p-3 backdrop-blur sm:space-y-4 sm:p-5">
               <h2 className="text-lg font-semibold">{t("home.callback.title")}</h2>
               <p className="text-sm text-[var(--muted)]">{t("home.callback.subtitle")}</p>
               <form action={createPublicRequestAction} className="space-y-3">
@@ -410,11 +410,11 @@ export default async function Home() {
 
         <Section title={t("home.projects.title")} subtitle={t("home.projects.subtitle")}>
           {featuredProjects.length === 0 ? (
-            <Card>
+            <Card className="p-3 sm:p-4">
               <p className="text-sm text-[var(--muted)]">{t("home.projects.empty")}</p>
             </Card>
           ) : (
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
               {featuredProjects.map((project) => (
                 <Card key={project.id} className="space-y-3 hrtaj-card">
                   <div className="aspect-[4/3] overflow-hidden rounded-xl bg-[var(--surface)]">
@@ -457,11 +457,11 @@ export default async function Home() {
 
         <Section title={t("home.featured.title")} subtitle={t("home.featured.subtitle")}>
           {listings.length === 0 ? (
-            <Card>
+            <Card className="p-3 sm:p-4">
               <p className="text-sm text-[var(--muted)]">{t("home.featured.empty")}</p>
             </Card>
           ) : (
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
               {listings.map((listing, index) => {
                 const cover =
                   listing.listing_images?.sort((a, b) => a.sort - b.sort)[0]?.path ?? null;

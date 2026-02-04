@@ -96,10 +96,10 @@ export default async function ListingsPage({
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <SiteHeader />
-      <main className="mx-auto w-full max-w-7xl space-y-8 px-4 py-8 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 sm:py-10 lg:px-8">
+      <main className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:space-y-8 sm:px-6 sm:py-10 lg:px-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div className="space-y-1">
-            <h1 className="text-2xl font-semibold">{t("listings.title")}</h1>
+            <h1 className="text-xl font-semibold sm:text-2xl">{t("listings.title")}</h1>
             <p className="text-sm text-[var(--muted)]">
               {t("listings.results", { count: formatNumber(totalCount, locale) })}
             </p>
@@ -118,11 +118,11 @@ export default async function ListingsPage({
           </div>
         </div>
 
-        <Card className="space-y-4 hrtaj-card">
+        <Card className="space-y-3 p-3 sm:space-y-4 sm:p-4 hrtaj-card">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="space-y-1">
-              <h2 className="text-lg font-semibold">{t("listings.filters.title")}</h2>
-              <p className="text-sm text-[var(--muted)]">{t("listings.filters.subtitle")}</p>
+              <h2 className="text-base font-semibold sm:text-lg">{t("listings.filters.title")}</h2>
+              <p className="text-xs text-[var(--muted)] sm:text-sm">{t("listings.filters.subtitle")}</p>
             </div>
             <Badge>
               {t("listings.results", { count: formatNumber(totalCount, locale) })}
@@ -219,7 +219,7 @@ export default async function ListingsPage({
         </Card>
 
         {listings.length === 0 ? (
-          <Card>
+          <Card className="p-3 sm:p-4">
             <p className="text-sm text-[var(--muted)]">{t("listings.empty")}</p>
           </Card>
         ) : (

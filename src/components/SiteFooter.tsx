@@ -15,10 +15,14 @@ export async function SiteFooter({ showFloating = false }: { showFloating?: bool
   const year = new Date().getFullYear();
 
   return (
-    <footer className="border-t border-[var(--border)] bg-[var(--surface)]">
-      <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-8 text-xs text-[var(--muted)] sm:px-6 sm:py-10 sm:text-sm lg:px-8 md:grid-cols-[1.4fr,1fr,1fr]">
+    <footer
+      className={`border-t border-[var(--border)] bg-[var(--surface)] ${
+        showFloating ? "pb-20 sm:pb-24" : ""
+      }`}
+    >
+      <div className="mx-auto grid w-full max-w-7xl gap-5 px-4 py-6 text-xs text-[var(--muted)] sm:gap-8 sm:px-6 sm:py-10 sm:text-sm lg:px-8 md:grid-cols-[1.4fr,1fr,1fr]">
         <div className="space-y-3">
-          <Logo name={t("brand.name")} className="text-[var(--text)]" imageClassName="h-10 md:h-12" />
+          <Logo name={t("brand.name")} className="text-[var(--text)]" imageClassName="h-8 sm:h-10 md:h-12" />
           <p className="max-w-md">{t("brand.tagline")}</p>
         </div>
         <div className="space-y-3">

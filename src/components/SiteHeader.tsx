@@ -83,20 +83,14 @@ export async function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--surface)]/90 backdrop-blur">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-3 py-3 lg:py-4">
+        <div className="flex items-center justify-between gap-3 py-2 sm:py-3 lg:py-4">
           <div className="flex items-center gap-3">
             <Link href="/">
-              <Logo name={t("brand.name")} imageClassName="h-8 sm:h-10 md:h-12" />
+              <Logo name={t("brand.name")} imageClassName="h-7 sm:h-9 md:h-12" />
             </Link>
             <span className="hidden rounded-full border border-[var(--border)] bg-[var(--accent-soft)] px-3 py-1 text-xs font-semibold text-[var(--accent)] lg:inline-flex">
               {t("brand.tagline")}
             </span>
-          </div>
-
-          <div className="flex items-center gap-2 md:hidden">
-            <LanguageSwitcher locale={locale} labels={langLabels} />
-            <ThemeSwitcher labels={themeLabels} />
-            <HelpModeToggle />
           </div>
 
           <div className="hidden items-center gap-2 md:flex">
@@ -129,6 +123,83 @@ export async function SiteHeader() {
               </Link>
             ) : null}
           </div>
+
+          <details className="group relative md:hidden">
+            <summary className="flex cursor-pointer items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--text)] shadow-[var(--shadow)]">
+              {t("nav.menu")}
+              <span className="transition group-open:rotate-180">v</span>
+            </summary>
+            <div className="absolute right-0 mt-2 w-[min(90vw,360px)] rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 shadow-[var(--shadow)]">
+              <div className="grid gap-2 text-sm text-[var(--muted)]">
+                <Link href="/listings" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                  {t("nav.listings")}
+                </Link>
+                <Link href="/about" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                  {t("nav.about")}
+                </Link>
+                <Link href="/careers" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                  {t("nav.careers")}
+                </Link>
+                {whatsappLink ? (
+                  <a
+                    href={whatsappLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]"
+                  >
+                    {t("nav.contact")}
+                  </a>
+                ) : null}
+                {isDeveloperPortal ? (
+                  <Link href="/developer" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                    {t("nav.partners")}
+                  </Link>
+                ) : null}
+                {showDeveloperAds ? (
+                  <Link href="/developer/ads" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                    {t("nav.ads")}
+                  </Link>
+                ) : null}
+                {isStaff ? (
+                  <Link href="/staff" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                    {t("nav.staff")}
+                  </Link>
+                ) : null}
+                {isCrmUser ? (
+                  <Link href="/crm" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                    {t("nav.crm")}
+                  </Link>
+                ) : null}
+                {isAdmin ? (
+                  <Link href="/admin" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                    {t("nav.admin")}
+                  </Link>
+                ) : null}
+                {showAdminAds ? (
+                  <Link href="/admin/ads" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                    {t("nav.ads")}
+                  </Link>
+                ) : null}
+                {isAdmin ? (
+                  <Link href="/admin/reports" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                    {t("nav.reports")}
+                  </Link>
+                ) : null}
+                {isAuthed ? (
+                  <Link href="/account" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
+                    {t("nav.account")}
+                  </Link>
+                ) : null}
+                <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-xs font-semibold text-[var(--muted)]">
+                  {t("layer.current")}: {currentLayer}
+                </div>
+                <div className="flex items-center gap-2 pt-2">
+                  <LanguageSwitcher locale={locale} labels={langLabels} />
+                  <ThemeSwitcher labels={themeLabels} />
+                </div>
+              </div>
+            </div>
+          </details>
         </div>
 
         <nav className="hidden items-center gap-5 pb-4 text-sm font-medium text-[var(--muted)] lg:flex">
@@ -189,82 +260,6 @@ export async function SiteHeader() {
         </nav>
       </div>
 
-      <div className="mx-auto w-full max-w-7xl px-4 pb-4 sm:px-6 lg:px-8 lg:hidden">
-        <details className="group rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-2">
-          <summary className="flex cursor-pointer items-center justify-between text-xs font-semibold text-[var(--text)] sm:text-sm">
-            {t("nav.menu")}
-            <span className="transition group-open:rotate-180">v</span>
-          </summary>
-          <div className="mt-3 grid gap-2 text-sm text-[var(--muted)]">
-            <Link href="/listings" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
-              {t("nav.listings")}
-            </Link>
-            <Link href="/about" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
-              {t("nav.about")}
-            </Link>
-            <Link href="/careers" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
-              {t("nav.careers")}
-            </Link>
-            {whatsappLink ? (
-              <a
-                href={whatsappLink}
-                target="_blank"
-                rel="noreferrer"
-                className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]"
-              >
-                {t("nav.contact")}
-              </a>
-            ) : null}
-            {isDeveloperPortal ? (
-              <Link href="/developer" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
-                {t("nav.partners")}
-              </Link>
-            ) : null}
-            {showDeveloperAds ? (
-              <Link href="/developer/ads" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
-                {t("nav.ads")}
-              </Link>
-            ) : null}
-            {isStaff ? (
-              <Link href="/staff" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
-                {t("nav.staff")}
-              </Link>
-            ) : null}
-            {isCrmUser ? (
-              <Link href="/crm" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
-                {t("nav.crm")}
-              </Link>
-            ) : null}
-            {isAdmin ? (
-              <Link href="/admin" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
-                {t("nav.admin")}
-              </Link>
-            ) : null}
-            {showAdminAds ? (
-              <Link href="/admin/ads" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
-                {t("nav.ads")}
-              </Link>
-            ) : null}
-            {isAdmin ? (
-              <Link href="/admin/reports" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
-                {t("nav.reports")}
-              </Link>
-            ) : null}
-            {isAuthed ? (
-              <Link href="/account" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
-                {t("nav.account")}
-              </Link>
-            ) : null}
-            <div className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 py-2 text-xs font-semibold text-[var(--muted)]">
-              {t("layer.current")}: {currentLayer}
-            </div>
-            <div className="flex items-center gap-2 pt-2">
-              <LanguageSwitcher locale={locale} labels={langLabels} />
-              <ThemeSwitcher labels={themeLabels} />
-            </div>
-          </div>
-        </details>
-      </div>
     </header>
   );
 }
