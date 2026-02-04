@@ -3,7 +3,8 @@ import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { requireRole } from "@/lib/auth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Badge, Button, Card, Input, Section } from "@/components/ui";
+import { Badge, Button, Card, Section } from "@/components/ui";
+import { FieldInput } from "@/components/FieldHelp";
 import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 import { createLeadSourceAction, toggleLeadSourceAction } from "./actions";
@@ -41,8 +42,18 @@ export default async function CrmSourcesPage() {
         {canManage ? (
           <Card className="space-y-4">
             <form action={createLeadSourceAction} className="grid gap-3 md:grid-cols-3">
-              <Input name="slug" placeholder={t("crm.sources.slug")} />
-              <Input name="name" placeholder={t("crm.sources.name")} />
+              <FieldInput
+                name="slug"
+                label={t("crm.sources.slug")}
+                helpKey="crm.sources.slug"
+                placeholder={t("crm.sources.slug")}
+              />
+              <FieldInput
+                name="name"
+                label={t("crm.sources.name")}
+                helpKey="crm.sources.name"
+                placeholder={t("crm.sources.name")}
+              />
               <Button type="submit" size="sm">
                 {t("crm.sources.add")}
               </Button>

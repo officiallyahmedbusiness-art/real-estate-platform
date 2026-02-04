@@ -13,6 +13,7 @@
     "dev:clean:web": "node scripts/dev-clean.mjs && set NEXT_DISABLE_TURBOPACK=1&& next dev",
     "dev:clean:windows": "node scripts/dev-clean.mjs && set NEXT_DISABLE_TURBOPACK=1&& next dev",
     "build": "next build",
+    "check:brand": "node scripts/check-brand-ar.mjs",
     "start": "next start",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit"

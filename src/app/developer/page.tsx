@@ -3,7 +3,8 @@ import { requireRole } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Button, Card, Input, Select, Section, Badge, Textarea, Stat } from "@/components/ui";
+import { Button, Card, Section, Badge, Stat } from "@/components/ui";
+import { FieldInput, FieldSelect, FieldTextarea } from "@/components/FieldHelp";
 import {
   PROPERTY_TYPE_OPTIONS,
   LEAD_STATUS_OPTIONS,
@@ -219,14 +220,51 @@ export default async function DeveloperPage() {
               {primaryDeveloperId ? (
                 <input type="hidden" name="developer_id" value={primaryDeveloperId} />
               ) : null}
-              <Input name="title_ar" placeholder={t("submission.field.title_ar")} required />
-              <Input name="title_en" placeholder={t("submission.field.title_en")} />
-              <Input name="city" placeholder={t("project.form.city")} required />
-              <Input name="area" placeholder={t("project.form.area")} />
-              <Input name="address" placeholder={t("project.form.address")} />
+              <FieldInput
+                name="title_ar"
+                label={t("submission.field.title_ar")}
+                helpKey="developer.project.title_ar"
+                placeholder={t("submission.field.title_ar")}
+                required
+              />
+              <FieldInput
+                name="title_en"
+                label={t("submission.field.title_en")}
+                helpKey="developer.project.title_en"
+                placeholder={t("submission.field.title_en")}
+              />
+              <FieldInput
+                name="city"
+                label={t("project.form.city")}
+                helpKey="developer.project.city"
+                placeholder={t("project.form.city")}
+                required
+              />
+              <FieldInput
+                name="area"
+                label={t("project.form.area")}
+                helpKey="developer.project.area"
+                placeholder={t("project.form.area")}
+              />
+              <FieldInput
+                name="address"
+                label={t("project.form.address")}
+                helpKey="developer.project.address"
+                placeholder={t("project.form.address")}
+              />
               <div className="md:col-span-3 grid gap-3 md:grid-cols-2">
-                <Textarea name="description_ar" placeholder={t("submission.field.desc_ar")} />
-                <Textarea name="description_en" placeholder={t("submission.field.desc_en")} />
+                <FieldTextarea
+                  name="description_ar"
+                  label={t("submission.field.desc_ar")}
+                  helpKey="developer.project.description_ar"
+                  placeholder={t("submission.field.desc_ar")}
+                />
+                <FieldTextarea
+                  name="description_en"
+                  label={t("submission.field.desc_en")}
+                  helpKey="developer.project.description_en"
+                  placeholder={t("submission.field.desc_en")}
+                />
               </div>
               <div className="md:col-span-3 flex justify-end">
                 <Button type="submit">{t("project.create.submit")}</Button>
@@ -302,7 +340,13 @@ export default async function DeveloperPage() {
                 {primaryDeveloperId ? (
                   <input type="hidden" name="developer_id" value={primaryDeveloperId} />
                 ) : null}
-                <Select name="project_id" defaultValue="" required>
+                <FieldSelect
+                  name="project_id"
+                  label={t("developer.form.project")}
+                  helpKey="developer.listing.project_id"
+                  defaultValue=""
+                  required
+                >
                   <option value="">{t("developer.form.project")}</option>
                   {projects.map((project) => (
                     <option key={project.id} value={project.id}>
@@ -314,46 +358,141 @@ export default async function DeveloperPage() {
                       )}
                     </option>
                   ))}
-                </Select>
-                <Input name="title" placeholder={t("developer.form.title")} required />
-                <Input name="title_ar" placeholder={t("submission.field.title_ar")} />
-                <Input name="title_en" placeholder={t("submission.field.title_en")} />
-                <Select name="type" defaultValue="">
+                </FieldSelect>
+                <FieldInput
+                  name="title"
+                  label={t("developer.form.title")}
+                  helpKey="developer.listing.title"
+                  placeholder={t("developer.form.title")}
+                  required
+                />
+                <FieldInput
+                  name="title_ar"
+                  label={t("submission.field.title_ar")}
+                  helpKey="developer.listing.title_ar"
+                  placeholder={t("submission.field.title_ar")}
+                />
+                <FieldInput
+                  name="title_en"
+                  label={t("submission.field.title_en")}
+                  helpKey="developer.listing.title_en"
+                  placeholder={t("submission.field.title_en")}
+                />
+                <FieldSelect
+                  name="type"
+                  label={t("filters.type")}
+                  helpKey="developer.listing.type"
+                  defaultValue=""
+                >
                   <option value="">{t("filters.type")}</option>
                   {PROPERTY_TYPE_OPTIONS.map((item) => (
                     <option key={item.value} value={item.value}>
                       {t(item.labelKey)}
                     </option>
                   ))}
-                </Select>
+                </FieldSelect>
                 <input type="hidden" name="purpose" value="new-development" />
-                <div className="flex items-center rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--muted)]">
-                  {t(getPurposeLabelKey("new-development"))}
-                </div>
-                <Input name="price" placeholder={t("developer.form.price")} required />
-                <Input name="currency" placeholder={t("developer.form.currency")} defaultValue="EGP" />
-                <Input name="city" placeholder={t("filters.city")} required />
-                <Input name="area" placeholder={t("filters.area")} />
-                <Input name="address" placeholder={t("developer.form.address")} />
-                <Input name="beds" placeholder={t("filters.beds")} defaultValue="0" />
-                <Input name="baths" placeholder={t("filters.baths")} defaultValue="0" />
-                <Input name="size_m2" placeholder={t("developer.form.size")} />
-                <Input name="amenities" placeholder={t("developer.form.amenities")} />
+                <FieldInput
+                  label={t("filters.purpose")}
+                  helpKey="developer.listing.purpose"
+                  value={t(getPurposeLabelKey("new-development"))}
+                  readOnly
+                  data-no-help
+                />
+                <FieldInput
+                  name="price"
+                  label={t("developer.form.price")}
+                  helpKey="developer.listing.price"
+                  placeholder={t("developer.form.price")}
+                  required
+                />
+                <FieldInput
+                  name="currency"
+                  label={t("developer.form.currency")}
+                  helpKey="developer.listing.currency"
+                  placeholder={t("developer.form.currency")}
+                  defaultValue="EGP"
+                />
+                <FieldInput
+                  name="city"
+                  label={t("filters.city")}
+                  helpKey="developer.listing.city"
+                  placeholder={t("filters.city")}
+                  required
+                />
+                <FieldInput
+                  name="area"
+                  label={t("filters.area")}
+                  helpKey="developer.listing.area"
+                  placeholder={t("filters.area")}
+                />
+                <FieldInput
+                  name="address"
+                  label={t("developer.form.address")}
+                  helpKey="developer.listing.address"
+                  placeholder={t("developer.form.address")}
+                />
+                <FieldInput
+                  name="beds"
+                  label={t("filters.beds")}
+                  helpKey="developer.listing.beds"
+                  placeholder={t("filters.beds")}
+                  defaultValue="0"
+                />
+                <FieldInput
+                  name="baths"
+                  label={t("filters.baths")}
+                  helpKey="developer.listing.baths"
+                  placeholder={t("filters.baths")}
+                  defaultValue="0"
+                />
+                <FieldInput
+                  name="size_m2"
+                  label={t("developer.form.size")}
+                  helpKey="developer.listing.size_m2"
+                  placeholder={t("developer.form.size")}
+                />
+                <FieldInput
+                  name="amenities"
+                  label={t("developer.form.amenities")}
+                  helpKey="developer.listing.amenities"
+                  placeholder={t("developer.form.amenities")}
+                />
                 {isAdmin ? (
-                  <Select name="status" defaultValue="draft">
+                  <FieldSelect
+                    name="status"
+                    label={t("submission.field.status")}
+                    helpKey="developer.listing.status"
+                    defaultValue="draft"
+                  >
                     <option value="draft">{t("status.draft")}</option>
                     <option value="published">{t("status.published")}</option>
                     <option value="archived">{t("status.archived")}</option>
-                  </Select>
+                  </FieldSelect>
                 ) : (
                   <input type="hidden" name="status" value="draft" />
                 )}
                 <div className="md:col-span-3">
-                  <Textarea name="description" placeholder={t("developer.form.description")} />
+                  <FieldTextarea
+                    name="description"
+                    label={t("developer.form.description")}
+                    helpKey="developer.listing.description"
+                    placeholder={t("developer.form.description")}
+                  />
                 </div>
                 <div className="md:col-span-3 grid gap-3 md:grid-cols-2">
-                  <Textarea name="description_ar" placeholder={t("submission.field.desc_ar")} />
-                  <Textarea name="description_en" placeholder={t("submission.field.desc_en")} />
+                  <FieldTextarea
+                    name="description_ar"
+                    label={t("submission.field.desc_ar")}
+                    helpKey="developer.listing.description_ar"
+                    placeholder={t("submission.field.desc_ar")}
+                  />
+                  <FieldTextarea
+                    name="description_en"
+                    label={t("submission.field.desc_en")}
+                    helpKey="developer.listing.description_en"
+                    placeholder={t("submission.field.desc_en")}
+                  />
                 </div>
                 <div className="md:col-span-3 flex justify-end">
                   <Button type="submit">{t("developer.create.submit")}</Button>
@@ -435,7 +574,12 @@ export default async function DeveloperPage() {
         <Section title={t("submission.section.media")} subtitle={t("media.submit.title")}>
           <Card>
             <form action={createMediaSubmissionAction} className="grid gap-4 md:grid-cols-4">
-              <Select name="project_id" defaultValue="">
+              <FieldSelect
+                name="project_id"
+                label={t("submission.section.projects")}
+                helpKey="developer.media.project_id"
+                defaultValue=""
+              >
                 <option value="">{t("submission.section.projects")}</option>
                 {projects.map((project) => (
                   <option key={project.id} value={project.id}>
@@ -447,23 +591,38 @@ export default async function DeveloperPage() {
                     )}
                   </option>
                 ))}
-              </Select>
-              <Select name="listing_id" defaultValue="">
+              </FieldSelect>
+              <FieldSelect
+                name="listing_id"
+                label={t("submission.section.inventory")}
+                helpKey="developer.media.listing_id"
+                defaultValue=""
+              >
                 <option value="">{t("submission.section.inventory")}</option>
                 {listings.map((listing) => (
                   <option key={listing.id} value={listing.id}>
                     {pickLocalizedText(locale, listing.title_ar, listing.title_en, listing.title)}
                   </option>
                 ))}
-              </Select>
-              <Select name="media_type" defaultValue="brochure">
+              </FieldSelect>
+              <FieldSelect
+                name="media_type"
+                label={t("media.submit.type")}
+                helpKey="developer.media.type"
+                defaultValue="brochure"
+              >
                 {MEDIA_TYPE_OPTIONS.map((option) => (
                   <option key={option.value} value={option.value}>
                     {t(option.labelKey)}
                   </option>
                 ))}
-              </Select>
-              <Input name="url" placeholder={t("media.submit.url")} />
+              </FieldSelect>
+              <FieldInput
+                name="url"
+                label={t("media.submit.url")}
+                helpKey="developer.media.url"
+                placeholder={t("media.submit.url")}
+              />
               <div className="md:col-span-4 flex justify-end">
                 <Button type="submit">{t("media.submit.add")}</Button>
               </div>
@@ -531,22 +690,33 @@ export default async function DeveloperPage() {
                     ) : (
                       <p className="text-xs text-[var(--muted)]">{t("developer.leads.noNote")}</p>
                     )}
-                    <form action={addLeadNoteAction} className="flex flex-wrap items-center gap-3">
+                    <form action={addLeadNoteAction} className="flex flex-wrap items-end gap-3">
                       <input type="hidden" name="lead_id" value={lead.id} />
-                      <Input name="note" placeholder={t("developer.leads.addNote")} className="flex-1" />
+                      <FieldInput
+                        name="note"
+                        label={t("developer.leads.addNote")}
+                        helpKey="developer.leads.note"
+                        placeholder={t("developer.leads.addNote")}
+                        wrapperClassName="flex-1"
+                      />
                       <Button size="sm" variant="secondary" type="submit">
                         {t("developer.leads.addNote")}
                       </Button>
                     </form>
-                    <form action={updateLeadStatusAction} className="flex flex-wrap items-center gap-3">
+                    <form action={updateLeadStatusAction} className="flex flex-wrap items-end gap-3">
                       <input type="hidden" name="lead_id" value={lead.id} />
-                      <Select name="status" defaultValue={lead.status ?? "new"}>
+                      <FieldSelect
+                        name="status"
+                        label={t("crm.filter.status")}
+                        helpKey="developer.leads.status"
+                        defaultValue={lead.status ?? "new"}
+                      >
                         {LEAD_STATUS_OPTIONS.map((option) => (
                           <option key={option.value} value={option.value}>
                             {t(option.labelKey)}
                           </option>
                         ))}
-                      </Select>
+                      </FieldSelect>
                       <Button size="sm" variant="secondary" type="submit">
                         {t("developer.leads.update")}
                       </Button>

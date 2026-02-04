@@ -3,7 +3,8 @@ import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { requireRole } from "@/lib/auth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Badge, Button, Card, Input, Section, Select, Textarea } from "@/components/ui";
+import { Badge, Button, Card, Section } from "@/components/ui";
+import { FieldInput, FieldSelect, FieldTextarea } from "@/components/FieldHelp";
 import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 import { createActivityAction } from "./actions";
@@ -63,33 +64,65 @@ export default async function CrmActivitiesPage() {
 
         <Card className="space-y-4">
           <form action={createActivityAction} className="grid gap-3 md:grid-cols-4">
-            <Select name="activity_type" defaultValue="">
+            <FieldSelect
+              name="activity_type"
+              label={t("crm.activities.type")}
+              helpKey="crm.activities.type"
+              defaultValue=""
+            >
               <option value="">{t("crm.activities.type")}</option>
               {ACTIVITY_TYPES.map((type) => (
                 <option key={type.value} value={type.value}>
                   {t(type.labelKey)}
                 </option>
               ))}
-            </Select>
-            <Select name="lead_id" defaultValue="">
+            </FieldSelect>
+            <FieldSelect
+              name="lead_id"
+              label={t("crm.activities.lead")}
+              helpKey="crm.activities.lead"
+              defaultValue=""
+            >
               <option value="">{t("crm.activities.lead")}</option>
               {leads.map((lead) => (
                 <option key={lead.id} value={lead.id}>
                   {lead.name}
                 </option>
               ))}
-            </Select>
-            <Select name="customer_id" defaultValue="">
+            </FieldSelect>
+            <FieldSelect
+              name="customer_id"
+              label={t("crm.activities.customer")}
+              helpKey="crm.activities.customer"
+              defaultValue=""
+            >
               <option value="">{t("crm.activities.customer")}</option>
               {customers.map((customer) => (
                 <option key={customer.id} value={customer.id}>
                   {customer.full_name ?? customer.phone_e164 ?? customer.id}
                 </option>
               ))}
-            </Select>
-            <Input name="occurred_at" type="datetime-local" />
-            <Input name="outcome" placeholder={t("crm.activities.outcome")} className="md:col-span-2" />
-            <Textarea name="notes" placeholder={t("crm.activities.notes")} className="md:col-span-3" />
+            </FieldSelect>
+            <FieldInput
+              name="occurred_at"
+              label={t("crm.activities.occurred_at")}
+              helpKey="crm.activities.occurred_at"
+              type="datetime-local"
+            />
+            <FieldInput
+              name="outcome"
+              label={t("crm.activities.outcome")}
+              helpKey="crm.activities.outcome"
+              placeholder={t("crm.activities.outcome")}
+              wrapperClassName="md:col-span-2"
+            />
+            <FieldTextarea
+              name="notes"
+              label={t("crm.activities.notes")}
+              helpKey="crm.activities.notes"
+              placeholder={t("crm.activities.notes")}
+              wrapperClassName="md:col-span-3"
+            />
             <Button type="submit" size="sm">
               {t("crm.activities.create")}
             </Button>

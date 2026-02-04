@@ -34,6 +34,10 @@
   --shadow-strong: 0 28px 60px rgba(8, 12, 24, 0.45);
   --bg-spot-1: rgba(245, 199, 107, 0.18);
   --bg-spot-2: rgba(111, 123, 94, 0.2);
+  --font-arabic-stack: var(--font-arabic), var(--font-cairo), "Cairo", "Tajawal",
+    "Noto Sans Arabic", "Noto Naskh Arabic", "Amiri", system-ui, sans-serif;
+  --font-latin-stack: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", sans-serif;
 }
 
 [data-theme="light"] {
@@ -68,7 +72,7 @@
 @theme inline {
   --color-background: var(--bg);
   --color-foreground: var(--text);
-  --font-sans: var(--font-cairo), var(--font-geist-sans);
+  --font-sans: var(--font-arabic-stack), var(--font-latin-stack);
   --font-mono: var(--font-geist-mono);
 }
 
@@ -84,8 +88,7 @@ body {
     var(--bg);
   background-attachment: fixed;
   color: var(--text);
-  font-family: var(--font-cairo), var(--font-geist-sans), ui-sans-serif,
-    system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--font-arabic-stack);
   font-size: var(--font-body);
   line-height: var(--line-body);
   font-weight: 500;
@@ -101,8 +104,11 @@ body {
 }
 
 html[dir="ltr"] body {
-  font-family: var(--font-geist-sans), var(--font-cairo), ui-sans-serif, system-ui,
-    -apple-system, "Segoe UI", sans-serif;
+  font-family: var(--font-latin-stack), var(--font-arabic-stack);
+}
+
+:lang(ar) {
+  font-family: var(--font-arabic-stack);
 }
 
 h1,
@@ -482,6 +488,58 @@ html[dir="rtl"] .hero-track {
 @media (prefers-reduced-motion: reduce) {
   .hero-track {
     animation: none;
+  }
+}
+
+.field-help-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.field-help-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 50;
+  width: min(320px, 90vw);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-strong);
+  padding: 12px;
+}
+
+.field-help-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(0, 0, 0, 0.35);
+  border: none;
+}
+
+.field-help-block {
+  border: 1px dashed var(--border);
+  background: var(--surface);
+  padding: 12px;
+}
+
+@media (max-width: 640px) {
+  .field-help-popover {
+    position: fixed;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    top: auto;
+    width: auto;
   }
 }
 

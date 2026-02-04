@@ -8,6 +8,7 @@ export async function SiteFooter({ showFloating = false }: { showFloating?: bool
   const t = createT(locale);
   const settings = await getSiteSettings();
   const whatsappLink = settings.whatsapp_link || null;
+  const instagramLink = settings.instagram_url || null;
   const linkedinLink = settings.linkedin_url || null;
   const tiktokLink = settings.tiktok_url || null;
   const contactEmail = settings.public_email || t("footer.email");
@@ -38,6 +39,11 @@ export async function SiteFooter({ showFloating = false }: { showFloating?: bool
             {settings.facebook_url ? (
               <a href={settings.facebook_url} target="_blank" rel="noreferrer" className="hover:text-[var(--text)]">
                 {t("footer.facebook")}
+              </a>
+            ) : null}
+            {instagramLink ? (
+              <a href={instagramLink} target="_blank" rel="noreferrer" className="hover:text-[var(--text)]">
+                {t("footer.instagram")}
               </a>
             ) : null}
             {linkedinLink ? (

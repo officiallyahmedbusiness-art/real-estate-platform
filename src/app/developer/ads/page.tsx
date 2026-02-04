@@ -3,7 +3,8 @@ import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { requireRole } from "@/lib/auth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Badge, Button, Card, Input, Section, Select, Textarea } from "@/components/ui";
+import { Badge, Button, Card, Section } from "@/components/ui";
+import { FieldCheckbox, FieldInput, FieldSelect, FieldTextarea } from "@/components/FieldHelp";
 import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 import {
@@ -80,21 +81,62 @@ export default async function DeveloperAdsPage() {
         <Section title={t("developer.ads.create")} subtitle={t("developer.ads.createHint")}>
           <Card className="space-y-4">
             <form action={createCampaignAction} className="grid gap-3 md:grid-cols-2">
-              <Input name="title_ar" placeholder={t("developer.ads.titleAr")} />
-              <Input name="title_en" placeholder={t("developer.ads.titleEn")} />
-              <Textarea name="body_ar" placeholder={t("developer.ads.bodyAr")} />
-              <Textarea name="body_en" placeholder={t("developer.ads.bodyEn")} />
-              <Input name="cta_label_ar" placeholder={t("developer.ads.ctaAr")} />
-              <Input name="cta_label_en" placeholder={t("developer.ads.ctaEn")} />
-              <Input name="cta_url" placeholder={t("developer.ads.ctaUrl")} className="md:col-span-2" />
+              <FieldInput
+                name="title_ar"
+                label={t("developer.ads.titleAr")}
+                helpKey="developer.ads.title_ar"
+                placeholder={t("developer.ads.titleAr")}
+              />
+              <FieldInput
+                name="title_en"
+                label={t("developer.ads.titleEn")}
+                helpKey="developer.ads.title_en"
+                placeholder={t("developer.ads.titleEn")}
+              />
+              <FieldTextarea
+                name="body_ar"
+                label={t("developer.ads.bodyAr")}
+                helpKey="developer.ads.body_ar"
+                placeholder={t("developer.ads.bodyAr")}
+              />
+              <FieldTextarea
+                name="body_en"
+                label={t("developer.ads.bodyEn")}
+                helpKey="developer.ads.body_en"
+                placeholder={t("developer.ads.bodyEn")}
+              />
+              <FieldInput
+                name="cta_label_ar"
+                label={t("developer.ads.ctaAr")}
+                helpKey="developer.ads.cta_label_ar"
+                placeholder={t("developer.ads.ctaAr")}
+              />
+              <FieldInput
+                name="cta_label_en"
+                label={t("developer.ads.ctaEn")}
+                helpKey="developer.ads.cta_label_en"
+                placeholder={t("developer.ads.ctaEn")}
+              />
+              <FieldInput
+                name="cta_url"
+                label={t("developer.ads.ctaUrl")}
+                helpKey="developer.ads.cta_url"
+                placeholder={t("developer.ads.ctaUrl")}
+                wrapperClassName="md:col-span-2"
+              />
               {isAdmin ? (
-                <Select name="status" defaultValue="draft">
+                <FieldSelect
+                  name="status"
+                  label={t("ads.status.label")}
+                  helpKey="developer.ads.status"
+                  defaultValue="draft"
+                >
                   <option value="draft">{t("ads.status.draft")}</option>
                   <option value="submitted">{t("ads.status.submitted")}</option>
                   <option value="needs_changes">{t("ads.status.needs_changes")}</option>
                   <option value="approved">{t("ads.status.approved")}</option>
                   <option value="published">{t("ads.status.published")}</option>
-                </Select>
+                </FieldSelect>
               ) : null}
               <Button type="submit" size="sm">
                 {t("developer.ads.create")}
@@ -124,22 +166,63 @@ export default async function DeveloperAdsPage() {
 
                   <form action={updateCampaignAction} className="grid gap-3 md:grid-cols-2">
                     <input type="hidden" name="id" value={campaign.id} />
-                    <Input name="title_ar" defaultValue={campaign.title_ar ?? ""} />
-                    <Input name="title_en" defaultValue={campaign.title_en ?? ""} />
-                    <Textarea name="body_ar" defaultValue={campaign.body_ar ?? ""} />
-                    <Textarea name="body_en" defaultValue={campaign.body_en ?? ""} />
-                    <Input name="cta_label_ar" defaultValue={campaign.cta_label_ar ?? ""} />
-                    <Input name="cta_label_en" defaultValue={campaign.cta_label_en ?? ""} />
-                    <Input name="cta_url" defaultValue={campaign.cta_url ?? ""} className="md:col-span-2" />
+                    <FieldInput
+                      name="title_ar"
+                      label={t("developer.ads.titleAr")}
+                      helpKey="developer.ads.title_ar"
+                      defaultValue={campaign.title_ar ?? ""}
+                    />
+                    <FieldInput
+                      name="title_en"
+                      label={t("developer.ads.titleEn")}
+                      helpKey="developer.ads.title_en"
+                      defaultValue={campaign.title_en ?? ""}
+                    />
+                    <FieldTextarea
+                      name="body_ar"
+                      label={t("developer.ads.bodyAr")}
+                      helpKey="developer.ads.body_ar"
+                      defaultValue={campaign.body_ar ?? ""}
+                    />
+                    <FieldTextarea
+                      name="body_en"
+                      label={t("developer.ads.bodyEn")}
+                      helpKey="developer.ads.body_en"
+                      defaultValue={campaign.body_en ?? ""}
+                    />
+                    <FieldInput
+                      name="cta_label_ar"
+                      label={t("developer.ads.ctaAr")}
+                      helpKey="developer.ads.cta_label_ar"
+                      defaultValue={campaign.cta_label_ar ?? ""}
+                    />
+                    <FieldInput
+                      name="cta_label_en"
+                      label={t("developer.ads.ctaEn")}
+                      helpKey="developer.ads.cta_label_en"
+                      defaultValue={campaign.cta_label_en ?? ""}
+                    />
+                    <FieldInput
+                      name="cta_url"
+                      label={t("developer.ads.ctaUrl")}
+                      helpKey="developer.ads.cta_url"
+                      defaultValue={campaign.cta_url ?? ""}
+                      wrapperClassName="md:col-span-2"
+                    />
                     {isAdmin ? (
-                      <Select name="status" defaultValue={campaign.status}>
+                      <FieldSelect
+                        name="status"
+                        label={t("ads.status.label")}
+                        helpKey="developer.ads.status"
+                        defaultValue={campaign.status}
+                      >
                         <option value="draft">{t("ads.status.draft")}</option>
                         <option value="submitted">{t("ads.status.submitted")}</option>
                         <option value="needs_changes">{t("ads.status.needs_changes")}</option>
                         <option value="approved">{t("ads.status.approved")}</option>
                         <option value="published">{t("ads.status.published")}</option>
                         <option value="archived">{t("ads.status.archived")}</option>
-                      </Select>
+                      </FieldSelect>
                     ) : null}
                     <div className="flex flex-wrap gap-3">
                       <Button type="submit" size="sm" variant="secondary">
@@ -158,17 +241,41 @@ export default async function DeveloperAdsPage() {
                     <h3 className="text-sm font-semibold">{t("developer.ads.assets")}</h3>
                     <form action={createAssetAction} className="mt-3 grid gap-3 md:grid-cols-6">
                       <input type="hidden" name="campaign_id" value={campaign.id} />
-                      <Select name="media_type" defaultValue="image">
+                      <FieldSelect
+                        name="media_type"
+                        label={t("ads.media.image")}
+                        helpKey="developer.ads.asset_type"
+                        defaultValue="image"
+                      >
                         <option value="image">{t("ads.media.image")}</option>
                         <option value="video">{t("ads.media.video")}</option>
-                      </Select>
-                      <Input name="url" placeholder={t("developer.ads.assetUrl")} className="md:col-span-2" />
-                      <Input name="poster_url" placeholder={t("developer.ads.posterUrl")} className="md:col-span-2" />
-                      <Input name="sort_order" placeholder={t("developer.ads.order")} type="number" />
-                      <label className="flex items-center gap-2 text-xs text-[var(--muted)]">
-                        <input type="checkbox" name="is_primary" />
-                        {t("developer.ads.primary")}
-                      </label>
+                      </FieldSelect>
+                      <FieldInput
+                        name="url"
+                        label={t("developer.ads.assetUrl")}
+                        helpKey="developer.ads.asset_url"
+                        placeholder={t("developer.ads.assetUrl")}
+                        wrapperClassName="md:col-span-2"
+                      />
+                      <FieldInput
+                        name="poster_url"
+                        label={t("developer.ads.posterUrl")}
+                        helpKey="developer.ads.poster_url"
+                        placeholder={t("developer.ads.posterUrl")}
+                        wrapperClassName="md:col-span-2"
+                      />
+                      <FieldInput
+                        name="sort_order"
+                        label={t("developer.ads.order")}
+                        helpKey="developer.ads.sort_order"
+                        placeholder={t("developer.ads.order")}
+                        type="number"
+                      />
+                      <FieldCheckbox
+                        name="is_primary"
+                        label={t("developer.ads.primary")}
+                        helpKey="developer.ads.primary"
+                      />
                       <Button type="submit" size="sm">
                         {t("developer.ads.addAsset")}
                       </Button>

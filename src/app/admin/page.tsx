@@ -7,6 +7,7 @@ import { Badge, Button, Card, Input, Select, Section, Stat } from "@/components/
 import { LEAD_STATUS_OPTIONS, SUBMISSION_STATUS_OPTIONS } from "@/lib/constants";
 import { createT, getLeadStatusLabelKey, getSubmissionStatusLabelKey } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
+import { InviteUserForm } from "@/components/InviteUserForm";
 import {
   addDeveloperMemberAction,
   addLeadNoteAction,
@@ -89,7 +90,7 @@ export default async function AdminPage() {
 
   const { data: profilesData } = await supabase
     .from("profiles")
-    .select("id, full_name, phone, role, created_at")
+    .select("id, full_name, phone, email, role, created_at")
     .order("created_at", { ascending: false })
     .limit(20);
   const profiles = profilesData ?? [];
@@ -341,42 +342,50 @@ export default async function AdminPage() {
                     ) : (
                       <p className="text-xs text-[var(--muted)]">{t("developer.leads.noNote")}</p>
                     )}
-                    <div className="grid gap-3 md:grid-cols-[1fr,1fr]">
-                      <form action={updateLeadStatusAction} className="flex flex-wrap items-center gap-3">
-                        <input type="hidden" name="lead_id" value={lead.id} />
-                        <Select name="status" defaultValue={lead.status ?? "new"}>
-                          {LEAD_STATUS_OPTIONS.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {t(option.labelKey)}
-                            </option>
-                          ))}
-                        </Select>
-                        <Button size="sm" variant="secondary" type="submit">
-                          {t("developer.leads.update")}
-                        </Button>
-                      </form>
-                      <form action={assignLeadAction} className="flex flex-wrap items-center gap-3">
-                        <input type="hidden" name="lead_id" value={lead.id} />
-                        <Select name="assigned_to" defaultValue={lead.assigned_to ?? ""}>
-                          <option value="">{t("admin.leads.unassigned")}</option>
-                          {profiles.map((profile) => (
-                            <option key={profile.id} value={profile.id}>
-                              {profile.full_name ?? profile.id} ({formatRoleLabel(profile.role)})
-                            </option>
-                          ))}
-                        </Select>
-                        <Button size="sm" variant="secondary" type="submit">
-                          {t("admin.leads.assign")}
-                        </Button>
-                      </form>
-                    </div>
-                    <form action={addLeadNoteAction} className="flex flex-wrap items-center gap-3">
-                      <input type="hidden" name="lead_id" value={lead.id} />
-                      <Input name="note" placeholder={t("admin.leads.addNote")} className="flex-1" />
-                      <Button size="sm" variant="secondary" type="submit">
-                        {t("admin.leads.addNote")}
-                      </Button>
-                    </form>
+                    {isOwner ? (
+                      <>
+                        <div className="grid gap-3 md:grid-cols-[1fr,1fr]">
+                          <form action={updateLeadStatusAction} className="flex flex-wrap items-center gap-3">
+                            <input type="hidden" name="lead_id" value={lead.id} />
+                            <Select name="status" defaultValue={lead.status ?? "new"}>
+                              {LEAD_STATUS_OPTIONS.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {t(option.labelKey)}
+                                </option>
+                              ))}
+                            </Select>
+                            <Button size="sm" variant="secondary" type="submit">
+                              {t("developer.leads.update")}
+                            </Button>
+                          </form>
+                          <form action={assignLeadAction} className="flex flex-wrap items-center gap-3">
+                            <input type="hidden" name="lead_id" value={lead.id} />
+                            <Select name="assigned_to" defaultValue={lead.assigned_to ?? ""}>
+                              <option value="">{t("admin.leads.unassigned")}</option>
+                              {profiles.map((profile) => (
+                                <option key={profile.id} value={profile.id}>
+                                  {profile.full_name ?? profile.id} ({formatRoleLabel(profile.role)})
+                                </option>
+                              ))}
+                            </Select>
+                            <Button size="sm" variant="secondary" type="submit">
+                              {t("admin.leads.assign")}
+                            </Button>
+                          </form>
+                        </div>
+                        <form action={addLeadNoteAction} className="flex flex-wrap items-center gap-3">
+                          <input type="hidden" name="lead_id" value={lead.id} />
+                          <Input name="note" placeholder={t("admin.leads.addNote")} className="flex-1" />
+                          <Button size="sm" variant="secondary" type="submit">
+                            {t("admin.leads.addNote")}
+                          </Button>
+                        </form>
+                      </>
+                    ) : (
+                      <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 text-xs text-[var(--muted)]">
+                        {t("crm.ownerOnly")}
+                      </div>
+                    )}
                   </Card>
                 );
               })}
@@ -416,7 +425,9 @@ export default async function AdminPage() {
 
         {isOwner ? (
           <Section title={t("admin.users.title")} subtitle={t("admin.users.subtitle")}>
-            <Card className="space-y-4">
+            <div className="space-y-4">
+              <InviteUserForm />
+              <Card className="space-y-4">
               {profiles.map((profile) => (
                 <form
                   key={profile.id}
@@ -424,28 +435,41 @@ export default async function AdminPage() {
                   className="flex flex-col gap-3 border-b border-[var(--border)] pb-4 last:border-none"
                 >
                   <input type="hidden" name="user_id" value={profile.id} />
+                  <input type="hidden" name="next_path" value="/admin" />
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold">{profile.full_name ?? "-"}</p>
                       <p className="text-xs text-[var(--muted)]">{profile.id}</p>
+                      <p className="text-xs text-[var(--muted)]">{profile.created_at ?? "-"}</p>
+                      <p className="text-xs text-[var(--muted)]">{profile.email ?? "-"}</p>
                       <p className="text-xs text-[var(--muted)]">{profile.phone ?? "-"}</p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <Select name="role" defaultValue={profile.role}>
+                      <Select
+                        name="role"
+                        defaultValue={profile.role}
+                        disabled={profile.role === "owner"}
+                      >
                         <option value="developer">{t("role.developer")}</option>
                         <option value="staff">{t("role.staff")}</option>
                         <option value="ops">{t("role.ops")}</option>
                         <option value="agent">{t("role.agent")}</option>
                         <option value="admin">{t("role.admin")}</option>
                       </Select>
-                      <Button size="sm" variant="secondary" type="submit">
+                      <Button
+                        size="sm"
+                        variant="secondary"
+                        type="submit"
+                        disabled={profile.role === "owner"}
+                      >
                         {t("admin.users.update")}
                       </Button>
                     </div>
                   </div>
                 </form>
               ))}
-            </Card>
+              </Card>
+            </div>
           </Section>
         ) : null}
       </main>

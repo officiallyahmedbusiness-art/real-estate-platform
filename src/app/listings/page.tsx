@@ -2,7 +2,8 @@ import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Button, Card, Input, Select, Badge } from "@/components/ui";
+import { Button, Card, Badge } from "@/components/ui";
+import { FieldInput, FieldSelect } from "@/components/FieldHelp";
 import { formatNumber, formatPrice } from "@/lib/format";
 import { getPublicImageUrl } from "@/lib/storage";
 import { PROPERTY_TYPE_OPTIONS, PURPOSE_OPTIONS, SORT_OPTIONS } from "@/lib/constants";
@@ -130,35 +131,86 @@ export default async function ListingsPage({
           <form className="grid gap-4 md:grid-cols-4">
             <input type="hidden" name="view" value={view} />
             <input type="hidden" name="page" value="1" />
-            <Input name="city" placeholder={t("filters.city")} defaultValue={city} />
-            <Input name="area" placeholder={t("filters.area")} defaultValue={area} />
-            <Select name="purpose" defaultValue={purpose}>
+            <FieldInput
+              name="city"
+              label={t("filters.city")}
+              helpKey="filters.city"
+              placeholder={t("filters.city")}
+              defaultValue={city}
+            />
+            <FieldInput
+              name="area"
+              label={t("filters.area")}
+              helpKey="filters.area"
+              placeholder={t("filters.area")}
+              defaultValue={area}
+            />
+            <FieldSelect
+              name="purpose"
+              label={t("filters.purpose")}
+              helpKey="filters.purpose"
+              defaultValue={purpose}
+            >
               <option value="">{t("filters.purpose")}</option>
               {PURPOSE_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
                   {t(option.labelKey)}
                 </option>
               ))}
-            </Select>
-            <Select name="type" defaultValue={type}>
+            </FieldSelect>
+            <FieldSelect
+              name="type"
+              label={t("filters.type")}
+              helpKey="filters.type"
+              defaultValue={type}
+            >
               <option value="">{t("filters.type")}</option>
               {PROPERTY_TYPE_OPTIONS.map((item) => (
                 <option key={item.value} value={item.value}>
                   {t(item.labelKey)}
                 </option>
               ))}
-            </Select>
-            <Input name="minPrice" placeholder={t("filters.minPrice")} defaultValue={minPrice} />
-            <Input name="maxPrice" placeholder={t("filters.maxPrice")} defaultValue={maxPrice} />
-            <Input name="beds" placeholder={t("filters.beds")} defaultValue={beds} />
-            <Input name="baths" placeholder={t("filters.baths")} defaultValue={baths} />
-            <Select name="sort" defaultValue={sort}>
+            </FieldSelect>
+            <FieldInput
+              name="minPrice"
+              label={t("filters.minPrice")}
+              helpKey="filters.minPrice"
+              placeholder={t("filters.minPrice")}
+              defaultValue={minPrice}
+            />
+            <FieldInput
+              name="maxPrice"
+              label={t("filters.maxPrice")}
+              helpKey="filters.maxPrice"
+              placeholder={t("filters.maxPrice")}
+              defaultValue={maxPrice}
+            />
+            <FieldInput
+              name="beds"
+              label={t("filters.beds")}
+              helpKey="filters.beds"
+              placeholder={t("filters.beds")}
+              defaultValue={beds}
+            />
+            <FieldInput
+              name="baths"
+              label={t("filters.baths")}
+              helpKey="filters.baths"
+              placeholder={t("filters.baths")}
+              defaultValue={baths}
+            />
+            <FieldSelect
+              name="sort"
+              label={t("filters.sort")}
+              helpKey="filters.sort"
+              defaultValue={sort}
+            >
               {SORT_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
                   {t(option.labelKey)}
                 </option>
               ))}
-            </Select>
+            </FieldSelect>
             <div className="md:col-span-3" />
             <Button type="submit" size="md">
               {t("listings.filters.apply")}

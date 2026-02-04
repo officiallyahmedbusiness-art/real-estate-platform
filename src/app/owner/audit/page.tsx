@@ -2,7 +2,8 @@
 import { requireOwnerAccess } from "@/lib/owner";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Button, Card, Input, Section } from "@/components/ui";
+import { Button, Card, Section } from "@/components/ui";
+import { FieldInput } from "@/components/FieldHelp";
 import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 
@@ -61,19 +62,41 @@ export default async function OwnerAuditPage({
         <Section title={t("owner.audit.filters")} subtitle={t("owner.audit.filtersHint")}>
           <Card>
             <form className="grid gap-3 md:grid-cols-6">
-              <Input name="action" placeholder={t("owner.audit.action")} defaultValue={searchParams?.action ?? ""} />
-              <Input
+              <FieldInput
+                name="action"
+                label={t("owner.audit.action")}
+                helpKey="owner.audit.action"
+                placeholder={t("owner.audit.action")}
+                defaultValue={searchParams?.action ?? ""}
+              />
+              <FieldInput
                 name="entity_type"
+                label={t("owner.audit.entity")}
+                helpKey="owner.audit.entity"
                 placeholder={t("owner.audit.entity")}
                 defaultValue={searchParams?.entity_type ?? ""}
               />
-              <Input
+              <FieldInput
                 name="actor_user_id"
+                label={t("owner.audit.actor")}
+                helpKey="owner.audit.actor"
                 placeholder={t("owner.audit.actor")}
                 defaultValue={searchParams?.actor_user_id ?? ""}
               />
-              <Input name="from" type="date" defaultValue={searchParams?.from ?? ""} />
-              <Input name="to" type="date" defaultValue={searchParams?.to ?? ""} />
+              <FieldInput
+                name="from"
+                label={t("owner.audit.from")}
+                helpKey="owner.audit.from"
+                type="date"
+                defaultValue={searchParams?.from ?? ""}
+              />
+              <FieldInput
+                name="to"
+                label={t("owner.audit.to")}
+                helpKey="owner.audit.to"
+                type="date"
+                defaultValue={searchParams?.to ?? ""}
+              />
               <Button type="submit" size="sm">
                 {t("owner.audit.apply")}
               </Button>

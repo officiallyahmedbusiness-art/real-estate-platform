@@ -52,6 +52,7 @@ Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'next dev' 
   - `NEXT_PUBLIC_ABOUT_VIDEO_ID` (YouTube video id for /about)
 - Optional (server-only):
   - `OWNER_SECRET` (required to unlock the hidden owner panel at `/owner`)
+  - `SUPABASE_SERVICE_ROLE_KEY` (required for server-side user invites)
 - After editing `.env.local`, delete the `.next` folder and restart `npm run dev` so client bundles pick up the values.
 
 ## Supabase setup
@@ -91,6 +92,8 @@ Get-CimInstance Win32_Process | Where-Object { $_.CommandLine -match 'next dev' 
    - `supabase/0020_update_contact_settings.sql`
 15) Report permissions hardening:
    - `supabase/0021_fix_report_permissions.sql`
+16) User management safeguards:
+   - `supabase/0026_manage_users_rbac.sql`
 
 ## Supabase security settings
 
@@ -113,6 +116,10 @@ update public.profiles set role = 'agent' where id = '<user-uuid>';
 update public.profiles set role = 'developer' where id = '<user-uuid>';
 ```
 - Owner-only pages are under `/owner/*` and require `OWNER_SECRET`.
+- Owner/Admin can invite users (admin or staff) from:
+  - `/owner/users` (owner or admin)
+  - `/admin` (User management section)
+- Admins cannot promote users to owner or edit the owner account.
 
 ## Data model notes
 

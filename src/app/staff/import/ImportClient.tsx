@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Card, Input, Select, Textarea } from "@/components/ui";
+import { Button, Card } from "@/components/ui";
+import { FieldFile, FieldSelect, FieldTextarea } from "@/components/FieldHelp";
 
 type ImportResult = {
   ok?: boolean;
@@ -39,16 +40,28 @@ export function ImportClient({ labels, type }: { labels: Record<string, string>;
   return (
     <Card className="space-y-4">
       <form onSubmit={onSubmit} className="grid gap-3 md:grid-cols-2">
-        <Input type="file" name="file" required />
-        <Select name="format" defaultValue="">
+        <FieldFile
+          name="file"
+          label={labels.file}
+          helpKey="staff.import.file"
+          required
+        />
+        <FieldSelect
+          name="format"
+          label={labels.format}
+          helpKey="staff.import.format"
+          defaultValue=""
+        >
           <option value="">{labels.format}</option>
           <option value="csv">CSV</option>
           <option value="xlsx">Excel</option>
-        </Select>
-        <Textarea
+        </FieldSelect>
+        <FieldTextarea
           name="notes"
+          label={labels.notes}
+          helpKey="staff.import.notes"
           placeholder={labels.notes}
-          className="md:col-span-2"
+          wrapperClassName="md:col-span-2"
         />
         <Button type="submit" size="sm" disabled={loading}>
           {loading ? labels.loading : labels.submit}

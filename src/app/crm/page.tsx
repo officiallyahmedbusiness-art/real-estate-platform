@@ -3,7 +3,9 @@ import Link from "next/link";
 import { requireRole } from "@/lib/auth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Badge, Button, Card, Input, Section, Select } from "@/components/ui";
+import { Badge, Button, Card, Section } from "@/components/ui";
+import { FieldInput, FieldSelect } from "@/components/FieldHelp";
+import { OwnerDeleteDialog } from "@/components/OwnerDeleteDialog";
 import { createT, getLeadStatusLabelKey } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 import { LEAD_SOURCE_OPTIONS, LEAD_STATUS_OPTIONS } from "@/lib/constants";
@@ -48,7 +50,8 @@ export default async function CrmPage({
   const lostReasonFilter = getParam(params, "lost_reason");
   const overdueFilter = getParam(params, "overdue");
   const query = getParam(params, "q");
-  const canExport = role === "admin" || role === "owner";
+  const isOwner = role === "owner";
+  const canExport = isOwner;
   const exportParams = new URLSearchParams({
     status: statusFilter,
     source: sourceFilter,
@@ -232,16 +235,33 @@ export default async function CrmPage({
             </Card>
             <Card className="space-y-3">
               <form action={updateLeadSpendAction} className="space-y-3">
-                <Input name="spend_month" type="date" defaultValue={monthKey} />
-                <Select name="channel" defaultValue="">
+                <FieldInput
+                  name="spend_month"
+                  label={t("crm.spend.month")}
+                  helpKey="crm.spend.month"
+                  type="date"
+                  defaultValue={monthKey}
+                />
+                <FieldSelect
+                  name="channel"
+                  label={t("crm.spend.channel")}
+                  helpKey="crm.spend.channel"
+                  defaultValue=""
+                >
                   <option value="">{t("crm.spend.channel")}</option>
                   {leadSources.map((source) => (
                     <option key={source.value} value={source.value}>
                       {source.label}
                     </option>
                   ))}
-                </Select>
-                <Input name="amount" type="number" placeholder={t("crm.spend.amount")} />
+                </FieldSelect>
+                <FieldInput
+                  name="amount"
+                  label={t("crm.spend.amount")}
+                  helpKey="crm.spend.amount"
+                  type="number"
+                  placeholder={t("crm.spend.amount")}
+                />
                 <Button type="submit" size="sm">
                   {t("crm.spend.save")}
                 </Button>
@@ -252,32 +272,58 @@ export default async function CrmPage({
 
         <Card className="space-y-4">
           <form className="flex flex-wrap gap-3">
-            <Input name="q" placeholder={t("crm.search")} defaultValue={query} />
-            <Select name="status" defaultValue={statusFilter}>
+            <FieldInput
+              name="q"
+              label={t("crm.search")}
+              helpKey="crm.search"
+              placeholder={t("crm.search")}
+              defaultValue={query}
+            />
+            <FieldSelect
+              name="status"
+              label={t("crm.filter.status")}
+              helpKey="crm.filter.status"
+              defaultValue={statusFilter}
+            >
               <option value="">{t("crm.filter.status")}</option>
               {LEAD_STATUS_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>
                   {t(option.labelKey)}
                 </option>
               ))}
-            </Select>
-            <Select name="source" defaultValue={sourceFilter}>
+            </FieldSelect>
+            <FieldSelect
+              name="source"
+              label={t("crm.filter.source")}
+              helpKey="crm.filter.source"
+              defaultValue={sourceFilter}
+            >
               <option value="">{t("crm.filter.source")}</option>
               {leadSources.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
               ))}
-            </Select>
-            <Select name="lost_reason" defaultValue={lostReasonFilter}>
+            </FieldSelect>
+            <FieldSelect
+              name="lost_reason"
+              label={t("crm.filter.lostReason")}
+              helpKey="crm.filter.lostReason"
+              defaultValue={lostReasonFilter}
+            >
               <option value="">{t("crm.filter.lostReason")}</option>
               {LOSS_REASONS.map((reason) => (
                 <option key={reason.value} value={reason.value}>
                   {t(reason.labelKey)}
                 </option>
               ))}
-            </Select>
-            <Select name="assigned" defaultValue={assignedFilter}>
+            </FieldSelect>
+            <FieldSelect
+              name="assigned"
+              label={t("crm.filter.assigned")}
+              helpKey="crm.filter.assigned"
+              defaultValue={assignedFilter}
+            >
               <option value="">{t("crm.filter.assigned")}</option>
               <option value="unassigned">{t("crm.filter.unassigned")}</option>
               {profiles.map((profile) => (
@@ -285,11 +331,16 @@ export default async function CrmPage({
                   {profile.full_name ?? profile.id}
                 </option>
               ))}
-            </Select>
-            <Select name="overdue" defaultValue={overdueFilter}>
+            </FieldSelect>
+            <FieldSelect
+              name="overdue"
+              label={t("crm.filter.overdue")}
+              helpKey="crm.filter.overdue"
+              defaultValue={overdueFilter}
+            >
               <option value="">{t("crm.filter.overdue")}</option>
               <option value="1">{t("crm.filter.overdueOnly")}</option>
-            </Select>
+            </FieldSelect>
             <Button type="submit" size="sm">
               {t("listings.filters.apply")}
             </Button>
@@ -343,63 +394,112 @@ export default async function CrmPage({
                         <span>{t(`lead.loss_reason.${lead.lost_reason}`)}</span>
                       ) : null}
                     </div>
-                    <div className="grid gap-3 md:grid-cols-2">
-                      <form action={updateLeadStatusAction} className="flex flex-wrap items-center gap-3">
-                        <input type="hidden" name="lead_id" value={lead.id} />
-                        <Select name="status" defaultValue={lead.status ?? "new"}>
-                          {LEAD_STATUS_OPTIONS.map((option) => (
-                            <option key={option.value} value={option.value}>
-                              {t(option.labelKey)}
-                            </option>
-                          ))}
-                        </Select>
-                        <Select name="lost_reason" defaultValue={lead.lost_reason ?? ""}>
-                          <option value="">{t("crm.lossReason.select")}</option>
-                          {LOSS_REASONS.map((reason) => (
-                            <option key={reason.value} value={reason.value}>
-                              {t(reason.labelKey)}
-                            </option>
-                          ))}
-                        </Select>
-                        <Input
-                          name="lost_reason_note"
-                          placeholder={t("lead.loss_reason.other_note")}
-                          defaultValue={lead.lost_reason_note ?? ""}
-                        />
-                        <Button type="submit" size="sm" variant="secondary">
-                          {t("crm.leads.update")}
-                        </Button>
-                      </form>
-                      <form action={assignLeadAction} className="flex items-center gap-3">
-                        <input type="hidden" name="lead_id" value={lead.id} />
-                        <Select name="assigned_to" defaultValue={lead.assigned_to ?? ""}>
-                          <option value="">{t("crm.leads.unassigned")}</option>
-                          {profiles.map((profile) => (
-                            <option key={profile.id} value={profile.id}>
-                              {profile.full_name ?? profile.id}
-                            </option>
-                          ))}
-                        </Select>
-                        <Button type="submit" size="sm" variant="secondary">
-                          {t("crm.leads.assign")}
-                        </Button>
-                      </form>
-                    </div>
-                    <form action={updateLeadNextAction} className="grid gap-3 md:grid-cols-[1fr,1fr,auto]">
-                      <input type="hidden" name="lead_id" value={lead.id} />
-                      <Input name="next_action_at" type="datetime-local" />
-                      <Input name="next_action_note" placeholder={t("crm.leads.nextNote")} />
-                      <Button type="submit" size="sm" variant="secondary">
-                        {t("crm.leads.schedule")}
-                      </Button>
-                    </form>
-                    <form action={addLeadNoteAction} className="flex items-center gap-3">
-                      <input type="hidden" name="lead_id" value={lead.id} />
-                      <Input name="note" placeholder={t("crm.leads.addNote")} className="flex-1" />
-                      <Button type="submit" size="sm">
-                        {t("crm.leads.add")}
-                      </Button>
-                    </form>
+                    {isOwner ? (
+                      <>
+                        <div className="grid gap-3 md:grid-cols-2">
+                          <form action={updateLeadStatusAction} className="flex flex-wrap items-end gap-3">
+                            <input type="hidden" name="lead_id" value={lead.id} />
+                            <FieldSelect
+                              name="status"
+                              label={t("crm.filter.status")}
+                              helpKey="crm.lead.status"
+                              defaultValue={lead.status ?? "new"}
+                            >
+                              {LEAD_STATUS_OPTIONS.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {t(option.labelKey)}
+                                </option>
+                              ))}
+                            </FieldSelect>
+                            <FieldSelect
+                              name="lost_reason"
+                              label={t("crm.filter.lostReason")}
+                              helpKey="crm.lead.lost_reason"
+                              defaultValue={lead.lost_reason ?? ""}
+                            >
+                              <option value="">{t("crm.lossReason.select")}</option>
+                              {LOSS_REASONS.map((reason) => (
+                                <option key={reason.value} value={reason.value}>
+                                  {t(reason.labelKey)}
+                                </option>
+                              ))}
+                            </FieldSelect>
+                            <FieldInput
+                              name="lost_reason_note"
+                              label={t("lead.loss_reason.other_note")}
+                              helpKey="crm.lead.lost_reason_note"
+                              placeholder={t("lead.loss_reason.other_note")}
+                              defaultValue={lead.lost_reason_note ?? ""}
+                            />
+                            <Button type="submit" size="sm" variant="secondary">
+                              {t("crm.leads.update")}
+                            </Button>
+                          </form>
+                          <form action={assignLeadAction} className="flex flex-wrap items-end gap-3">
+                            <input type="hidden" name="lead_id" value={lead.id} />
+                            <FieldSelect
+                              name="assigned_to"
+                              label={t("crm.filter.assigned")}
+                              helpKey="crm.lead.assigned_to"
+                              defaultValue={lead.assigned_to ?? ""}
+                            >
+                              <option value="">{t("crm.leads.unassigned")}</option>
+                              {profiles.map((profile) => (
+                                <option key={profile.id} value={profile.id}>
+                                  {profile.full_name ?? profile.id}
+                                </option>
+                              ))}
+                            </FieldSelect>
+                            <Button type="submit" size="sm" variant="secondary">
+                              {t("crm.leads.assign")}
+                            </Button>
+                          </form>
+                        </div>
+                        <form action={updateLeadNextAction} className="flex flex-wrap items-end gap-3">
+                          <input type="hidden" name="lead_id" value={lead.id} />
+                          <FieldInput
+                            name="next_action_at"
+                            label={t("crm.leads.nextActionAt")}
+                            helpKey="crm.lead.next_action_at"
+                            type="datetime-local"
+                          />
+                          <FieldInput
+                            name="next_action_note"
+                            label={t("crm.leads.nextNote")}
+                            helpKey="crm.lead.next_action_note"
+                            placeholder={t("crm.leads.nextNote")}
+                          />
+                          <Button type="submit" size="sm" variant="secondary">
+                            {t("crm.leads.schedule")}
+                          </Button>
+                        </form>
+                        <form action={addLeadNoteAction} className="flex flex-wrap items-end gap-3">
+                          <input type="hidden" name="lead_id" value={lead.id} />
+                          <FieldInput
+                            name="note"
+                            label={t("crm.leads.addNote")}
+                            helpKey="crm.lead.note"
+                            placeholder={t("crm.leads.addNote")}
+                            wrapperClassName="flex-1"
+                          />
+                          <Button type="submit" size="sm">
+                            {t("crm.leads.add")}
+                          </Button>
+                        </form>
+                        <div className="flex justify-end">
+                          <OwnerDeleteDialog
+                            entityId={lead.id}
+                            endpoint="/api/owner/leads/delete"
+                            title={t("crm.leads.delete.title")}
+                            description={t("crm.leads.delete.subtitle")}
+                          />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 text-xs text-[var(--muted)]">
+                        {t("crm.ownerOnly")}
+                      </div>
+                    )}
                   </Card>
                 );
               })

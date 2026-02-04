@@ -2,7 +2,8 @@
 
 import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Input, Select, Badge } from "@/components/ui";
+import { Button, Badge } from "@/components/ui";
+import { FieldCheckbox, FieldInput, FieldSelect, FieldWrapper } from "@/components/FieldHelp";
 
 type Attachment = {
   id: string;
@@ -204,33 +205,45 @@ export function AttachmentsManager({
           <span>{labels.drag}</span>
         </div>
         <div className="mt-4 grid gap-3 md:grid-cols-4">
-          <Select value={uploadCategory} onChange={(event) => setUploadCategory(event.target.value)}>
+          <FieldSelect
+            label={labels.category}
+            helpKey="attachments.upload.category"
+            value={uploadCategory}
+            onChange={(event) => setUploadCategory(event.target.value)}
+          >
             {categories.map((category) => (
               <option key={category.value} value={category.value}>
                 {category.label}
               </option>
             ))}
-          </Select>
-          <Input
+          </FieldSelect>
+          <FieldInput
+            label={labels.titleLabel}
+            helpKey="attachments.upload.title"
             value={uploadTitle}
             onChange={(event) => setUploadTitle(event.target.value)}
             placeholder={labels.titleLabel}
           />
-          <Input
+          <FieldInput
+            label={labels.noteLabel}
+            helpKey="attachments.upload.note"
             value={uploadNote}
             onChange={(event) => setUploadNote(event.target.value)}
             placeholder={labels.noteLabel}
           />
-          <label className="flex cursor-pointer items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-2 text-sm text-[var(--text)]">
-            <input
-              type="file"
-              className="sr-only"
-              multiple
-              disabled={pending}
-              onChange={(event) => handleUpload(event.target.files)}
-            />
-            {labels.upload}
-          </label>
+          <FieldWrapper label={labels.upload} helpKey="attachments.upload.file">
+            <label className="flex cursor-pointer items-center justify-center rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-2 text-sm text-[var(--text)]">
+              <input
+                type="file"
+                className="sr-only"
+                multiple
+                disabled={pending}
+                onChange={(event) => handleUpload(event.target.files)}
+                data-no-help
+              />
+              {labels.upload}
+            </label>
+          </FieldWrapper>
         </div>
       </div>
 
@@ -279,21 +292,27 @@ export function AttachmentsManager({
                     {attachment.is_published ? <Badge>{labels.published}</Badge> : null}
                   </div>
                   <div className="grid gap-2 md:grid-cols-3">
-                    <Input
+                    <FieldInput
+                      label={labels.titleLabel}
+                      helpKey="attachments.item.title"
                       defaultValue={attachment.title ?? ""}
                       placeholder={labels.titleLabel}
                       onBlur={(event) =>
                         handleUpdate(attachment.id, { title: event.target.value || "" })
                       }
                     />
-                    <Input
+                    <FieldInput
+                      label={labels.noteLabel}
+                      helpKey="attachments.item.note"
                       defaultValue={attachment.note ?? ""}
                       placeholder={labels.noteLabel}
                       onBlur={(event) =>
                         handleUpdate(attachment.id, { note: event.target.value || "" })
                       }
                     />
-                    <Select
+                    <FieldSelect
+                      label={labels.category}
+                      helpKey="attachments.item.category"
                       defaultValue={attachment.category}
                       onChange={(event) =>
                         handleUpdate(attachment.id, { category: event.target.value })
@@ -304,30 +323,26 @@ export function AttachmentsManager({
                           {category.label}
                         </option>
                       ))}
-                    </Select>
+                    </FieldSelect>
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <label className="flex items-center gap-2 text-xs text-[var(--muted)]">
-                    <input
-                      type="checkbox"
-                      checked={attachment.is_primary}
-                      onChange={(event) =>
-                        handleUpdate(attachment.id, { is_primary: event.target.checked })
-                      }
-                    />
-                    {labels.primary}
-                  </label>
-                  <label className="flex items-center gap-2 text-xs text-[var(--muted)]">
-                    <input
-                      type="checkbox"
-                      checked={attachment.is_published}
-                      onChange={(event) =>
-                        handleUpdate(attachment.id, { is_published: event.target.checked })
-                      }
-                    />
-                    {labels.published}
-                  </label>
+                  <FieldCheckbox
+                    label={labels.primary}
+                    helpKey="attachments.item.primary"
+                    checked={attachment.is_primary}
+                    onChange={(event) =>
+                      handleUpdate(attachment.id, { is_primary: event.target.checked })
+                    }
+                  />
+                  <FieldCheckbox
+                    label={labels.published}
+                    helpKey="attachments.item.published"
+                    checked={attachment.is_published}
+                    onChange={(event) =>
+                      handleUpdate(attachment.id, { is_published: event.target.checked })
+                    }
+                  />
                   <Button type="button" size="sm" variant="ghost" onClick={() => handleCopy(attachment.id)}>
                     {labels.copy}
                   </Button>

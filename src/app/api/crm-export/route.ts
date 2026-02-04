@@ -32,7 +32,7 @@ export async function GET(request: Request) {
     .select("role")
     .eq("id", data.user.id)
     .maybeSingle();
-  if (profile?.role !== "admin" && profile?.role !== "owner") {
+  if (profile?.role !== "owner") {
     return NextResponse.json({ ok: false, error: "forbidden" }, { status: 403 });
   }
 

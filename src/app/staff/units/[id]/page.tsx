@@ -4,7 +4,8 @@ import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { requireRole } from "@/lib/auth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Button, Card, Input, Select, Badge, Textarea } from "@/components/ui";
+import { Button, Card, Badge } from "@/components/ui";
+import { FieldCheckbox, FieldInput, FieldSelect, FieldTextarea } from "@/components/FieldHelp";
 import { AttachmentsManager } from "@/components/AttachmentsManager";
 import { ImageUploader } from "@/components/ImageUploader";
 import { ShareLinks } from "@/components/ShareLinks";
@@ -164,69 +165,118 @@ export default async function StaffUnitPage({
                   </p>
                 </div>
                 <div className="grid gap-4 md:grid-cols-2">
-                  <Input name="title" placeholder={t("staff.form.title")} defaultValue={listing.title} />
-                  <Select name="unit_status" defaultValue={listing.unit_status ?? "available"}>
+                  <FieldInput
+                    name="title"
+                    label={t("staff.form.title")}
+                    helpKey="staff.listing.title"
+                    placeholder={t("staff.form.title")}
+                    defaultValue={listing.title}
+                  />
+                  <FieldSelect
+                    name="unit_status"
+                    label={t("staff.form.unitStatus")}
+                    helpKey="staff.listing.unit_status"
+                    defaultValue={listing.unit_status ?? "available"}
+                  >
                     {UNIT_STATUS_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>
                         {t(option.labelKey)}
                       </option>
                     ))}
-                  </Select>
-                  <Input
+                  </FieldSelect>
+                  <FieldInput
                     name="listing_code"
+                    label={t("staff.form.internalCode")}
+                    helpKey="staff.listing.listing_code"
                     placeholder={t("staff.form.internalCode")}
                     defaultValue={listing.listing_code ?? ""}
                   />
-                  <Input
+                  <FieldInput
                     name="unit_code"
+                    label={t("staff.form.unitCode")}
+                    helpKey="staff.listing.unit_code"
                     placeholder={t("staff.form.unitCode")}
                     defaultValue={listing.unit_code ?? intake?.unit_code ?? ""}
                   />
-                  <Select name="type" defaultValue={listing.type}>
+                  <FieldSelect
+                    name="type"
+                    label={t("staff.form.type")}
+                    helpKey="staff.listing.type"
+                    defaultValue={listing.type}
+                  >
                     {PROPERTY_TYPE_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>
                         {t(option.labelKey)}
                       </option>
                     ))}
-                  </Select>
-                  <Select name="purpose" defaultValue={listing.purpose}>
+                  </FieldSelect>
+                  <FieldSelect
+                    name="purpose"
+                    label={t("staff.form.purpose")}
+                    helpKey="staff.listing.purpose"
+                    defaultValue={listing.purpose}
+                  >
                     {PURPOSE_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>
                         {t(option.labelKey)}
                       </option>
                     ))}
-                  </Select>
-                  <Input
+                  </FieldSelect>
+                  <FieldInput
                     name="price"
+                    label={t("staff.form.price")}
+                    helpKey="staff.listing.price"
                     type="number"
                     placeholder={t("staff.form.price")}
                     defaultValue={listing.price ?? ""}
                   />
-                  <Input
+                  <FieldInput
                     name="currency"
+                    label={t("staff.form.currency")}
+                    helpKey="staff.listing.currency"
                     placeholder={t("staff.form.currency")}
                     defaultValue={listing.currency ?? "EGP"}
                   />
-                  <Input name="city" placeholder={t("staff.form.city")} defaultValue={listing.city ?? ""} />
-                  <Input name="area" placeholder={t("staff.form.area")} defaultValue={listing.area ?? ""} />
-                  <Input
+                  <FieldInput
+                    name="city"
+                    label={t("staff.form.city")}
+                    helpKey="staff.listing.city"
+                    placeholder={t("staff.form.city")}
+                    defaultValue={listing.city ?? ""}
+                  />
+                  <FieldInput
+                    name="area"
+                    label={t("staff.form.area")}
+                    helpKey="staff.listing.area"
+                    placeholder={t("staff.form.area")}
+                    defaultValue={listing.area ?? ""}
+                  />
+                  <FieldInput
                     name="address"
+                    label={t("staff.form.address")}
+                    helpKey="staff.listing.address"
                     placeholder={t("staff.form.address")}
                     defaultValue={listing.address ?? ""}
                   />
-                  <Input
+                  <FieldInput
                     name="requested"
+                    label={t("staff.form.requested")}
+                    helpKey="staff.listing.requested"
                     placeholder={t("staff.form.requested")}
                     defaultValue={listing.requested ?? intake?.target ?? ""}
                   />
-                  <Input
+                  <FieldInput
                     name="intake_date"
+                    label={t("staff.form.date")}
+                    helpKey="staff.listing.intake_date"
                     type="date"
                     placeholder={t("staff.form.date")}
                     defaultValue={listing.intake_date ?? intake?.intake_date ?? ""}
                   />
-                  <Select
+                  <FieldSelect
                     name="agent_user_id"
+                    label={t("staff.form.agent")}
+                    helpKey="staff.listing.agent_user_id"
                     defaultValue={listing.agent_user_id ?? intake?.agent_user_id ?? ""}
                   >
                     <option value="">{t("staff.form.agent")}</option>
@@ -235,9 +285,11 @@ export default async function StaffUnitPage({
                         {agent.full_name ?? agent.id}
                       </option>
                     ))}
-                  </Select>
-                  <Input
+                  </FieldSelect>
+                  <FieldInput
                     name="agent_name"
+                    label={t("staff.form.agentFallback")}
+                    helpKey="staff.listing.agent_name"
                     placeholder={t("staff.form.agentFallback")}
                     defaultValue={listing.agent_name ?? intake?.agent_name ?? ""}
                   />
@@ -247,79 +299,101 @@ export default async function StaffUnitPage({
               <section className="space-y-4">
                 <h3 className="text-lg font-semibold">{t("staff.section.details")}</h3>
                 <div className="grid gap-4 md:grid-cols-2">
-                  <Input
+                  <FieldInput
                     name="beds"
+                    label={t("staff.form.beds")}
+                    helpKey="staff.listing.beds"
                     type="number"
                     placeholder={t("staff.form.beds")}
                     defaultValue={listing.beds ?? 0}
                   />
-                  <Input
+                  <FieldInput
                     name="baths"
+                    label={t("staff.form.baths")}
+                    helpKey="staff.listing.baths"
                     type="number"
                     placeholder={t("staff.form.baths")}
                     defaultValue={listing.baths ?? 0}
                   />
-                  <Input
+                  <FieldInput
                     name="size_m2"
+                    label={t("staff.form.size")}
+                    helpKey="staff.listing.size_m2"
                     type="number"
                     placeholder={t("staff.form.size")}
                     defaultValue={listing.size_m2 ?? ""}
                   />
-                  <Input name="floor" placeholder={t("staff.form.floor")} defaultValue={listing.floor ?? intake?.floor ?? ""} />
-                  <Input
+                  <FieldInput
+                    name="floor"
+                    label={t("staff.form.floor")}
+                    helpKey="staff.listing.floor"
+                    placeholder={t("staff.form.floor")}
+                    defaultValue={listing.floor ?? intake?.floor ?? ""}
+                  />
+                  <FieldInput
                     name="finishing"
+                    label={t("staff.form.finishing")}
+                    helpKey="staff.listing.finishing"
                     placeholder={t("staff.form.finishing")}
                     defaultValue={listing.finishing ?? intake?.finishing ?? ""}
                   />
-                  <Input
+                  <FieldInput
                     name="meters"
+                    label={t("staff.form.meters")}
+                    helpKey="staff.listing.meters"
                     placeholder={t("staff.form.meters")}
                     defaultValue={listing.meters ?? intake?.meters ?? ""}
                   />
-                  <Input
+                  <FieldInput
                     name="reception"
+                    label={t("staff.form.reception")}
+                    helpKey="staff.listing.reception"
                     placeholder={t("staff.form.reception")}
                     defaultValue={listing.reception ?? intake?.reception ?? ""}
                   />
-                  <Input
+                  <FieldInput
                     name="view"
+                    label={t("staff.form.view")}
+                    helpKey="staff.listing.view"
                     placeholder={t("staff.form.view")}
                     defaultValue={listing.view ?? intake?.view ?? ""}
                   />
-                  <Input
+                  <FieldInput
                     name="building"
+                    label={t("staff.form.building")}
+                    helpKey="staff.listing.building"
                     placeholder={t("staff.form.building")}
                     defaultValue={listing.building ?? intake?.building ?? ""}
                   />
-                  <Input
+                  <FieldInput
                     name="commission"
+                    label={t("staff.form.commission")}
+                    helpKey="staff.listing.commission"
                     placeholder={t("staff.form.commission")}
                     defaultValue={listing.commission ?? intake?.commission ?? ""}
                   />
-                  <Input
+                  <FieldInput
                     name="ad_channel"
+                    label={t("staff.form.adChannel")}
+                    helpKey="staff.listing.ad_channel"
                     placeholder={t("staff.form.adChannel")}
                     defaultValue={listing.ad_channel ?? intake?.ad_channel ?? ""}
                   />
-                  <div className="flex items-center gap-3">
-                    <label className="flex items-center gap-2 text-sm text-[var(--muted)]">
-                      <input
-                        type="checkbox"
-                        name="elevator"
-                        value="1"
-                        defaultChecked={Boolean(listing.elevator ?? intake?.elevator)}
-                      />
-                      {t("staff.form.elevator")}
-                    </label>
-                    <label className="flex items-center gap-2 text-sm text-[var(--muted)]">
-                      <input
-                        type="checkbox"
-                        name="kitchen"
-                        value="1"
-                        defaultChecked={Boolean(listing.kitchen ?? intake?.kitchen)}
-                      />
-                      {t("staff.form.kitchen")}
-                    </label>
+                  <div className="flex flex-wrap items-center gap-4">
+                    <FieldCheckbox
+                      name="elevator"
+                      label={t("staff.form.elevator")}
+                      helpKey="staff.listing.elevator"
+                      value="1"
+                      defaultChecked={Boolean(listing.elevator ?? intake?.elevator)}
+                    />
+                    <FieldCheckbox
+                      name="kitchen"
+                      label={t("staff.form.kitchen")}
+                      helpKey="staff.listing.kitchen"
+                      value="1"
+                      defaultChecked={Boolean(listing.kitchen ?? intake?.kitchen)}
+                    />
                   </div>
                 </div>
               </section>
@@ -328,43 +402,45 @@ export default async function StaffUnitPage({
                 <section className="space-y-4">
                   <h3 className="text-lg font-semibold">{t("staff.section.owner")}</h3>
                   <div className="grid gap-4 md:grid-cols-2">
-                    <Input
+                    <FieldInput
                       name="owner_name"
+                      label={t("staff.form.ownerName")}
+                      helpKey="staff.listing.owner_name"
                       placeholder={t("staff.form.ownerName")}
                       defaultValue={intake?.owner_name ?? ""}
                     />
-                    <Input
+                    <FieldInput
                       name="owner_phone"
+                      label={t("staff.form.ownerPhone")}
+                      helpKey="staff.listing.owner_phone"
                       placeholder={t("staff.form.ownerPhone")}
                       defaultValue={intake?.owner_phone ?? ""}
                     />
-                    <Textarea
+                    <FieldTextarea
                       name="owner_notes"
+                      label={t("staff.form.ownerNotes")}
+                      helpKey="staff.listing.owner_notes"
                       placeholder={t("staff.form.ownerNotes")}
                       defaultValue={intake?.owner_notes ?? ""}
                     />
-                    <div className="space-y-2">
-                      <label className="text-sm text-[var(--muted)]">
-                        {t("staff.form.lastOwnerContactAt")}
-                      </label>
-                      <Input
-                        name="last_owner_contact_at"
-                        type="datetime-local"
-                        defaultValue={lastContactValue}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <label className="text-sm text-[var(--muted)]">
-                        {t("staff.form.nextOwnerFollowupAt")}
-                      </label>
-                      <Input
-                        name="next_owner_followup_at"
-                        type="datetime-local"
-                        defaultValue={nextFollowupValue}
-                      />
-                    </div>
-                    <Textarea
+                    <FieldInput
+                      name="last_owner_contact_at"
+                      label={t("staff.form.lastOwnerContactAt")}
+                      helpKey="staff.listing.last_owner_contact_at"
+                      type="datetime-local"
+                      defaultValue={lastContactValue}
+                    />
+                    <FieldInput
+                      name="next_owner_followup_at"
+                      label={t("staff.form.nextOwnerFollowupAt")}
+                      helpKey="staff.listing.next_owner_followup_at"
+                      type="datetime-local"
+                      defaultValue={nextFollowupValue}
+                    />
+                    <FieldTextarea
                       name="last_owner_contact_note"
+                      label={t("staff.form.lastOwnerContactNote")}
+                      helpKey="staff.listing.last_owner_contact_note"
                       placeholder={t("staff.form.lastOwnerContactNote")}
                       defaultValue={intake?.last_owner_contact_note ?? ""}
                     />
@@ -375,33 +451,45 @@ export default async function StaffUnitPage({
               <section className="space-y-4">
                 <h3 className="text-lg font-semibold">{t("staff.section.notes")}</h3>
                 <div className="grid gap-4 md:grid-cols-2">
-                  <Textarea
+                  <FieldTextarea
                     name="description"
+                    label={t("staff.form.description")}
+                    helpKey="staff.listing.description"
                     placeholder={t("staff.form.description")}
                     defaultValue={listing.description ?? ""}
                   />
-                  <Textarea
+                  <FieldTextarea
                     name="notes"
+                    label={t("staff.form.notes")}
+                    helpKey="staff.listing.notes"
                     placeholder={t("staff.form.notes")}
                     defaultValue={intake?.notes ?? ""}
                   />
-                  <Input
+                  <FieldInput
                     name="title_ar"
+                    label={t("submission.field.title_ar")}
+                    helpKey="staff.listing.title_ar"
                     placeholder={t("submission.field.title_ar")}
                     defaultValue={listing.title_ar ?? ""}
                   />
-                  <Input
+                  <FieldInput
                     name="title_en"
+                    label={t("submission.field.title_en")}
+                    helpKey="staff.listing.title_en"
                     placeholder={t("submission.field.title_en")}
                     defaultValue={listing.title_en ?? ""}
                   />
-                  <Textarea
+                  <FieldTextarea
                     name="description_ar"
+                    label={t("submission.field.desc_ar")}
+                    helpKey="staff.listing.description_ar"
                     placeholder={t("submission.field.desc_ar")}
                     defaultValue={listing.description_ar ?? ""}
                   />
-                  <Textarea
+                  <FieldTextarea
                     name="description_en"
+                    label={t("submission.field.desc_en")}
+                    helpKey="staff.listing.description_en"
                     placeholder={t("submission.field.desc_en")}
                     defaultValue={listing.description_en ?? ""}
                   />
@@ -445,6 +533,7 @@ export default async function StaffUnitPage({
               <ImageUploader
                 listingId={listing.id}
                 existingCount={imageCount}
+                helpKey="staff.listing.images"
                 labels={{
                   title: t("developer.edit.images"),
                   hint: t("developer.edit.images.subtitle"),

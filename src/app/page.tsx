@@ -2,7 +2,8 @@ import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Button, Card, Input, Select, Badge, Section, Textarea } from "@/components/ui";
+import { Button, Card, Badge, Section } from "@/components/ui";
+import { FieldInput, FieldSelect, FieldTextarea } from "@/components/FieldHelp";
 import { formatPrice } from "@/lib/format";
 import { FEATURE_CATEGORIES, PROPERTY_TYPE_OPTIONS, PURPOSE_OPTIONS } from "@/lib/constants";
 import { getPublicImageUrl } from "@/lib/storage";
@@ -242,14 +243,34 @@ export default async function Home() {
                   autoComplete="off"
                   className="sr-only"
                   aria-hidden="true"
+                  data-no-help
                 />
                 <input type="hidden" name="source" value="web" />
                 <input type="hidden" name="intent" value="buy" />
                 <div className="grid gap-3 md:grid-cols-2">
-                  <Input name="name" placeholder={t("home.callback.name")} required />
-                  <Input name="email" placeholder={t("home.callback.email")} type="email" />
+                  <FieldInput
+                    name="name"
+                    label={t("home.callback.name")}
+                    helpKey="home.callback.name"
+                    placeholder={t("home.callback.name")}
+                    required
+                  />
+                  <FieldInput
+                    name="email"
+                    label={t("home.callback.email")}
+                    helpKey="home.callback.email"
+                    placeholder={t("home.callback.email")}
+                    type="email"
+                  />
                 </div>
-                <Input name="phone" placeholder={t("home.callback.phone")} required type="tel" />
+                <FieldInput
+                  name="phone"
+                  label={t("home.callback.phone")}
+                  helpKey="home.callback.phone"
+                  placeholder={t("home.callback.phone")}
+                  required
+                  type="tel"
+                />
                 <Button type="submit" className="w-full">
                   {t("home.callback.submit")}
                 </Button>
@@ -262,30 +283,60 @@ export default async function Home() {
           <Card className="space-y-4 bg-[var(--surface-elevated)]/90">
             <form action="/listings" className="space-y-3">
               <div className="grid gap-3 md:grid-cols-2">
-                <Input name="city" placeholder={t("home.search.city")} />
-                <Input name="area" placeholder={t("home.search.area")} />
+                <FieldInput
+                  name="city"
+                  label={t("home.search.city")}
+                  helpKey="home.search.city"
+                  placeholder={t("home.search.city")}
+                />
+                <FieldInput
+                  name="area"
+                  label={t("home.search.area")}
+                  helpKey="home.search.area"
+                  placeholder={t("home.search.area")}
+                />
               </div>
               <div className="grid gap-3 md:grid-cols-2">
-                <Select name="purpose" defaultValue="">
+                <FieldSelect
+                  name="purpose"
+                  label={t("home.search.purpose")}
+                  helpKey="home.search.purpose"
+                  defaultValue=""
+                >
                   <option value="">{t("home.search.purpose")}</option>
                   {PURPOSE_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
                       {t(option.labelKey)}
                     </option>
                   ))}
-                </Select>
-                <Select name="type" defaultValue="">
+                </FieldSelect>
+                <FieldSelect
+                  name="type"
+                  label={t("filters.type")}
+                  helpKey="home.search.type"
+                  defaultValue=""
+                >
                   <option value="">{t("filters.type")}</option>
                   {PROPERTY_TYPE_OPTIONS.map((option) => (
                     <option key={option.value} value={option.value}>
                       {t(option.labelKey)}
                     </option>
                   ))}
-                </Select>
+                </FieldSelect>
               </div>
               <div className="grid grid-cols-2 gap-3">
-                <Input name="minPrice" placeholder={t("home.search.minPrice")} />
-                <Input name="maxPrice" placeholder={t("home.search.maxPrice")} />
+                <FieldInput
+                  name="minPrice"
+                  label={t("home.search.minPrice")}
+                  helpKey="home.search.minPrice"
+                  placeholder={t("home.search.minPrice")}
+                />
+                <FieldInput
+                  name="maxPrice"
+                  label={t("home.search.maxPrice")}
+                  helpKey="home.search.maxPrice"
+                  placeholder={t("home.search.maxPrice")}
+                />
               </div>
               <Button type="submit" className="w-full">
                 {t("home.search.submit")}
@@ -516,53 +567,80 @@ export default async function Home() {
                 autoComplete="off"
                 className="sr-only"
                 aria-hidden="true"
+                data-no-help
               />
               <input type="hidden" name="source" value="web" />
-              <div className="space-y-2">
-                <label className="text-sm text-[var(--muted)]">{t("home.request.name")}</label>
-                <Input name="name" required placeholder={t("home.request.name")} />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm text-[var(--muted)]">{t("home.request.phone")}</label>
-                <Input name="phone" required placeholder={t("home.request.phone")} type="tel" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm text-[var(--muted)]">{t("home.request.intent")}</label>
-                <Select name="intent" defaultValue="" required>
-                  <option value="">{t("home.request.intent")}</option>
-                  {intentOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm text-[var(--muted)]">{t("home.request.area")}</label>
-                <Input name="preferred_area" placeholder={t("home.request.area")} />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm text-[var(--muted)]">{t("home.request.budgetMin")}</label>
-                <Input name="budget_min" placeholder={t("home.request.budgetMin")} type="number" />
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm text-[var(--muted)]">{t("home.request.budgetMax")}</label>
-                <Input name="budget_max" placeholder={t("home.request.budgetMax")} type="number" />
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <label className="text-sm text-[var(--muted)]">{t("home.request.contactTime")}</label>
-                <Select name="preferred_contact_time" defaultValue="">
-                  <option value="">{t("home.request.contactTime")}</option>
-                  {contactOptions.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
-                </Select>
-              </div>
-              <div className="space-y-2 md:col-span-2">
-                <label className="text-sm text-[var(--muted)]">{t("home.request.notes")}</label>
-                <Textarea name="notes" placeholder={t("home.request.notes")} className="min-h-[120px]" />
+              <FieldInput
+                name="name"
+                label={t("home.request.name")}
+                helpKey="home.request.name"
+                required
+                placeholder={t("home.request.name")}
+              />
+              <FieldInput
+                name="phone"
+                label={t("home.request.phone")}
+                helpKey="home.request.phone"
+                required
+                placeholder={t("home.request.phone")}
+                type="tel"
+              />
+              <FieldSelect
+                name="intent"
+                label={t("home.request.intent")}
+                helpKey="home.request.intent"
+                defaultValue=""
+                required
+              >
+                <option value="">{t("home.request.intent")}</option>
+                {intentOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </FieldSelect>
+              <FieldInput
+                name="preferred_area"
+                label={t("home.request.area")}
+                helpKey="home.request.area"
+                placeholder={t("home.request.area")}
+              />
+              <FieldInput
+                name="budget_min"
+                label={t("home.request.budgetMin")}
+                helpKey="home.request.budgetMin"
+                placeholder={t("home.request.budgetMin")}
+                type="number"
+              />
+              <FieldInput
+                name="budget_max"
+                label={t("home.request.budgetMax")}
+                helpKey="home.request.budgetMax"
+                placeholder={t("home.request.budgetMax")}
+                type="number"
+              />
+              <FieldSelect
+                name="preferred_contact_time"
+                label={t("home.request.contactTime")}
+                helpKey="home.request.contactTime"
+                defaultValue=""
+                wrapperClassName="md:col-span-2"
+              >
+                <option value="">{t("home.request.contactTime")}</option>
+                {contactOptions.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </FieldSelect>
+              <div className="md:col-span-2">
+                <FieldTextarea
+                  name="notes"
+                  label={t("home.request.notes")}
+                  helpKey="home.request.notes"
+                  placeholder={t("home.request.notes")}
+                  className="min-h-[120px]"
+                />
               </div>
               <div className="md:col-span-2">
                 <Button type="submit" className="w-full">

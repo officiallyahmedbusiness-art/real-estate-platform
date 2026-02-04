@@ -33,3 +33,8 @@ export async function requireOwnerAccess(nextPath: string) {
 
   return { supabase, userId: data.user.id };
 }
+
+export async function requireManageUsersAccess(nextPath: string) {
+  const { supabase, userId } = await requireOwnerAccess(nextPath);
+  return { supabase, userId, role: "owner" };
+}

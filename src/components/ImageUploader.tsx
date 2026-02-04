@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
+import { FieldWrapper } from "@/components/FieldHelp";
 
 const BUCKET = "property-images";
 
 type ImageUploaderProps = {
   listingId: string;
   existingCount: number;
+  helpKey?: string;
   labels: {
     title: string;
     hint: string;
@@ -23,7 +25,7 @@ function getExtension(name: string) {
   return parts.length > 1 ? parts.pop()!.toLowerCase() : "jpg";
 }
 
-export function ImageUploader({ listingId, existingCount, labels }: ImageUploaderProps) {
+export function ImageUploader({ listingId, existingCount, labels, helpKey }: ImageUploaderProps) {
   const router = useRouter();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,19 +67,22 @@ export function ImageUploader({ listingId, existingCount, labels }: ImageUploade
 
   return (
     <div className="space-y-2">
-      <label className="flex cursor-pointer flex-col gap-2 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-4 py-4 text-sm text-[var(--muted)]">
-        <span className="font-semibold text-[var(--text)]">{labels.title}</span>
-        <span>{labels.hint}</span>
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          disabled={uploading}
-          onChange={(event) => handleFiles(event.target.files)}
-          className="sr-only"
-        />
-        {uploading ? <span className="text-xs">{labels.uploading}</span> : null}
-      </label>
+      <FieldWrapper label={labels.title} helpKey={helpKey ?? "uploads.images"}>
+        <label className="flex cursor-pointer flex-col gap-2 rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-4 py-4 text-sm text-[var(--muted)]">
+          <span className="font-semibold text-[var(--text)]">{labels.title}</span>
+          <span>{labels.hint}</span>
+          <input
+            type="file"
+            accept="image/*"
+            multiple
+            disabled={uploading}
+            onChange={(event) => handleFiles(event.target.files)}
+            className="sr-only"
+            data-no-help
+          />
+          {uploading ? <span className="text-xs">{labels.uploading}</span> : null}
+        </label>
+      </FieldWrapper>
       {error ? <p className="text-sm text-[var(--danger)]">{error}</p> : null}
       <p className="text-xs text-[var(--muted)]">
         {labels.pathLabel}: <span className="text-[var(--text)]">listings/{listingId}/...</span>

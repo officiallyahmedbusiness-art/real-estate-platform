@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Button, Card, Badge, Input, Textarea } from "@/components/ui";
+import { Button, Card, Badge } from "@/components/ui";
+import { FieldInput, FieldTextarea } from "@/components/FieldHelp";
 import { formatPrice } from "@/lib/format";
 import { createLeadAction } from "@/app/actions/marketplace";
 import { isUuid } from "@/lib/validators";
@@ -125,13 +126,36 @@ export default async function PublicSharePage({
                   autoComplete="off"
                   className="sr-only"
                   aria-hidden="true"
+                  data-no-help
                 />
                 <input type="hidden" name="listingId" value={listing.id} />
                 <input type="hidden" name="source" value="web" />
-                <Input name="name" placeholder={t("detail.lead.name")} required />
-                <Input name="phone" placeholder={t("detail.lead.phone")} />
-                <Input name="email" placeholder={t("detail.lead.email")} type="email" />
-                <Textarea name="message" placeholder={t("detail.lead.message")} />
+                <FieldInput
+                  name="name"
+                  label={t("detail.lead.name")}
+                  helpKey="lead.name"
+                  placeholder={t("detail.lead.name")}
+                  required
+                />
+                <FieldInput
+                  name="phone"
+                  label={t("detail.lead.phone")}
+                  helpKey="lead.phone"
+                  placeholder={t("detail.lead.phone")}
+                />
+                <FieldInput
+                  name="email"
+                  label={t("detail.lead.email")}
+                  helpKey="lead.email"
+                  placeholder={t("detail.lead.email")}
+                  type="email"
+                />
+                <FieldTextarea
+                  name="message"
+                  label={t("detail.lead.message")}
+                  helpKey="lead.message"
+                  placeholder={t("detail.lead.message")}
+                />
                 <Button type="submit" className="w-full">
                   {t("detail.lead.submit")}
                 </Button>

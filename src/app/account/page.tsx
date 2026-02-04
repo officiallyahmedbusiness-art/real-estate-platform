@@ -3,7 +3,8 @@ import { requireAuth } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Button, Card, Input, Badge, Section } from "@/components/ui";
+import { Button, Card, Badge, Section } from "@/components/ui";
+import { FieldInput } from "@/components/FieldHelp";
 import { formatPrice } from "@/lib/format";
 import { getPublicImageUrl } from "@/lib/storage";
 import { updateProfileAction } from "./actions";
@@ -57,14 +58,20 @@ export default async function AccountPage() {
 
         <Card>
           <form action={updateProfileAction} className="grid gap-4 md:grid-cols-2">
-            <div className="md:col-span-2">
-              <label className="text-sm text-[var(--muted)]">{t("account.profile.name")}</label>
-              <Input name="full_name" defaultValue={profile?.full_name ?? ""} required />
-            </div>
-            <div>
-              <label className="text-sm text-[var(--muted)]">{t("account.profile.phone")}</label>
-              <Input name="phone" defaultValue={profile?.phone ?? ""} />
-            </div>
+            <FieldInput
+              name="full_name"
+              label={t("account.profile.name")}
+              helpKey="account.profile.full_name"
+              defaultValue={profile?.full_name ?? ""}
+              required
+              wrapperClassName="md:col-span-2"
+            />
+            <FieldInput
+              name="phone"
+              label={t("account.profile.phone")}
+              helpKey="account.profile.phone"
+              defaultValue={profile?.phone ?? ""}
+            />
             <div className="md:col-span-2 flex justify-end">
               <Button type="submit">{t("account.profile.save")}</Button>
             </div>

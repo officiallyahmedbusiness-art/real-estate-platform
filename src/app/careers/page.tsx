@@ -1,6 +1,7 @@
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Button, Card, Input, Select, Textarea } from "@/components/ui";
+import { Button, Card } from "@/components/ui";
+import { FieldFile, FieldInput, FieldSelect, FieldTextarea } from "@/components/FieldHelp";
 import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 import { submitCareerApplicationAction } from "./actions";
@@ -58,28 +59,47 @@ export default async function CareersPage() {
             <h2 className="text-xl font-semibold">{t("careers.apply.title")}</h2>
             <form action={submitCareerApplicationAction} className="space-y-3">
               <input type="hidden" name="locale" value={locale} />
-              <Input name="name" placeholder={t("careers.apply.name")} required />
-              <Input name="email" placeholder={t("careers.apply.email")} type="email" />
-              <Input name="phone" placeholder={t("careers.apply.phone")} />
-              <Select name="role_title" defaultValue="">
+              <FieldInput
+                name="name"
+                label={t("careers.apply.name")}
+                helpKey="careers.apply.name"
+                placeholder={t("careers.apply.name")}
+                required
+              />
+              <FieldInput
+                name="email"
+                label={t("careers.apply.email")}
+                helpKey="careers.apply.email"
+                placeholder={t("careers.apply.email")}
+                type="email"
+              />
+              <FieldInput
+                name="phone"
+                label={t("careers.apply.phone")}
+                helpKey="careers.apply.phone"
+                placeholder={t("careers.apply.phone")}
+              />
+              <FieldSelect name="role_title" label={t("careers.apply.role")} helpKey="careers.apply.role" defaultValue="">
                 <option value="">{t("careers.apply.role")}</option>
                 {OPENINGS.map((role) => (
                   <option key={role.id} value={t(role.labelKey)}>
                     {t(role.labelKey)}
                   </option>
                 ))}
-              </Select>
-              <Textarea name="message" placeholder={t("careers.apply.message")} />
-              <div className="space-y-2 text-xs text-[var(--muted)]">
-                <label className="block text-sm text-[var(--text)]">{t("careers.apply.cv")}</label>
-                <input
-                  type="file"
-                  name="cv"
-                  accept=".pdf,.doc,.docx"
-                  className="w-full rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
-                  required
-                />
-              </div>
+              </FieldSelect>
+              <FieldTextarea
+                name="message"
+                label={t("careers.apply.message")}
+                helpKey="careers.apply.message"
+                placeholder={t("careers.apply.message")}
+              />
+              <FieldFile
+                name="cv"
+                label={t("careers.apply.cv")}
+                helpKey="careers.apply.cv"
+                accept=".pdf,.doc,.docx"
+                required
+              />
               <Button type="submit" className="w-full">
                 {t("careers.apply.submit")}
               </Button>

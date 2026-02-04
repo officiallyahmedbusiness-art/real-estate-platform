@@ -2,7 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { headers } from "next/headers";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
+import { requireOwnerAccess } from "@/lib/owner";
 import {
   isUuid,
   parseListingInput,
@@ -39,28 +41,6 @@ async function requireAdmin(nextPath: string) {
   return { supabase, userId: data.user.id };
 }
 
-async function requireOwner(nextPath: string) {
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.auth.getUser();
-
-  if (error || !data?.user) {
-    const safeNext = safeNextPath(nextPath, "/admin");
-    redirect(`/auth?next=${encodeURIComponent(safeNext)}`);
-  }
-
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role")
-    .eq("id", data.user.id)
-    .maybeSingle();
-
-  if (profile?.role !== "owner") {
-    redirect("/dashboard?unauthorized=1");
-  }
-
-  return { supabase, userId: data.user.id };
-}
-
 async function requireStaff(nextPath: string) {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase.auth.getUser();
@@ -85,17 +65,35 @@ async function requireStaff(nextPath: string) {
 }
 
 export async function updateUserRoleAction(formData: FormData) {
-  const { supabase } = await requireOwner("/admin");
+  const nextPath = safeNextPath(String(formData.get("next_path") ?? ""), "/admin");
+  const { supabase, userId: actorId } = await requireOwnerAccess(nextPath);
   const userId = String(formData.get("user_id") ?? "");
   const role = String(formData.get("role") ?? "");
 
   if (!isUuid(userId)) return;
   const parsedRole = parseRole(role);
   if (!parsedRole) return;
-  if (parsedRole === "owner") return;
+  if (parsedRole === "owner" && userId !== actorId) return;
+  const { data: targetProfile } = await supabase
+    .from("profiles")
+    .select("role")
+    .eq("id", userId)
+    .maybeSingle();
+  if (targetProfile?.role === "owner" && userId !== actorId) return;
 
   await supabase.from("profiles").update({ role: parsedRole }).eq("id", userId);
+  const hdrs = await headers();
+  await logAudit(supabase, {
+    actor_user_id: actorId,
+    action: "role_updated",
+    entity_type: "profile",
+    entity_id: userId,
+    metadata: { role: parsedRole },
+    ip: hdrs.get("x-forwarded-for"),
+    user_agent: hdrs.get("user-agent"),
+  });
   revalidatePath("/admin");
+  revalidatePath("/owner/users");
 }
 
 export async function createDeveloperAction(formData: FormData) {
@@ -154,7 +152,8 @@ export async function updateListingStatusAction(formData: FormData) {
 }
 
 export async function updateLeadStatusAction(formData: FormData) {
-  const { supabase, userId } = await requireStaff("/admin");
+  const { supabase, userId, role } = await requireStaff("/admin");
+  if (role !== "owner") return;
   const leadId = String(formData.get("lead_id") ?? "");
   const status = parseLeadStatus(formData.get("status"));
 
@@ -180,7 +179,8 @@ export async function updateLeadStatusAction(formData: FormData) {
 }
 
 export async function assignLeadAction(formData: FormData) {
-  const { supabase, userId } = await requireStaff("/admin");
+  const { supabase, userId, role } = await requireStaff("/admin");
+  if (role !== "owner") return;
   const leadId = String(formData.get("lead_id") ?? "");
   const assignedRaw = String(formData.get("assigned_to") ?? "");
   const assignedTo = assignedRaw && isUuid(assignedRaw) ? assignedRaw : null;
@@ -221,7 +221,8 @@ export async function assignLeadAction(formData: FormData) {
 }
 
 export async function addLeadNoteAction(formData: FormData) {
-  const { supabase, userId } = await requireStaff("/admin");
+  const { supabase, userId, role } = await requireStaff("/admin");
+  if (role !== "owner") return;
   const leadId = String(formData.get("lead_id") ?? "");
   const note = String(formData.get("note") ?? "").trim();
 

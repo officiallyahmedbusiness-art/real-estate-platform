@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import { safeNextPath } from "@/lib/paths";
 import { Button, Card, Input } from "@/components/ui";
+import { FieldInput, FieldWrapper } from "@/components/FieldHelp";
 import { createT } from "@/lib/i18n";
 import { getClientLocale } from "@/lib/i18n.client";
 import Link from "next/link";
@@ -145,18 +146,16 @@ export default function AuthClient() {
           ) : null}
 
           <section className="grid gap-4">
-            <div className="space-y-2">
-              <label className="text-sm text-[var(--muted)]">{t("auth.email.label")}</label>
-              <Input
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t("auth.email.placeholder")}
-                autoComplete="email"
-                disabled={loading}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm text-[var(--muted)]">{t("auth.password.label")}</label>
+            <FieldInput
+              label={t("auth.email.label")}
+              helpKey="auth.email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t("auth.email.placeholder")}
+              autoComplete="email"
+              disabled={loading}
+            />
+            <FieldWrapper label={t("auth.password.label")} helpKey="auth.password">
               <div className="relative">
                 <Input
                   value={password}
@@ -166,6 +165,7 @@ export default function AuthClient() {
                   autoComplete="current-password"
                   disabled={loading}
                   className="pr-24"
+                  data-no-help
                 />
                 <button
                   type="button"
@@ -177,7 +177,7 @@ export default function AuthClient() {
                 </button>
               </div>
               <small className="text-xs text-[var(--muted)]">{t("auth.password.hint")}</small>
-            </div>
+            </FieldWrapper>
             <div className="flex flex-wrap gap-3">
               <Button onClick={handleEmailSignIn} disabled={disabledEmail}>
                 {t("auth.action.signIn")}

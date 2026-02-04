@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Button, Card, Input } from "@/components/ui";
+import { Button, Card } from "@/components/ui";
+import { FieldInput } from "@/components/FieldHelp";
 import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 import { updatePasswordAction } from "./actions";
@@ -29,14 +30,22 @@ export default async function ResetPasswordPage({
           ) : null}
 
           <form action={updatePasswordAction} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm text-[var(--muted)]">{t("auth.reset.newPassword")}</label>
-              <Input name="password" type="password" required minLength={6} />
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm text-[var(--muted)]">{t("auth.reset.confirm")}</label>
-              <Input name="confirm" type="password" required minLength={6} />
-            </div>
+            <FieldInput
+              name="password"
+              label={t("auth.reset.newPassword")}
+              helpKey="auth.password"
+              type="password"
+              required
+              minLength={6}
+            />
+            <FieldInput
+              name="confirm"
+              label={t("auth.reset.confirm")}
+              helpKey="auth.passwordConfirm"
+              type="password"
+              required
+              minLength={6}
+            />
             <Button type="submit" className="w-full">
               {t("auth.reset.save")}
             </Button>

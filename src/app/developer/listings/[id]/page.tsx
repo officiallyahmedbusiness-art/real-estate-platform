@@ -4,7 +4,8 @@ import { requireRole } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Button, Card, Input, Select, Section, Badge, Textarea } from "@/components/ui";
+import { Button, Card, Section, Badge } from "@/components/ui";
+import { FieldInput, FieldSelect, FieldTextarea } from "@/components/FieldHelp";
 import { PROPERTY_TYPE_OPTIONS } from "@/lib/constants";
 import { getPublicImageUrl } from "@/lib/storage";
 import { isUuid } from "@/lib/validators";
@@ -80,76 +81,163 @@ export default async function DeveloperListingEditPage({
           <Card>
             <form action={updateListingAction} className="grid gap-4 md:grid-cols-3">
               <input type="hidden" name="listing_id" value={listing.id} />
-              <Input name="title" defaultValue={listing.title} required disabled={!canEdit} />
-              <Input
+              <FieldInput
+                name="title"
+                label={t("developer.form.title")}
+                helpKey="developer.listing.title"
+                defaultValue={listing.title}
+                required
+                disabled={!canEdit}
+              />
+              <FieldInput
                 name="title_ar"
+                label={t("submission.field.title_ar")}
+                helpKey="developer.listing.title_ar"
                 defaultValue={listing.title_ar ?? ""}
                 placeholder={t("submission.field.title_ar")}
                 disabled={!canEdit}
               />
-              <Input
+              <FieldInput
                 name="title_en"
+                label={t("submission.field.title_en")}
+                helpKey="developer.listing.title_en"
                 defaultValue={listing.title_en ?? ""}
                 placeholder={t("submission.field.title_en")}
                 disabled={!canEdit}
               />
-              <Select name="type" defaultValue={listing.type}>
+              <FieldSelect
+                name="type"
+                label={t("filters.type")}
+                helpKey="developer.listing.type"
+                defaultValue={listing.type}
+              >
                 {PROPERTY_TYPE_OPTIONS.map((item) => (
                   <option key={item.value} value={item.value}>
                     {t(item.labelKey)}
                   </option>
                 ))}
-              </Select>
+              </FieldSelect>
               <input type="hidden" name="purpose" value="new-development" />
-              <div className="flex items-center rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm text-[var(--muted)]">
-                {t(getPurposeLabelKey("new-development"))}
-              </div>
-              <Input name="price" defaultValue={String(listing.price)} required disabled={!canEdit} />
-              <Input name="currency" defaultValue={listing.currency} disabled={!canEdit} />
-              <Input name="city" defaultValue={listing.city} required disabled={!canEdit} />
-              <Input name="area" defaultValue={listing.area ?? ""} disabled={!canEdit} />
-              <Input name="address" defaultValue={listing.address ?? ""} disabled={!canEdit} />
-              <Input name="beds" defaultValue={String(listing.beds)} disabled={!canEdit} />
-              <Input name="baths" defaultValue={String(listing.baths)} disabled={!canEdit} />
-              <Input
+              <FieldInput
+                label={t("filters.purpose")}
+                helpKey="developer.listing.purpose"
+                value={t(getPurposeLabelKey("new-development"))}
+                readOnly
+                data-no-help
+              />
+              <FieldInput
+                name="price"
+                label={t("developer.form.price")}
+                helpKey="developer.listing.price"
+                defaultValue={String(listing.price)}
+                required
+                disabled={!canEdit}
+              />
+              <FieldInput
+                name="currency"
+                label={t("developer.form.currency")}
+                helpKey="developer.listing.currency"
+                defaultValue={listing.currency}
+                disabled={!canEdit}
+              />
+              <FieldInput
+                name="city"
+                label={t("filters.city")}
+                helpKey="developer.listing.city"
+                defaultValue={listing.city}
+                required
+                disabled={!canEdit}
+              />
+              <FieldInput
+                name="area"
+                label={t("filters.area")}
+                helpKey="developer.listing.area"
+                defaultValue={listing.area ?? ""}
+                disabled={!canEdit}
+              />
+              <FieldInput
+                name="address"
+                label={t("developer.form.address")}
+                helpKey="developer.listing.address"
+                defaultValue={listing.address ?? ""}
+                disabled={!canEdit}
+              />
+              <FieldInput
+                name="beds"
+                label={t("filters.beds")}
+                helpKey="developer.listing.beds"
+                defaultValue={String(listing.beds)}
+                disabled={!canEdit}
+              />
+              <FieldInput
+                name="baths"
+                label={t("filters.baths")}
+                helpKey="developer.listing.baths"
+                defaultValue={String(listing.baths)}
+                disabled={!canEdit}
+              />
+              <FieldInput
                 name="size_m2"
+                label={t("developer.form.size")}
+                helpKey="developer.listing.size_m2"
                 defaultValue={listing.size_m2 ? String(listing.size_m2) : ""}
                 disabled={!canEdit}
               />
-              <Input
+              <FieldInput
                 name="amenities"
+                label={t("developer.form.amenities")}
+                helpKey="developer.listing.amenities"
                 defaultValue={(listing.amenities as string[] | null | undefined)?.join(", ") ?? ""}
                 disabled={!canEdit}
               />
-              <Input
+              <FieldInput
                 name="listing_code"
+                label={t("submission.field.listing_code")}
+                helpKey="developer.listing.listing_code"
                 defaultValue={listing.listing_code ?? ""}
                 placeholder={t("submission.field.listing_code")}
                 disabled={!isAdmin}
               />
-              <Input
+              <FieldInput
                 name="unit_code"
+                label={t("submission.field.unit_code")}
+                helpKey="developer.listing.unit_code"
                 defaultValue={listing.unit_code ?? ""}
                 placeholder={t("submission.field.unit_code")}
                 disabled={!isAdmin}
               />
-              <Select name="status" defaultValue={listing.status}>
+              <FieldSelect
+                name="status"
+                label={t("submission.field.status")}
+                helpKey="developer.listing.status"
+                defaultValue={listing.status}
+              >
                 <option value="draft">{t("status.draft")}</option>
                 {isAdmin ? <option value="published">{t("status.published")}</option> : null}
                 <option value="archived">{t("status.archived")}</option>
-              </Select>
+              </FieldSelect>
               <div className="md:col-span-3">
-                <Textarea name="description" defaultValue={listing.description ?? ""} disabled={!canEdit} />
+                <FieldTextarea
+                  name="description"
+                  label={t("developer.form.description")}
+                  helpKey="developer.listing.description"
+                  defaultValue={listing.description ?? ""}
+                  disabled={!canEdit}
+                />
               </div>
               <div className="md:col-span-3 grid gap-3 md:grid-cols-2">
-                <Textarea
+                <FieldTextarea
                   name="description_ar"
+                  label={t("submission.field.desc_ar")}
+                  helpKey="developer.listing.description_ar"
                   defaultValue={listing.description_ar ?? ""}
                   placeholder={t("submission.field.desc_ar")}
                   disabled={!canEdit}
                 />
-                <Textarea
+                <FieldTextarea
                   name="description_en"
+                  label={t("submission.field.desc_en")}
+                  helpKey="developer.listing.description_en"
                   defaultValue={listing.description_en ?? ""}
                   placeholder={t("submission.field.desc_en")}
                   disabled={!canEdit}

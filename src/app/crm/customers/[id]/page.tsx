@@ -5,10 +5,13 @@ import { requireRole } from "@/lib/auth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Badge, Button, Card, Section } from "@/components/ui";
+import { FieldInput } from "@/components/FieldHelp";
 import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 import { formatPrice } from "@/lib/format";
 import { isUuid } from "@/lib/validators";
+import { updateCustomerAction } from "./actions";
+import { OwnerDeleteDialog } from "@/components/OwnerDeleteDialog";
 
 export default async function CrmCustomerDetailPage({
   params,
@@ -17,7 +20,11 @@ export default async function CrmCustomerDetailPage({
 }) {
   const { id } = await params;
   if (!isUuid(id)) notFound();
-  await requireRole(["owner", "admin", "ops", "staff", "agent"], `/crm/customers/${id}`);
+  const { role } = await requireRole(
+    ["owner", "admin", "ops", "staff", "agent"],
+    `/crm/customers/${id}`
+  );
+  const isOwner = role === "owner";
 
   const supabase = await createSupabaseServerClient();
   const locale = await getServerLocale();
@@ -25,7 +32,7 @@ export default async function CrmCustomerDetailPage({
 
   const { data: customer } = await supabase
     .from("customers")
-    .select("id, full_name, phone_e164, email, intent, preferred_areas, budget_min, budget_max, created_at")
+    .select("id, full_name, phone_raw, phone_e164, email, intent, preferred_areas, budget_min, budget_max, lead_source, created_at")
     .eq("id", id)
     .maybeSingle();
   if (!customer) notFound();
@@ -82,6 +89,98 @@ export default async function CrmCustomerDetailPage({
             <p className="text-sm font-semibold">{budgetLabel}</p>
           </Card>
         </div>
+
+        {isOwner ? (
+          <Section title={t("crm.customers.edit.title")} subtitle={t("crm.customers.edit.subtitle")}>
+            <Card className="space-y-4">
+              <form action={updateCustomerAction} className="grid gap-3 md:grid-cols-2">
+                <input type="hidden" name="customer_id" value={customer.id} />
+                <input type="hidden" name="next_path" value={`/crm/customers/${customer.id}`} />
+                <FieldInput
+                  name="full_name"
+                  label={t("crm.customers.form.full_name")}
+                  helpKey="crm.customers.full_name"
+                  defaultValue={customer.full_name ?? ""}
+                  placeholder={t("crm.customers.form.full_name")}
+                />
+                <FieldInput
+                  name="phone_e164"
+                  label={t("crm.customers.form.phone")}
+                  helpKey="crm.customers.phone_e164"
+                  defaultValue={customer.phone_e164 ?? ""}
+                  placeholder={t("crm.customers.form.phone")}
+                />
+                <FieldInput
+                  name="phone_raw"
+                  label={t("crm.customers.form.phoneRaw")}
+                  helpKey="crm.customers.phone_raw"
+                  defaultValue={customer.phone_raw ?? ""}
+                  placeholder={t("crm.customers.form.phoneRaw")}
+                />
+                <FieldInput
+                  name="email"
+                  label={t("crm.customers.form.email")}
+                  helpKey="crm.customers.email"
+                  defaultValue={customer.email ?? ""}
+                  placeholder={t("crm.customers.form.email")}
+                  type="email"
+                />
+                <FieldInput
+                  name="intent"
+                  label={t("crm.customers.form.intent")}
+                  helpKey="crm.customers.intent"
+                  defaultValue={customer.intent ?? ""}
+                  placeholder={t("crm.customers.form.intent")}
+                />
+                <FieldInput
+                  name="preferred_areas"
+                  label={t("crm.customers.form.areas")}
+                  helpKey="crm.customers.preferred_areas"
+                  defaultValue={customer.preferred_areas?.join(", ") ?? ""}
+                  placeholder={t("crm.customers.form.areas")}
+                />
+                <FieldInput
+                  name="budget_min"
+                  label={t("crm.customers.form.budgetMin")}
+                  helpKey="crm.customers.budget_min"
+                  defaultValue={customer.budget_min ?? ""}
+                  placeholder={t("crm.customers.form.budgetMin")}
+                  type="number"
+                />
+                <FieldInput
+                  name="budget_max"
+                  label={t("crm.customers.form.budgetMax")}
+                  helpKey="crm.customers.budget_max"
+                  defaultValue={customer.budget_max ?? ""}
+                  placeholder={t("crm.customers.form.budgetMax")}
+                  type="number"
+                />
+                <FieldInput
+                  name="lead_source"
+                  label={t("crm.customers.form.source")}
+                  helpKey="crm.customers.lead_source"
+                  defaultValue={customer.lead_source ?? ""}
+                  placeholder={t("crm.customers.form.source")}
+                />
+                <div className="md:col-span-2 flex flex-wrap items-center gap-3">
+                  <Button type="submit" size="sm" variant="secondary">
+                    {t("crm.customers.form.save")}
+                  </Button>
+                  <OwnerDeleteDialog
+                    entityId={customer.id}
+                    endpoint="/api/owner/customers/delete"
+                    title={t("crm.customers.delete.title")}
+                    description={t("crm.customers.delete.subtitle")}
+                  />
+                </div>
+              </form>
+            </Card>
+          </Section>
+        ) : (
+          <Card className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--muted)]">
+            {t("crm.customers.ownerOnly")}
+          </Card>
+        )}
 
         <Section title={t("crm.leads.title")} subtitle={t("crm.leads.subtitle")}>
           <div className="grid gap-3">

@@ -2,6 +2,7 @@ import { createSupabaseServerClient } from "@/lib/supabaseServer";
 
 export type SiteSettings = {
   facebook_url: string;
+  instagram_url: string;
   linkedin_url: string;
   tiktok_url: string;
   public_email: string;
@@ -11,6 +12,7 @@ export type SiteSettings = {
 
 const defaults: SiteSettings = {
   facebook_url: "https://www.facebook.com/share/1C1fQLJD2W/",
+  instagram_url: "https://www.instagram.com/hrtaj.co",
   linkedin_url: "https://www.linkedin.com/in/hrtaj-real-estate-519564307",
   tiktok_url: "https://www.tiktok.com/@hrtajrealestate?_r=1&_t=ZS-93ZFLAWsstD",
   public_email: "hrtajrealestate@gmail.com",

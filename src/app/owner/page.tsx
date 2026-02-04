@@ -2,7 +2,8 @@ import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Button, Card, Input } from "@/components/ui";
+import { Button, Card } from "@/components/ui";
+import { FieldInput } from "@/components/FieldHelp";
 import { unlockOwnerAction } from "./actions";
 
 export default async function OwnerUnlockPage({
@@ -27,7 +28,13 @@ export default async function OwnerUnlockPage({
         <Card className="space-y-4">
           <form action={unlockOwnerAction} className="space-y-3">
             <input type="hidden" name="next" value={nextPath} />
-            <Input name="owner_token" type="password" placeholder={t("owner.unlock.input")} />
+            <FieldInput
+              name="owner_token"
+              label={t("owner.unlock.input")}
+              helpKey="owner.unlock.token"
+              type="password"
+              placeholder={t("owner.unlock.input")}
+            />
             {hasError ? (
               <p className="text-xs text-[var(--danger)]">{t("owner.unlock.error")}</p>
             ) : null}

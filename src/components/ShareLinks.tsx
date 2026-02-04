@@ -74,7 +74,7 @@ export function ShareLinks({ labels, paths }: { labels: ShareLabels; paths: Shar
           </div>
           {item.hint ? <p className="text-xs text-[var(--muted)]">{item.hint}</p> : null}
           <div className="flex items-center gap-2">
-            <Input readOnly value={item.url} className="text-xs" />
+            <Input readOnly value={item.url} className="text-xs" data-no-help />
             <Button
               type="button"
               size="sm"

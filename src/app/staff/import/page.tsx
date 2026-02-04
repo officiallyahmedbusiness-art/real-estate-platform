@@ -31,6 +31,7 @@ export default async function StaffImportPage() {
         <ImportClient
           type="resale"
           labels={{
+            file: t("staff.import.file"),
             format: t("staff.import.format"),
             notes: t("staff.import.notes"),
             submit: t("staff.import.submit"),

@@ -3,7 +3,8 @@ import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { requireRole } from "@/lib/auth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Button, Card, Input, Section, Badge } from "@/components/ui";
+import { Button, Card, Section, Badge } from "@/components/ui";
+import { FieldInput } from "@/components/FieldHelp";
 import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 import { formatPrice } from "@/lib/format";
@@ -70,7 +71,13 @@ export default async function CrmCustomersPage({
 
         <Card className="space-y-4">
           <form className="flex flex-wrap gap-3">
-            <Input name="q" placeholder={t("crm.customers.search")} defaultValue={query} />
+            <FieldInput
+              name="q"
+              label={t("crm.customers.search")}
+              helpKey="crm.customers.search"
+              placeholder={t("crm.customers.search")}
+              defaultValue={query}
+            />
             <Button type="submit" size="sm">
               {t("listings.filters.apply")}
             </Button>

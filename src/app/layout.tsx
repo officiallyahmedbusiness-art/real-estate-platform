@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
-import { Cairo, Geist, Geist_Mono } from "next/font/google";
+import { Cairo, Geist, Geist_Mono, Noto_Sans_Arabic } from "next/font/google";
 import "./globals.css";
+import { BrandGlyphFallback } from "@/components/BrandGlyphFallback";
+import { HelpModeProvider } from "@/components/FieldHelp";
 import { DebugCursorInspector } from "@/components/DebugCursorInspector";
 import { ThemeScript } from "@/components/ThemeScript";
 import { createT } from "@/lib/i18n";
@@ -21,6 +23,11 @@ const geistMono = Geist_Mono({
 const cairo = Cairo({
   variable: "--font-cairo",
   subsets: ["arabic", "latin"],
+});
+
+const notoSansArabic = Noto_Sans_Arabic({
+  variable: "--font-arabic",
+  subsets: ["arabic"],
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -61,9 +68,14 @@ export default async function RootLayout({
       <head>
         <ThemeScript />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} ${cairo.variable} antialiased`}>
-        {children}
-        {showDebugCursor ? <DebugCursorInspector /> : null}
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${cairo.variable} ${notoSansArabic.variable} antialiased`}
+      >
+        <HelpModeProvider>
+          <BrandGlyphFallback />
+          {children}
+          {showDebugCursor ? <DebugCursorInspector /> : null}
+        </HelpModeProvider>
       </body>
     </html>
   );

@@ -3,7 +3,8 @@ import { requireRole } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Button, Card, Input, Section } from "@/components/ui";
+import { Button, Card, Section } from "@/components/ui";
+import { FieldCheckbox, FieldInput } from "@/components/FieldHelp";
 import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 import {
@@ -43,14 +44,40 @@ export default async function AdminPartnersPage() {
         <Section title={t("admin.partners.manageTitle")} subtitle={t("admin.partners.manageSubtitle")}>
           <Card className="space-y-4">
             <form action={createPartnerAction} className="grid gap-3 md:grid-cols-6">
-              <Input name="name_ar" placeholder={t("admin.partners.nameAr")} required />
-              <Input name="name_en" placeholder={t("admin.partners.nameEn")} required />
-              <Input name="logo_url" placeholder={t("admin.partners.logo")} className="md:col-span-2" />
-              <Input name="sort_order" placeholder={t("admin.homepage.order")} type="number" />
-              <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" name="is_active" defaultChecked />
-                {t("admin.partners.active")}
-              </label>
+              <FieldInput
+                name="name_ar"
+                label={t("admin.partners.nameAr")}
+                helpKey="admin.partners.name_ar"
+                placeholder={t("admin.partners.nameAr")}
+                required
+              />
+              <FieldInput
+                name="name_en"
+                label={t("admin.partners.nameEn")}
+                helpKey="admin.partners.name_en"
+                placeholder={t("admin.partners.nameEn")}
+                required
+              />
+              <FieldInput
+                name="logo_url"
+                label={t("admin.partners.logo")}
+                helpKey="admin.partners.logo_url"
+                placeholder={t("admin.partners.logo")}
+                wrapperClassName="md:col-span-2"
+              />
+              <FieldInput
+                name="sort_order"
+                label={t("admin.homepage.order")}
+                helpKey="admin.partners.sort_order"
+                placeholder={t("admin.homepage.order")}
+                type="number"
+              />
+              <FieldCheckbox
+                name="is_active"
+                label={t("admin.partners.active")}
+                helpKey="admin.partners.is_active"
+                defaultChecked
+              />
               <Button type="submit" size="sm">
                 {t("admin.homepage.add")}
               </Button>
@@ -62,14 +89,38 @@ export default async function AdminPartnersPage() {
               <Card key={partner.id}>
                 <form action={updatePartnerAction} className="grid gap-3 md:grid-cols-6">
                   <input type="hidden" name="id" value={partner.id} />
-                  <Input name="name_ar" defaultValue={partner.name_ar} />
-                  <Input name="name_en" defaultValue={partner.name_en} />
-                  <Input name="logo_url" defaultValue={partner.logo_url ?? ""} className="md:col-span-2" />
-                  <Input name="sort_order" defaultValue={partner.sort_order} type="number" />
-                  <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" name="is_active" defaultChecked={partner.is_active} />
-                    {t("admin.partners.active")}
-                  </label>
+                  <FieldInput
+                    name="name_ar"
+                    label={t("admin.partners.nameAr")}
+                    helpKey="admin.partners.name_ar"
+                    defaultValue={partner.name_ar}
+                  />
+                  <FieldInput
+                    name="name_en"
+                    label={t("admin.partners.nameEn")}
+                    helpKey="admin.partners.name_en"
+                    defaultValue={partner.name_en}
+                  />
+                  <FieldInput
+                    name="logo_url"
+                    label={t("admin.partners.logo")}
+                    helpKey="admin.partners.logo_url"
+                    defaultValue={partner.logo_url ?? ""}
+                    wrapperClassName="md:col-span-2"
+                  />
+                  <FieldInput
+                    name="sort_order"
+                    label={t("admin.homepage.order")}
+                    helpKey="admin.partners.sort_order"
+                    defaultValue={partner.sort_order}
+                    type="number"
+                  />
+                  <FieldCheckbox
+                    name="is_active"
+                    label={t("admin.partners.active")}
+                    helpKey="admin.partners.is_active"
+                    defaultChecked={partner.is_active}
+                  />
                   <div className="flex gap-3">
                     <Button type="submit" size="sm" variant="secondary">
                       {t("admin.homepage.save")}

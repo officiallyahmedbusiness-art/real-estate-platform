@@ -2,6 +2,7 @@
 import { ThemeSwitcher } from "@/components/ThemeSwitcher";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Logo } from "@/components/Logo";
+import { HelpModeToggle } from "@/components/FieldHelp";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { getSiteSettings } from "@/lib/settings";
 import { createT } from "@/lib/i18n";
@@ -95,6 +96,7 @@ export async function SiteHeader() {
           <div className="flex items-center gap-2 md:hidden">
             <LanguageSwitcher locale={locale} labels={langLabels} />
             <ThemeSwitcher labels={themeLabels} />
+            <HelpModeToggle />
           </div>
 
           <div className="hidden items-center gap-2 md:flex">
@@ -117,6 +119,7 @@ export async function SiteHeader() {
             </details>
             <LanguageSwitcher locale={locale} labels={langLabels} />
             <ThemeSwitcher labels={themeLabels} />
+            <HelpModeToggle />
             {isAuthed ? (
               <Link
                 href="/dashboard"

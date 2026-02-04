@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
-import { Button, Card, Input } from "@/components/ui";
+import { Button, Card } from "@/components/ui";
+import { FieldInput } from "@/components/FieldHelp";
 import { requestResetAction } from "./actions";
 
 export default async function ForgotPasswordPage({
@@ -25,10 +26,14 @@ export default async function ForgotPasswordPage({
 
           <form action={requestResetAction} className="space-y-4">
             <input type="hidden" name="next" value={nextPath} />
-            <div className="space-y-2">
-              <label className="text-sm text-[var(--muted)]">{t("auth.reset.email")}</label>
-              <Input name="email" placeholder={t("auth.email.placeholder")} autoComplete="email" required />
-            </div>
+            <FieldInput
+              name="email"
+              label={t("auth.reset.email")}
+              helpKey="auth.email"
+              placeholder={t("auth.email.placeholder")}
+              autoComplete="email"
+              required
+            />
             <Button type="submit" className="w-full">
               {t("auth.reset.send")}
             </Button>

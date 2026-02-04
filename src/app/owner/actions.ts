@@ -59,6 +59,7 @@ export async function updateSiteSettingsAction(formData: FormData) {
   const nextPath = "/owner/settings";
   const { supabase, userId: actorId } = await requireOwnerAccess(nextPath);
   const facebook_url = clean(formData.get("facebook_url"));
+  const instagram_url = clean(formData.get("instagram_url"));
   const public_email = clean(formData.get("public_email"));
   const linkedin_url = clean(formData.get("linkedin_url"));
   const tiktok_url = clean(formData.get("tiktok_url"));
@@ -67,6 +68,7 @@ export async function updateSiteSettingsAction(formData: FormData) {
 
   const entries = [
     { key: "facebook_url", value: facebook_url },
+    { key: "instagram_url", value: instagram_url },
     { key: "public_email", value: public_email },
     { key: "linkedin_url", value: linkedin_url },
     { key: "tiktok_url", value: tiktok_url },
