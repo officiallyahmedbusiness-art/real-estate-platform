@@ -1,4 +1,4 @@
-import { BRAND_EN_NAME, getBrandArName } from "./brand";
+import { BRAND, getBrandArName } from "./brand";
 
 export const LOCALES = ["ar", "en"] as const;
 export type Locale = (typeof LOCALES)[number];
@@ -30,6 +30,9 @@ const ar: Dictionary = {
 
   "theme.dark": "داكن",
   "theme.light": "فاتح",
+
+  "help.mode.on": "وضع الشرح (مفعّل)",
+  "help.mode.off": "وضع الشرح",
 
   "role.developer": "مطور",
   "role.owner": "مالك",
@@ -560,6 +563,7 @@ const ar: Dictionary = {
   "admin.approvals.subtitle": "العقارات في انتظار الاعتماد",
   "admin.approvals.empty": "لا توجد عقارات قيد المراجعة حاليًا.",
   "admin.approvals.update": "تحديث الحالة",
+  "admin.approvals.status": "حالة الإعلان",
   "admin.leads.title": "إدارة الطلبات",
   "admin.leads.subtitle": "متابعة العملاء وتحويلهم للفريق المناسب",
   "admin.leads.empty": "لا توجد طلبات جديدة حاليا.",
@@ -593,6 +597,7 @@ const ar: Dictionary = {
   "admin.partners.subtitle": "إضافة شركاء وربط الحسابات",
   "admin.partners.manageTitle": "شركاء التسويق",
   "admin.partners.manageSubtitle": "إضافة الشركاء وتحديث الشعار والترتيب.",
+  "admin.partners.name": "اسم الشريك",
   "admin.partners.nameAr": "الاسم (عربي)",
   "admin.partners.nameEn": "الاسم (إنجليزي)",
   "admin.partners.logo": "رابط الشعار",
@@ -603,10 +608,12 @@ const ar: Dictionary = {
   "admin.partners.addBtn": "إضافة",
   "admin.partners.linkBtn": "ربط الحساب",
   "admin.partners.selectDeveloper": "اختر الشريك",
+  "admin.partners.role": "دور العضو",
   "admin.partners.roleHint": "دور العضو (عضو / مدير)",
   "admin.users.title": "إدارة المستخدمين",
   "admin.users.subtitle": "تحديث صلاحيات المستخدمين",
   "admin.users.update": "تحديث الدور",
+  "admin.users.role": "الدور",
   "admin.homepage.title": "محتوى الصفحة الرئيسية",
   "admin.homepage.subtitle": "إدارة وسائط البانر والإحصاءات والمشروعات المميزة.",
   "admin.homepage.manage": "إدارة الصفحة الرئيسية",
@@ -645,6 +652,8 @@ const ar: Dictionary = {
   "admin.review.diff.submitted": "بيانات الشريك",
   "admin.review.diff.final": "نسخة {{brand}}",
   "admin.review.missing": "حقول ناقصة",
+  "admin.review.submissionStatus": "حالة المراجعة",
+  "admin.review.note.label": "ملاحظات المراجعة",
   "admin.review.note.placeholder": "اكتب ملاحظات للمراجعة",
 
   "reports.title": "التقارير",
@@ -765,6 +774,7 @@ const ar: Dictionary = {
   "careers.admin.subtitle": "مراجعة المتقدمين وتتبع حالة كل طلب.",
   "careers.admin.empty": "لا توجد طلبات حتى الآن.",
   "careers.admin.cv": "الملف",
+  "careers.admin.status": "حالة الطلب",
   "careers.status.new": "جديد",
   "careers.status.reviewing": "قيد المراجعة",
   "careers.status.interview": "مقابلة",
@@ -954,8 +964,8 @@ const ar: Dictionary = {
 };
 
 const en: Dictionary = {
-  "brand.name": "HRTAJ",
-  "brand.tagline": "HRTAJ - real estate marketing",
+  "brand.name": "{{brand}}",
+  "brand.tagline": "{{brand}} - real estate marketing",
   "brand.domain": "Real estate marketing",
 
   "nav.listings": "Listings",
@@ -977,6 +987,9 @@ const en: Dictionary = {
   "theme.dark": "Dark",
   "theme.light": "Light",
 
+  "help.mode.on": "Help mode (On)",
+  "help.mode.off": "Help mode",
+
   "role.developer": "Developer",
   "role.owner": "Owner",
   "role.admin": "Admin",
@@ -993,7 +1006,7 @@ const en: Dictionary = {
   "submission.status.archived": "Archived",
 
   "submission.portal.title": "Submission portal",
-  "submission.portal.subtitle": "Submit your inventory and projects to HRTAJ for review before publishing.",
+  "submission.portal.subtitle": "Submit your inventory and projects to {{brand}} for review before publishing.",
   "submission.section.projects": "Projects",
   "submission.section.inventory": "Inventory units",
   "submission.section.media": "Marketing assets",
@@ -1002,7 +1015,7 @@ const en: Dictionary = {
   "submission.action.approve": "Approve",
   "submission.action.publish": "Publish",
   "submission.action.archive": "Archive",
-  "submission.action.assign_code": "Assign HRTAJ code",
+  "submission.action.assign_code": "Assign {{brand}} code",
   "submission.field.listing_code": "Listing code",
   "submission.field.project_code": "Project code",
   "submission.field.unit_code": "Unit code",
@@ -1013,7 +1026,7 @@ const en: Dictionary = {
   "submission.field.status": "Status",
   "submission.field.missing": "Missing fields",
   "submission.field.review_note": "Review notes",
-  "submission.locked": "Editing is locked while HRTAJ reviews this submission.",
+  "submission.locked": "Editing is locked while {{brand}} reviews this submission.",
 
   "media.type.brochure": "Brochure",
   "media.type.floorplan": "Floor plan",
@@ -1023,13 +1036,13 @@ const en: Dictionary = {
   "media.submit.url": "Asset URL",
   "media.submit.add": "Add asset",
 
-  "home.hero.badge": "hrtaj verified real estate marketing",
-  "home.hero.title": "Discover your next property with hrtaj and trusted marketing campaigns.",
+  "home.hero.badge": "{{brand}} verified real estate marketing",
+  "home.hero.title": "Discover your next property with {{brand}} and trusted marketing campaigns.",
   "home.hero.subtitle": "Verified listings for sale and rent, connecting clients with certified partners.",
   "home.hero.ctaPrimary": "Browse listings",
   "home.hero.ctaSecondary": "Submission portal",
   "home.callback.title": "Request a call back",
-  "home.callback.subtitle": "Leave your details and the HRTAJ team will contact you shortly.",
+  "home.callback.subtitle": "Leave your details and the {{brand}} team will contact you shortly.",
   "home.callback.name": "Full name",
   "home.callback.email": "Email",
   "home.callback.phone": "Phone number",
@@ -1052,7 +1065,7 @@ const en: Dictionary = {
   "home.featured.subtitle": "Handpicked listings added recently",
   "home.featured.empty": "No listings published yet.",
   "home.request.title": "Tell us what you want",
-  "home.request.subtitle": "Send your request to HRTAJ and we will follow up quickly.",
+  "home.request.subtitle": "Send your request to {{brand}} and we will follow up quickly.",
   "home.request.name": "Full name",
   "home.request.phone": "Phone number",
   "home.request.intent": "Intent",
@@ -1070,10 +1083,10 @@ const en: Dictionary = {
   "home.request.notes": "Additional notes",
   "home.request.submit": "Submit request",
   "home.partners.title": "Partner developers",
-  "home.partners.subtitle": "A trusted network of developers marketed by HRTAJ.",
+  "home.partners.subtitle": "A trusted network of developers marketed by {{brand}}.",
   "home.partners.cta": "View projects",
   "home.ads.title": "Developer campaigns",
-  "home.ads.subtitle": "HRTAJ-approved campaigns for selected projects.",
+  "home.ads.subtitle": "{{brand}}-approved campaigns for selected projects.",
   "home.ads.empty": "No published campaigns yet.",
   "home.ads.cta": "View details",
   "home.partners.tag.launch": "New launches",
@@ -1088,7 +1101,7 @@ const en: Dictionary = {
   "home.partners.item.atlas": "Atlas Developments",
 
   "home.proof.title": "Proof in numbers",
-  "home.proof.subtitle": "Key metrics for HRTAJ operations.",
+  "home.proof.subtitle": "Key metrics for {{brand}} operations.",
   "home.projects.title": "Featured projects",
   "home.projects.subtitle": "New launches with curated investment opportunities.",
   "home.projects.empty": "No featured projects available right now.",
@@ -1120,7 +1133,7 @@ const en: Dictionary = {
 
   "detail.back": "Back to listings",
   "detail.contact.title": "Contact",
-  "detail.contact.subtitle": "Reach HRTAJ to schedule a viewing.",
+  "detail.contact.subtitle": "Reach {{brand}} to schedule a viewing.",
   "detail.contact.defaultName": "Sales team",
   "detail.contact.noPhone": "Contact details available on request",
   "detail.contact.whatsapp": "WhatsApp",
@@ -1145,7 +1158,7 @@ const en: Dictionary = {
   "detail.lead.guest.action": "sign in",
 
   "auth.title": "Sign in",
-  "auth.subtitle": "Sign-in is limited to HRTAJ staff and approved partners.",
+  "auth.subtitle": "Sign-in is limited to {{brand}} staff and approved partners.",
   "auth.tab.email": "Email",
   "auth.tab.phone": "Phone",
   "auth.session.title": "You are already signed in.",
@@ -1229,7 +1242,7 @@ const en: Dictionary = {
   "developer.stats.projects": "Total projects",
   "developer.stats.leads": "Latest requests",
   "developer.create.title": "Add new listing",
-  "developer.create.subtitle": "Fill the basics. HRTAJ reviews submissions before publishing.",
+  "developer.create.subtitle": "Fill the basics. {{brand}} reviews submissions before publishing.",
   "developer.create.submit": "Create listing",
   "developer.form.title": "Listing title",
   "developer.form.price": "Price",
@@ -1308,7 +1321,7 @@ const en: Dictionary = {
   "project.manage": "Manage project",
 
   "staff.title": "Staff data entry",
-  "staff.subtitle": "Prepare resale units for HRTAJ marketing and publishing.",
+  "staff.subtitle": "Prepare resale units for {{brand}} marketing and publishing.",
   "staff.stats.total": "Total units",
   "staff.stats.draft": "Drafts",
   "staff.stats.submitted": "In review",
@@ -1376,7 +1389,7 @@ const en: Dictionary = {
   "staff.share.internal": "Internal link",
   "staff.share.print": "Print view",
   "staff.share.publicHint": "Share without owner details.",
-  "staff.share.internalHint": "For internal HRTAJ use only.",
+  "staff.share.internalHint": "For internal {{brand}} use only.",
   "staff.share.copy": "Copy link",
   "staff.import.title": "Resale intake import",
   "staff.import.subtitle": "Upload CSV or Excel to create internal resale units.",
@@ -1410,7 +1423,7 @@ const en: Dictionary = {
   "owner.unlock.action": "Unlock panel",
   "owner.unlock.error": "Invalid owner key.",
   "owner.users.title": "User management",
-  "owner.users.subtitle": "Manage roles and access for HRTAJ accounts.",
+  "owner.users.subtitle": "Manage roles and access for {{brand}} accounts.",
   "owner.users.update": "Update role",
   "owner.users.invite.title": "Add user",
   "owner.users.invite.subtitle": "Create admin and staff accounts from the web app.",
@@ -1506,6 +1519,7 @@ const en: Dictionary = {
   "admin.approvals.subtitle": "Listings awaiting approval",
   "admin.approvals.empty": "No listings awaiting review.",
   "admin.approvals.update": "Update status",
+  "admin.approvals.status": "Listing status",
   "admin.leads.title": "Requests management",
   "admin.leads.subtitle": "Assign and track client requests",
   "admin.leads.empty": "No new requests.",
@@ -1539,6 +1553,7 @@ const en: Dictionary = {
   "admin.partners.subtitle": "Add partners and link accounts",
   "admin.partners.manageTitle": "Marketing partners",
   "admin.partners.manageSubtitle": "Add partners and update logo/order.",
+  "admin.partners.name": "Partner name",
   "admin.partners.nameAr": "Name (Arabic)",
   "admin.partners.nameEn": "Name (English)",
   "admin.partners.logo": "Logo URL",
@@ -1549,10 +1564,12 @@ const en: Dictionary = {
   "admin.partners.addBtn": "Add",
   "admin.partners.linkBtn": "Link",
   "admin.partners.selectDeveloper": "Select partner",
+  "admin.partners.role": "Member role",
   "admin.partners.roleHint": "Member role (member / manager)",
   "admin.users.title": "User management",
   "admin.users.subtitle": "Update user roles",
   "admin.users.update": "Update role",
+  "admin.users.role": "Role",
   "admin.homepage.title": "Homepage content",
   "admin.homepage.subtitle": "Manage hero media, proof metrics, and featured projects ordering.",
   "admin.homepage.manage": "Homepage manager",
@@ -1589,8 +1606,10 @@ const en: Dictionary = {
   "admin.review.empty": "No submissions waiting for review.",
   "admin.review.diff.title": "Submission diff",
   "admin.review.diff.submitted": "Partner submission",
-  "admin.review.diff.final": "HRTAJ final",
+  "admin.review.diff.final": "{{brand}} final",
   "admin.review.missing": "Missing fields",
+  "admin.review.submissionStatus": "Submission status",
+  "admin.review.note.label": "Review notes",
   "admin.review.note.placeholder": "Write review notes",
 
   "reports.title": "Reports",
@@ -1665,11 +1684,11 @@ const en: Dictionary = {
   "upload.error": "Something went wrong while uploading.",
   "upload.path": "Path",
 
-  "about.kicker": "About HRTAJ",
-  "about.title": "HRTAJ real estate marketing in Egypt",
+  "about.kicker": "About {{brand}}",
+  "about.title": "{{brand}} real estate marketing in Egypt",
   "about.subtitle": "We turn raw inventory into publish-ready listings and manage a full lead journey from first inquiry to close.",
   "about.story.title": "An operating system for marketing",
-  "about.story.body": "HRTAJ blends internal data operations with partner inventory and a CRM that keeps follow-ups measurable.",
+  "about.story.body": "{{brand}} blends internal data operations with partner inventory and a CRM that keeps follow-ups measurable.",
   "about.values.data": "Data quality",
   "about.values.dataDesc": "Clean, verified unit data before publishing.",
   "about.values.partners": "Developer supply",
@@ -1679,7 +1698,7 @@ const en: Dictionary = {
   "about.values.trust": "Market trust",
   "about.values.trustDesc": "Professional brand experience for every client.",
   "about.media.title": "Company video",
-  "about.media.caption": "Add the official HRTAJ YouTube video.",
+  "about.media.caption": "Add the official {{brand}} YouTube video.",
   "about.media.placeholder": "Set NEXT_PUBLIC_ABOUT_VIDEO_ID to show a video.",
   "about.impact.title": "Operational impact",
   "about.impact.subtitle": "Quick metrics that summarize the platform.",
@@ -1691,7 +1710,7 @@ const en: Dictionary = {
   "about.impact.metric3.value": "+300",
 
   "careers.kicker": "Careers",
-  "careers.title": "Join the HRTAJ team",
+  "careers.title": "Join the {{brand}} team",
   "careers.subtitle": "We are hiring professionals who understand real estate data, campaigns, and client experience.",
   "careers.openings.title": "Open roles",
   "careers.openings.location": "Cairo • Full time",
@@ -1711,6 +1730,7 @@ const en: Dictionary = {
   "careers.admin.subtitle": "Review applicants and track each application.",
   "careers.admin.empty": "No applications yet.",
   "careers.admin.cv": "Resume",
+  "careers.admin.status": "Application status",
   "careers.status.new": "New",
   "careers.status.reviewing": "Reviewing",
   "careers.status.interview": "Interview",
@@ -1718,7 +1738,7 @@ const en: Dictionary = {
   "careers.status.rejected": "Rejected",
   "careers.status.hired": "Hired",
 
-  "crm.title": "HRTAJ CRM",
+  "crm.title": "{{brand}} CRM",
   "crm.subtitle": "A unified pipeline connecting marketing to sales execution.",
   "crm.stats.total": "Total leads",
   "crm.stats.duplicates": "Duplicate phones",
@@ -1827,16 +1847,16 @@ const en: Dictionary = {
 
   "footer.links": "Quick links",
   "footer.contact": "Contact",
-    "footer.facebook": "HRTAJ Facebook",
-    "footer.instagram": "إنستجرام {{brand}}",
-    "footer.linkedin": "HRTAJ LinkedIn",
-    "footer.tiktok": "HRTAJ TikTok",
-  "footer.whatsapp": "WhatsApp HRTAJ",
+    "footer.facebook": "{{brand}} Facebook",
+    "footer.instagram": "Instagram {{brand}}",
+    "footer.linkedin": "{{brand}} LinkedIn",
+    "footer.tiktok": "{{brand}} TikTok",
+  "footer.whatsapp": "WhatsApp {{brand}}",
   "footer.email": "hrtajrealestate@gmail.com",
   "footer.rights": "All rights reserved",
 
   "home.hero.quick": "Quick shortcuts",
-  "home.why.title": "Why HRTAJ",
+  "home.why.title": "Why {{brand}}",
   "home.why.subtitle": "Marketing discipline backed by data, operations, and measurable outcomes.",
   "home.why.item1.title": "Targeted campaigns",
   "home.why.item1.body": "Allocate budgets by area and intent to lift conversions.",
@@ -1852,7 +1872,7 @@ const en: Dictionary = {
   "home.process.step2.body": "Verify data, assign internal codes, then publish.",
   "home.process.step3.title": "Lead management",
   "home.process.step3.body": "Distribute requests and follow through to closure.",
-  "home.about.title": "About HRTAJ",
+  "home.about.title": "About {{brand}}",
   "home.about.subtitle": "An operating system for real estate marketing and brokerage in Egypt.",
   "home.about.cta": "Learn more",
   "home.about.card1.kicker": "Operations",
@@ -1877,7 +1897,7 @@ const en: Dictionary = {
   "print.title": "Print version",
   "print.share": "Share link",
 
-  "careers.perks.title": "Why join HRTAJ",
+  "careers.perks.title": "Why join {{brand}}",
   "careers.perks.item1": "Fast-growing team with continuous training.",
   "careers.perks.item2": "Clear growth path and mentorship.",
   "careers.perks.item3": "Modern ops and sales tools.",
@@ -1907,7 +1927,8 @@ export function createT(locale: Locale) {
   return (key: TranslationKey, params?: Record<string, string | number>) => {
     const template = DICTIONARY[locale][key] ?? DICTIONARY[DEFAULT_LOCALE][key] ?? key;
     const injected = {
-      brand: locale === "ar" ? getBrandArName() : BRAND_EN_NAME,
+      brand: locale === "ar" ? getBrandArName() : BRAND.en,
+      domain: BRAND.domain,
     };
     const mergedParams = params ? { ...injected, ...params } : injected;
     return Object.entries(mergedParams).reduce(
@@ -1966,3 +1987,4 @@ export function getSubmissionStatusLabelKey(value: string) {
   };
   return map[value] ?? "submission.status.draft";
 }
+

@@ -26,12 +26,12 @@ export function HelpModeProvider({ children }: { children: React.ReactNode }) {
   });
 
   useEffect(() => {
-  try {
-    window.localStorage.setItem(HELP_MODE_KEY, helpMode ? "1" : "0");
-  } catch {
-    // ignore
-  }
-  document.documentElement.setAttribute("data-help-mode", helpMode ? "1" : "0");
+    try {
+      window.localStorage.setItem(HELP_MODE_KEY, helpMode ? "1" : "0");
+    } catch {
+      // ignore
+    }
+    document.documentElement.setAttribute("data-help-mode", helpMode ? "1" : "0");
   }, [helpMode]);
 
   const value = useMemo(() => ({ helpMode, setHelpMode }), [helpMode]);
@@ -47,43 +47,48 @@ export function useHelpMode() {
   return ctx;
 }
 
-function HelpContent({ helpKey }: { helpKey: string }) {
+function applyLabel(text: string, label?: string) {
+  if (!label) return text;
+  return text.replace(/{{label}}/g, label);
+}
+
+function HelpContent({ helpKey, label }: { helpKey: string; label?: string }) {
   const entry = getFieldHelp(helpKey);
 
   return (
     <div className="space-y-3 text-sm">
       <div>
         <p className="text-xs font-semibold text-[var(--muted)]">عنوان الحقل</p>
-        <p>{entry.what_ar}</p>
+        <p>{applyLabel(entry.what_ar, label)}</p>
       </div>
       <div>
         <p className="text-xs font-semibold text-[var(--muted)]">الغرض من الحقل</p>
-        <p>{entry.purpose_ar}</p>
+        <p>{applyLabel(entry.purpose_ar, label)}</p>
       </div>
       <div>
         <p className="text-xs font-semibold text-[var(--muted)]">الفكرة الرئيسية</p>
-        <p>{entry.idea_ar}</p>
+        <p>{applyLabel(entry.idea_ar, label)}</p>
       </div>
       <div>
-        <p className="text-xs font-semibold text-[var(--muted)]">خطوات التوضيح</p>
+        <p className="text-xs font-semibold text-[var(--muted)]">خطوات الاستخدام</p>
         <ul className="list-disc space-y-1 ps-5">
           {entry.steps_ar.map((step) => (
-            <li key={step}>{step}</li>
+            <li key={step}>{applyLabel(step, label)}</li>
           ))}
         </ul>
       </div>
       {entry.example_ar ? (
         <div>
-      <p className="text-xs font-semibold text-[var(--muted)]">مثال</p>
-          <p>{entry.example_ar}</p>
+          <p className="text-xs font-semibold text-[var(--muted)]">{"\u0645\u062b\u0627\u0644"}</p>
+          <p>{applyLabel(entry.example_ar, label)}</p>
         </div>
       ) : null}
       {entry.rules_ar && entry.rules_ar.length > 0 ? (
         <div>
-          <p className="text-xs font-semibold text-[var(--muted)]">قواعد استخدام</p>
+          <p className="text-xs font-semibold text-[var(--muted)]">قواعد الاستخدام</p>
           <ul className="list-disc space-y-1 ps-5">
             {entry.rules_ar.map((rule) => (
-              <li key={rule}>{rule}</li>
+              <li key={rule}>{applyLabel(rule, label)}</li>
             ))}
           </ul>
         </div>
@@ -92,16 +97,17 @@ function HelpContent({ helpKey }: { helpKey: string }) {
   );
 }
 
-export function FieldHelpIcon({ helpKey }: { helpKey: string }) {
+export function FieldHelpIcon({ helpKey, label }: { helpKey: string; label?: string }) {
   const [open, setOpen] = useState(false);
   const entry = getFieldHelp(helpKey);
+  const resolvedLabel = label ?? entry.label_ar;
 
   return (
     <div className="relative inline-flex">
       <button
         type="button"
         className="field-help-icon"
-        aria-label={`?????? ?????: ${entry.label_ar}`}
+        aria-label={`\u0634\u0631\u062d \u0627\u0644\u062d\u0642\u0644: ${resolvedLabel}`}
         onClick={() => setOpen((prev) => !prev)}
       >
         i
@@ -111,13 +117,13 @@ export function FieldHelpIcon({ helpKey }: { helpKey: string }) {
           <button
             type="button"
             className="field-help-backdrop"
-            aria-label="????? ????????"
+            aria-label="\u0625\u063a\u0644\u0627\u0642 \u0627\u0644\u0634\u0631\u062d"
             onClick={() => setOpen(false)}
           />
           <div className="field-help-popover">
             <div className="space-y-2">
-              <p className="text-sm font-semibold">{entry.label_ar}</p>
-              <HelpContent helpKey={helpKey} />
+              <p className="text-sm font-semibold">{resolvedLabel}</p>
+              <HelpContent helpKey={helpKey} label={label} />
             </div>
           </div>
         </>
@@ -126,14 +132,15 @@ export function FieldHelpIcon({ helpKey }: { helpKey: string }) {
   );
 }
 
-export function FieldHelpBlock({ helpKey }: { helpKey: string }) {
+export function FieldHelpBlock({ helpKey, label }: { helpKey: string; label?: string }) {
   const { helpMode } = useHelpMode();
   if (!helpMode) return null;
   const entry = getFieldHelp(helpKey);
+  const resolvedLabel = label ?? entry.label_ar;
   return (
     <Card className="field-help-block">
-      <p className="text-sm font-semibold">{entry.label_ar}</p>
-      <HelpContent helpKey={helpKey} />
+      <p className="text-sm font-semibold">{resolvedLabel}</p>
+      <HelpContent helpKey={helpKey} label={label} />
     </Card>
   );
 }
@@ -153,12 +160,12 @@ export function FieldWrapper({
 }) {
   return (
     <div className={`space-y-2 ${className}`}>
-      <div className={`flex items-center gap-2 ${labelClassName}`}>
+      <div className={`flex flex-wrap items-center gap-2 ${labelClassName}`}>
         <label className="text-sm text-[var(--muted)]">{label}</label>
-        <FieldHelpIcon helpKey={helpKey} />
+        <FieldHelpIcon helpKey={helpKey} label={label} />
       </div>
       {children}
-      <FieldHelpBlock helpKey={helpKey} />
+      <FieldHelpBlock helpKey={helpKey} label={label} />
     </div>
   );
 }
@@ -245,9 +252,9 @@ export function FieldCheckbox({
       <label className="flex items-center gap-2 text-sm text-[var(--muted)]">
         <input type="checkbox" {...props} />
         <span>{label}</span>
-        <FieldHelpIcon helpKey={helpKey} />
+        <FieldHelpIcon helpKey={helpKey} label={label} />
       </label>
-      <FieldHelpBlock helpKey={helpKey} />
+      <FieldHelpBlock helpKey={helpKey} label={label} />
     </div>
   );
 }

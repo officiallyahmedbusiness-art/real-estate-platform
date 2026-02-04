@@ -4,7 +4,8 @@ import { requireRole } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Button, Card, Input, Section, Badge, Textarea } from "@/components/ui";
+import { Button, Card, Section, Badge } from "@/components/ui";
+import { FieldInput, FieldTextarea } from "@/components/FieldHelp";
 import { isUuid } from "@/lib/validators";
 import { submitProjectAction, updateProjectAction } from "../../actions";
 import { createT, getSubmissionStatusLabelKey } from "@/lib/i18n";
@@ -68,53 +69,69 @@ export default async function DeveloperProjectEditPage({
           <Card>
             <form action={updateProjectAction} className="grid gap-4 md:grid-cols-3">
               <input type="hidden" name="project_id" value={project.id} />
-              <Input
+              <FieldInput
                 name="title_ar"
+                label={t("submission.field.title_ar")}
+                helpKey="developer.project.title_ar"
                 defaultValue={project.title_ar ?? ""}
                 placeholder={t("submission.field.title_ar")}
                 required
                 disabled={!canEdit}
               />
-              <Input
+              <FieldInput
                 name="title_en"
+                label={t("submission.field.title_en")}
+                helpKey="developer.project.title_en"
                 defaultValue={project.title_en ?? ""}
                 placeholder={t("submission.field.title_en")}
                 disabled={!canEdit}
               />
-              <Input
+              <FieldInput
                 name="city"
+                label={t("project.form.city")}
+                helpKey="developer.project.city"
                 defaultValue={project.city ?? ""}
                 placeholder={t("project.form.city")}
                 required
                 disabled={!canEdit}
               />
-              <Input
+              <FieldInput
                 name="area"
+                label={t("project.form.area")}
+                helpKey="developer.project.area"
                 defaultValue={project.area ?? ""}
                 placeholder={t("project.form.area")}
                 disabled={!canEdit}
               />
-              <Input
+              <FieldInput
                 name="address"
+                label={t("project.form.address")}
+                helpKey="developer.project.address"
                 defaultValue={project.address ?? ""}
                 placeholder={t("project.form.address")}
                 disabled={!canEdit}
               />
-              <Input
+              <FieldInput
                 name="project_code"
+                label={t("submission.field.project_code")}
+                helpKey="developer.project.project_code"
                 defaultValue={project.project_code ?? ""}
                 placeholder={t("submission.field.project_code")}
                 disabled={!isAdmin}
               />
               <div className="md:col-span-3 grid gap-3 md:grid-cols-2">
-                <Textarea
+                <FieldTextarea
                   name="description_ar"
+                  label={t("submission.field.desc_ar")}
+                  helpKey="developer.project.description_ar"
                   defaultValue={project.description_ar ?? ""}
                   placeholder={t("submission.field.desc_ar")}
                   disabled={!canEdit}
                 />
-                <Textarea
+                <FieldTextarea
                   name="description_en"
+                  label={t("submission.field.desc_en")}
+                  helpKey="developer.project.description_en"
                   defaultValue={project.description_en ?? ""}
                   placeholder={t("submission.field.desc_en")}
                   disabled={!canEdit}

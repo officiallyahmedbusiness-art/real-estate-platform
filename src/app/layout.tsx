@@ -2,10 +2,10 @@ import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
 import { Cairo, Geist, Geist_Mono, Noto_Sans_Arabic } from "next/font/google";
 import "./globals.css";
-import { BrandGlyphFallback } from "@/components/BrandGlyphFallback";
 import { HelpModeProvider } from "@/components/FieldHelp";
 import { DebugCursorInspector } from "@/components/DebugCursorInspector";
 import { ThemeScript } from "@/components/ThemeScript";
+import { HeaderScroll } from "@/components/HeaderScroll";
 import { createT } from "@/lib/i18n";
 import { getServerDir, getServerLocale } from "@/lib/i18n.server";
 import { THEME_COOKIE, normalizeTheme, themeToColorScheme } from "@/lib/theme";
@@ -43,6 +43,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  viewportFit: "cover",
 };
 
 export default async function RootLayout({
@@ -72,7 +73,7 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${cairo.variable} ${notoSansArabic.variable} antialiased`}
       >
         <HelpModeProvider>
-          <BrandGlyphFallback />
+          <HeaderScroll />
           {children}
           {showDebugCursor ? <DebugCursorInspector /> : null}
         </HelpModeProvider>

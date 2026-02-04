@@ -17,7 +17,7 @@ export async function SiteFooter({ showFloating = false }: { showFloating?: bool
   return (
     <footer
       className={`border-t border-[var(--border)] bg-[var(--surface)] ${
-        showFloating ? "pb-20 sm:pb-24" : ""
+        showFloating ? "pb-[calc(5rem+var(--safe-bottom))] sm:pb-[calc(6rem+var(--safe-bottom))]" : ""
       }`}
     >
       <div className="mx-auto grid w-full max-w-7xl gap-5 px-4 py-6 text-xs text-[var(--muted)] sm:gap-8 sm:px-6 sm:py-10 sm:text-sm lg:px-8 md:grid-cols-[1.4fr,1fr,1fr]">
@@ -84,7 +84,7 @@ export async function SiteFooter({ showFloating = false }: { showFloating?: bool
           href={whatsappLink}
           target="_blank"
           rel="noreferrer"
-          className="fixed bottom-4 right-4 z-50 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-xs font-semibold text-white shadow-[var(--shadow-strong)] transition hover:-translate-y-1 sm:bottom-6 sm:right-6"
+          className="floating-whatsapp fixed z-50 inline-flex items-center gap-2 rounded-full bg-[#25D366] px-4 py-3 text-xs font-semibold text-white shadow-[var(--shadow-strong)] transition hover:-translate-y-1"
         >
           <svg
             aria-hidden="true"

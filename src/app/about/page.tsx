@@ -77,7 +77,7 @@ export default async function AboutPage() {
                     <iframe
                       className="h-full w-full"
                       src={`https://www.youtube.com/embed/${videoId}`}
-                      title="HRTAJ"
+                      title={t("brand.name")}
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                       allowFullScreen
                     />

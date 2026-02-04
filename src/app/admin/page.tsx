@@ -3,7 +3,8 @@ import { requireRole } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Badge, Button, Card, Input, Select, Section, Stat } from "@/components/ui";
+import { Badge, Button, Card, Section, Stat } from "@/components/ui";
+import { FieldInput, FieldSelect } from "@/components/FieldHelp";
 import { LEAD_STATUS_OPTIONS, SUBMISSION_STATUS_OPTIONS } from "@/lib/constants";
 import { createT, getLeadStatusLabelKey, getSubmissionStatusLabelKey } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
@@ -196,13 +197,19 @@ export default async function AdminPage() {
                       <p className="text-lg font-semibold">{listing.title}</p>
                       <p className="text-sm text-[var(--muted)]">{listing.city}</p>
                     </div>
-                    <form action={updateListingStatusAction} className="flex items-center gap-3">
+                    <form action={updateListingStatusAction} className="flex flex-wrap items-end gap-3">
                       <input type="hidden" name="listing_id" value={listing.id} />
-                      <Select name="status" defaultValue="draft" className="min-w-[140px]">
+                      <FieldSelect
+                        label={t("admin.approvals.status")}
+                        helpKey="admin.approvals.status"
+                        name="status"
+                        defaultValue="draft"
+                        wrapperClassName="min-w-[180px]"
+                      >
                         <option value="draft">{t("status.draft")}</option>
                         <option value="published">{t("status.published")}</option>
                         <option value="archived">{t("status.archived")}</option>
-                      </Select>
+                      </FieldSelect>
                       <Button size="sm" variant="secondary" type="submit">
                         {t("admin.approvals.update")}
                       </Button>
@@ -243,14 +250,24 @@ export default async function AdminPage() {
                     </div>
                     <form action={updateProjectSubmissionStatusAction} className="grid gap-3 md:grid-cols-[1fr,1fr]">
                       <input type="hidden" name="project_id" value={project.id} />
-                      <Select name="submission_status" defaultValue={project.submission_status ?? "submitted"}>
+                      <FieldSelect
+                        label={t("admin.review.submissionStatus")}
+                        helpKey="admin.review.submission_status"
+                        name="submission_status"
+                        defaultValue={project.submission_status ?? "submitted"}
+                      >
                         {reviewStatusOptions.map((option) => (
                           <option key={option.value} value={option.value}>
                             {t(option.labelKey)}
                           </option>
                         ))}
-                      </Select>
-                      <Input name="note" placeholder={t("admin.review.note.placeholder")} />
+                      </FieldSelect>
+                      <FieldInput
+                        label={t("admin.review.note.label")}
+                        helpKey="admin.review.note"
+                        name="note"
+                        placeholder={t("admin.review.note.placeholder")}
+                      />
                       <div className="md:col-span-2 flex justify-end">
                         <Button size="sm" variant="secondary" type="submit">
                           {t("admin.approvals.update")}
@@ -283,14 +300,24 @@ export default async function AdminPage() {
                     </div>
                     <form action={updateListingSubmissionStatusAction} className="grid gap-3 md:grid-cols-[1fr,1fr]">
                       <input type="hidden" name="listing_id" value={listing.id} />
-                      <Select name="submission_status" defaultValue={listing.submission_status ?? "submitted"}>
+                      <FieldSelect
+                        label={t("admin.review.submissionStatus")}
+                        helpKey="admin.review.submission_status"
+                        name="submission_status"
+                        defaultValue={listing.submission_status ?? "submitted"}
+                      >
                         {reviewStatusOptions.map((option) => (
                           <option key={option.value} value={option.value}>
                             {t(option.labelKey)}
                           </option>
                         ))}
-                      </Select>
-                      <Input name="note" placeholder={t("admin.review.note.placeholder")} />
+                      </FieldSelect>
+                      <FieldInput
+                        label={t("admin.review.note.label")}
+                        helpKey="admin.review.note"
+                        name="note"
+                        placeholder={t("admin.review.note.placeholder")}
+                      />
                       <div className="md:col-span-2 flex justify-end">
                         <Button size="sm" variant="secondary" type="submit">
                           {t("admin.approvals.update")}
@@ -345,37 +372,55 @@ export default async function AdminPage() {
                     {isOwner ? (
                       <>
                         <div className="grid gap-3 md:grid-cols-[1fr,1fr]">
-                          <form action={updateLeadStatusAction} className="flex flex-wrap items-center gap-3">
+                          <form action={updateLeadStatusAction} className="flex flex-wrap items-end gap-3">
                             <input type="hidden" name="lead_id" value={lead.id} />
-                            <Select name="status" defaultValue={lead.status ?? "new"}>
+                            <FieldSelect
+                              label={t("crm.filter.status")}
+                              helpKey="crm.lead.status"
+                              name="status"
+                              defaultValue={lead.status ?? "new"}
+                              wrapperClassName="min-w-[180px]"
+                            >
                               {LEAD_STATUS_OPTIONS.map((option) => (
                                 <option key={option.value} value={option.value}>
                                   {t(option.labelKey)}
                                 </option>
                               ))}
-                            </Select>
+                            </FieldSelect>
                             <Button size="sm" variant="secondary" type="submit">
                               {t("developer.leads.update")}
                             </Button>
                           </form>
-                          <form action={assignLeadAction} className="flex flex-wrap items-center gap-3">
+                          <form action={assignLeadAction} className="flex flex-wrap items-end gap-3">
                             <input type="hidden" name="lead_id" value={lead.id} />
-                            <Select name="assigned_to" defaultValue={lead.assigned_to ?? ""}>
+                            <FieldSelect
+                              label={t("crm.filter.assigned")}
+                              helpKey="crm.lead.assigned_to"
+                              name="assigned_to"
+                              defaultValue={lead.assigned_to ?? ""}
+                              wrapperClassName="min-w-[220px]"
+                            >
                               <option value="">{t("admin.leads.unassigned")}</option>
                               {profiles.map((profile) => (
                                 <option key={profile.id} value={profile.id}>
                                   {profile.full_name ?? profile.id} ({formatRoleLabel(profile.role)})
                                 </option>
                               ))}
-                            </Select>
+                            </FieldSelect>
                             <Button size="sm" variant="secondary" type="submit">
                               {t("admin.leads.assign")}
                             </Button>
                           </form>
                         </div>
-                        <form action={addLeadNoteAction} className="flex flex-wrap items-center gap-3">
+                        <form action={addLeadNoteAction} className="flex flex-wrap items-end gap-3">
                           <input type="hidden" name="lead_id" value={lead.id} />
-                          <Input name="note" placeholder={t("admin.leads.addNote")} className="flex-1" />
+                          <FieldInput
+                            label={t("crm.leads.addNote")}
+                            helpKey="crm.lead.note"
+                            name="note"
+                            placeholder={t("admin.leads.addNote")}
+                            wrapperClassName="flex-1 min-w-[240px]"
+                          />
                           <Button size="sm" variant="secondary" type="submit">
                             {t("admin.leads.addNote")}
                           </Button>
@@ -399,23 +444,45 @@ export default async function AdminPage() {
               <Card>
                 <h3 className="text-lg font-semibold">{t("admin.partners.add")}</h3>
                 <form action={createDeveloperAction} className="mt-3 space-y-3">
-                  <Input name="name" placeholder={t("admin.partners.add")} required />
+                  <FieldInput
+                    label={t("admin.partners.name")}
+                    helpKey="admin.partners.name"
+                    name="name"
+                    placeholder={t("admin.partners.add")}
+                    required
+                  />
                   <Button type="submit">{t("admin.partners.addBtn")}</Button>
                 </form>
               </Card>
               <Card>
                 <h3 className="text-lg font-semibold">{t("admin.partners.link")}</h3>
                 <form action={addDeveloperMemberAction} className="mt-3 space-y-3">
-                  <Select name="developer_id" defaultValue="">
+                  <FieldSelect
+                    label={t("admin.partners.selectDeveloper")}
+                    helpKey="admin.partners.developer_id"
+                    name="developer_id"
+                    defaultValue=""
+                  >
                     <option value="">{t("admin.partners.selectDeveloper")}</option>
                     {developers.map((dev) => (
                       <option key={dev.id} value={dev.id}>
                         {dev.name}
                       </option>
                     ))}
-                  </Select>
-                  <Input name="user_id" placeholder={t("admin.partners.userId")} required />
-                  <Input name="role" placeholder={t("admin.partners.roleHint")} />
+                  </FieldSelect>
+                  <FieldInput
+                    label={t("admin.partners.userId")}
+                    helpKey="admin.partners.user_id"
+                    name="user_id"
+                    placeholder={t("admin.partners.userId")}
+                    required
+                  />
+                  <FieldInput
+                    label={t("admin.partners.role")}
+                    helpKey="admin.partners.role"
+                    name="role"
+                    placeholder={t("admin.partners.roleHint")}
+                  />
                   <Button type="submit">{t("admin.partners.linkBtn")}</Button>
                 </form>
               </Card>
@@ -444,18 +511,21 @@ export default async function AdminPage() {
                       <p className="text-xs text-[var(--muted)]">{profile.email ?? "-"}</p>
                       <p className="text-xs text-[var(--muted)]">{profile.phone ?? "-"}</p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <Select
+                    <div className="flex items-end gap-3">
+                      <FieldSelect
+                        label={t("admin.users.role")}
+                        helpKey="admin.users.role"
                         name="role"
                         defaultValue={profile.role}
                         disabled={profile.role === "owner"}
+                        wrapperClassName="min-w-[180px]"
                       >
                         <option value="developer">{t("role.developer")}</option>
                         <option value="staff">{t("role.staff")}</option>
                         <option value="ops">{t("role.ops")}</option>
                         <option value="agent">{t("role.agent")}</option>
                         <option value="admin">{t("role.admin")}</option>
-                      </Select>
+                      </FieldSelect>
                       <Button
                         size="sm"
                         variant="secondary"

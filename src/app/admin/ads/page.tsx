@@ -3,7 +3,8 @@ import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { requireRole } from "@/lib/auth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Badge, Button, Card, Input, Section, Select, Textarea } from "@/components/ui";
+import { Badge, Button, Card, Section } from "@/components/ui";
+import { FieldInput, FieldSelect, FieldTextarea } from "@/components/FieldHelp";
 import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 import {
@@ -96,21 +97,62 @@ export default async function AdminAdsPage() {
 
                   <form action={updateAdCampaignAction} className="grid gap-3 md:grid-cols-2">
                     <input type="hidden" name="id" value={campaign.id} />
-                    <Input name="title_ar" defaultValue={campaign.title_ar ?? ""} />
-                    <Input name="title_en" defaultValue={campaign.title_en ?? ""} />
-                    <Textarea name="body_ar" defaultValue={campaign.body_ar ?? ""} />
-                    <Textarea name="body_en" defaultValue={campaign.body_en ?? ""} />
-                    <Input name="cta_label_ar" defaultValue={campaign.cta_label_ar ?? ""} />
-                    <Input name="cta_label_en" defaultValue={campaign.cta_label_en ?? ""} />
-                    <Input name="cta_url" defaultValue={campaign.cta_url ?? ""} className="md:col-span-2" />
-                    <Select name="status" defaultValue={campaign.status}>
+                    <FieldInput
+                      name="title_ar"
+                      label={t("developer.ads.titleAr")}
+                      helpKey="admin.ads.title_ar"
+                      defaultValue={campaign.title_ar ?? ""}
+                    />
+                    <FieldInput
+                      name="title_en"
+                      label={t("developer.ads.titleEn")}
+                      helpKey="admin.ads.title_en"
+                      defaultValue={campaign.title_en ?? ""}
+                    />
+                    <FieldTextarea
+                      name="body_ar"
+                      label={t("developer.ads.bodyAr")}
+                      helpKey="admin.ads.body_ar"
+                      defaultValue={campaign.body_ar ?? ""}
+                    />
+                    <FieldTextarea
+                      name="body_en"
+                      label={t("developer.ads.bodyEn")}
+                      helpKey="admin.ads.body_en"
+                      defaultValue={campaign.body_en ?? ""}
+                    />
+                    <FieldInput
+                      name="cta_label_ar"
+                      label={t("developer.ads.ctaAr")}
+                      helpKey="admin.ads.cta_label_ar"
+                      defaultValue={campaign.cta_label_ar ?? ""}
+                    />
+                    <FieldInput
+                      name="cta_label_en"
+                      label={t("developer.ads.ctaEn")}
+                      helpKey="admin.ads.cta_label_en"
+                      defaultValue={campaign.cta_label_en ?? ""}
+                    />
+                    <FieldInput
+                      name="cta_url"
+                      label={t("developer.ads.ctaUrl")}
+                      helpKey="admin.ads.cta_url"
+                      defaultValue={campaign.cta_url ?? ""}
+                      wrapperClassName="md:col-span-2"
+                    />
+                    <FieldSelect
+                      name="status"
+                      label={t("ads.status.label")}
+                      helpKey="admin.ads.status"
+                      defaultValue={campaign.status}
+                    >
                       <option value="draft">{t("ads.status.draft")}</option>
                       <option value="submitted">{t("ads.status.submitted")}</option>
                       <option value="needs_changes">{t("ads.status.needs_changes")}</option>
                       <option value="approved">{t("ads.status.approved")}</option>
                       <option value="published">{t("ads.status.published")}</option>
                       <option value="archived">{t("ads.status.archived")}</option>
-                    </Select>
+                    </FieldSelect>
                     <Button type="submit" size="sm" variant="secondary">
                       {t("admin.ads.save")}
                     </Button>

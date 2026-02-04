@@ -81,9 +81,9 @@ export async function SiteHeader() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--surface)]/90 backdrop-blur">
+    <header className="site-header sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--surface)]/90 backdrop-blur">
       <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-3 py-2 sm:py-3 lg:py-4">
+        <div className="site-header-inner flex items-center justify-between gap-3 py-2 sm:py-3 lg:py-4">
           <div className="flex items-center gap-3">
             <Link href="/">
               <Logo name={t("brand.name")} imageClassName="h-7 sm:h-9 md:h-12" />
@@ -124,12 +124,12 @@ export async function SiteHeader() {
             ) : null}
           </div>
 
-          <details className="group relative md:hidden">
-            <summary className="flex cursor-pointer items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--text)] shadow-[var(--shadow)]">
+          <details className="group relative md:hidden mobile-menu-root">
+            <summary className="mobile-menu-trigger flex cursor-pointer items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs font-semibold text-[var(--text)] shadow-[var(--shadow)]">
               {t("nav.menu")}
               <span className="transition group-open:rotate-180">v</span>
             </summary>
-            <div className="absolute right-0 mt-2 w-[min(90vw,360px)] rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 shadow-[var(--shadow)]">
+            <div className="mobile-menu-panel absolute right-0 mt-2 w-[min(90vw,360px)] rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 shadow-[var(--shadow)]">
               <div className="grid gap-2 text-sm text-[var(--muted)]">
                 <Link href="/listings" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
                   {t("nav.listings")}
@@ -196,6 +196,7 @@ export async function SiteHeader() {
                 <div className="flex items-center gap-2 pt-2">
                   <LanguageSwitcher locale={locale} labels={langLabels} />
                   <ThemeSwitcher labels={themeLabels} />
+                  <HelpModeToggle />
                 </div>
               </div>
             </div>

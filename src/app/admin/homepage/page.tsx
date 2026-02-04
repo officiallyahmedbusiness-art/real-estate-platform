@@ -3,7 +3,8 @@ import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { requireRole } from "@/lib/auth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Badge, Button, Card, Input, Section, Select } from "@/components/ui";
+import { Badge, Button, Card, Section } from "@/components/ui";
+import { FieldCheckbox, FieldInput, FieldSelect } from "@/components/FieldHelp";
 import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 import {
@@ -63,18 +64,50 @@ export default async function AdminHomepagePage() {
         <Section title={t("admin.homepage.media.title")} subtitle={t("admin.homepage.media.subtitle")}>
           <Card className="space-y-4">
             <form action={createHeroMediaAction} className="grid gap-3 md:grid-cols-6">
-              <Select name="media_type" defaultValue="image">
+              <FieldSelect
+                name="media_type"
+                label={t("admin.homepage.media.type")}
+                helpKey="admin.homepage.media.type"
+                defaultValue="image"
+              >
                 <option value="image">{t("admin.homepage.media.image")}</option>
                 <option value="video">{t("admin.homepage.media.video")}</option>
-              </Select>
-              <Input name="url" placeholder={t("admin.homepage.media.url")} className="md:col-span-2" required />
-              <Input name="poster_url" placeholder={t("admin.homepage.media.poster")} className="md:col-span-2" />
-              <Input name="sort_order" placeholder={t("admin.homepage.order")} type="number" />
-              <Input name="title" placeholder={t("admin.homepage.media.titleField")} className="md:col-span-2" />
-              <label className="flex items-center gap-2 text-sm md:col-span-2">
-                <input type="checkbox" name="is_published" />
-                {t("admin.homepage.published")}
-              </label>
+              </FieldSelect>
+              <FieldInput
+                name="url"
+                label={t("admin.homepage.media.url")}
+                helpKey="admin.homepage.media.url"
+                placeholder={t("admin.homepage.media.url")}
+                wrapperClassName="md:col-span-2"
+                required
+              />
+              <FieldInput
+                name="poster_url"
+                label={t("admin.homepage.media.poster")}
+                helpKey="admin.homepage.media.poster"
+                placeholder={t("admin.homepage.media.poster")}
+                wrapperClassName="md:col-span-2"
+              />
+              <FieldInput
+                name="sort_order"
+                label={t("admin.homepage.order")}
+                helpKey="admin.homepage.media.sort_order"
+                placeholder={t("admin.homepage.order")}
+                type="number"
+              />
+              <FieldInput
+                name="title"
+                label={t("admin.homepage.media.titleField")}
+                helpKey="admin.homepage.media.title"
+                placeholder={t("admin.homepage.media.titleField")}
+                wrapperClassName="md:col-span-2"
+              />
+              <FieldCheckbox
+                name="is_published"
+                label={t("admin.homepage.published")}
+                helpKey="admin.homepage.media.is_published"
+                wrapperClassName="md:col-span-2"
+              />
               <Button type="submit" size="sm" className="md:col-span-2">
                 {t("admin.homepage.add")}
               </Button>
@@ -92,18 +125,50 @@ export default async function AdminHomepagePage() {
                 </div>
                 <form action={updateHeroMediaAction} className="grid gap-3 md:grid-cols-6">
                   <input type="hidden" name="id" value={item.id} />
-                  <Select name="media_type" defaultValue={item.media_type}>
+                  <FieldSelect
+                    name="media_type"
+                    label={t("admin.homepage.media.type")}
+                    helpKey="admin.homepage.media.type"
+                    defaultValue={item.media_type}
+                  >
                     <option value="image">{t("admin.homepage.media.image")}</option>
                     <option value="video">{t("admin.homepage.media.video")}</option>
-                  </Select>
-                  <Input name="url" defaultValue={item.url} className="md:col-span-2" />
-                  <Input name="poster_url" defaultValue={item.poster_url ?? ""} className="md:col-span-2" />
-                  <Input name="sort_order" defaultValue={item.sort_order} type="number" />
-                  <Input name="title" defaultValue={item.title ?? ""} className="md:col-span-2" />
-                  <label className="flex items-center gap-2 text-sm md:col-span-2">
-                    <input type="checkbox" name="is_published" defaultChecked={item.is_published} />
-                    {t("admin.homepage.published")}
-                  </label>
+                  </FieldSelect>
+                  <FieldInput
+                    name="url"
+                    label={t("admin.homepage.media.url")}
+                    helpKey="admin.homepage.media.url"
+                    defaultValue={item.url}
+                    wrapperClassName="md:col-span-2"
+                  />
+                  <FieldInput
+                    name="poster_url"
+                    label={t("admin.homepage.media.poster")}
+                    helpKey="admin.homepage.media.poster"
+                    defaultValue={item.poster_url ?? ""}
+                    wrapperClassName="md:col-span-2"
+                  />
+                  <FieldInput
+                    name="sort_order"
+                    label={t("admin.homepage.order")}
+                    helpKey="admin.homepage.media.sort_order"
+                    defaultValue={item.sort_order}
+                    type="number"
+                  />
+                  <FieldInput
+                    name="title"
+                    label={t("admin.homepage.media.titleField")}
+                    helpKey="admin.homepage.media.title"
+                    defaultValue={item.title ?? ""}
+                    wrapperClassName="md:col-span-2"
+                  />
+                  <FieldCheckbox
+                    name="is_published"
+                    label={t("admin.homepage.published")}
+                    helpKey="admin.homepage.media.is_published"
+                    defaultChecked={item.is_published}
+                    wrapperClassName="md:col-span-2"
+                  />
                   <div className="flex gap-3 md:col-span-2">
                     <Button type="submit" size="sm" variant="secondary">
                       {t("admin.homepage.save")}
@@ -121,14 +186,36 @@ export default async function AdminHomepagePage() {
         <Section title={t("admin.homepage.metrics.title")} subtitle={t("admin.homepage.metrics.subtitle")}>
           <Card className="space-y-4">
             <form action={createMetricAction} className="grid gap-3 md:grid-cols-6">
-              <Input name="label_ar" placeholder={t("admin.homepage.metrics.labelAr")} />
-              <Input name="label_en" placeholder={t("admin.homepage.metrics.labelEn")} />
-              <Input name="value" placeholder={t("admin.homepage.metrics.value")} />
-              <Input name="sort_order" placeholder={t("admin.homepage.order")} type="number" />
-              <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" name="is_published" />
-                {t("admin.homepage.published")}
-              </label>
+              <FieldInput
+                name="label_ar"
+                label={t("admin.homepage.metrics.labelAr")}
+                helpKey="admin.homepage.metrics.label_ar"
+                placeholder={t("admin.homepage.metrics.labelAr")}
+              />
+              <FieldInput
+                name="label_en"
+                label={t("admin.homepage.metrics.labelEn")}
+                helpKey="admin.homepage.metrics.label_en"
+                placeholder={t("admin.homepage.metrics.labelEn")}
+              />
+              <FieldInput
+                name="value"
+                label={t("admin.homepage.metrics.value")}
+                helpKey="admin.homepage.metrics.value"
+                placeholder={t("admin.homepage.metrics.value")}
+              />
+              <FieldInput
+                name="sort_order"
+                label={t("admin.homepage.order")}
+                helpKey="admin.homepage.metrics.sort_order"
+                placeholder={t("admin.homepage.order")}
+                type="number"
+              />
+              <FieldCheckbox
+                name="is_published"
+                label={t("admin.homepage.published")}
+                helpKey="admin.homepage.metrics.is_published"
+              />
               <Button type="submit" size="sm">
                 {t("admin.homepage.add")}
               </Button>
@@ -139,14 +226,37 @@ export default async function AdminHomepagePage() {
               <Card key={metric.id}>
                 <form action={updateMetricAction} className="grid gap-3 md:grid-cols-6">
                   <input type="hidden" name="id" value={metric.id} />
-                  <Input name="label_ar" defaultValue={metric.label_ar} />
-                  <Input name="label_en" defaultValue={metric.label_en} />
-                  <Input name="value" defaultValue={metric.value} />
-                  <Input name="sort_order" defaultValue={metric.sort_order} type="number" />
-                  <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" name="is_published" defaultChecked={metric.is_published} />
-                    {t("admin.homepage.published")}
-                  </label>
+                  <FieldInput
+                    name="label_ar"
+                    label={t("admin.homepage.metrics.labelAr")}
+                    helpKey="admin.homepage.metrics.label_ar"
+                    defaultValue={metric.label_ar}
+                  />
+                  <FieldInput
+                    name="label_en"
+                    label={t("admin.homepage.metrics.labelEn")}
+                    helpKey="admin.homepage.metrics.label_en"
+                    defaultValue={metric.label_en}
+                  />
+                  <FieldInput
+                    name="value"
+                    label={t("admin.homepage.metrics.value")}
+                    helpKey="admin.homepage.metrics.value"
+                    defaultValue={metric.value}
+                  />
+                  <FieldInput
+                    name="sort_order"
+                    label={t("admin.homepage.order")}
+                    helpKey="admin.homepage.metrics.sort_order"
+                    defaultValue={metric.sort_order}
+                    type="number"
+                  />
+                  <FieldCheckbox
+                    name="is_published"
+                    label={t("admin.homepage.published")}
+                    helpKey="admin.homepage.metrics.is_published"
+                    defaultChecked={metric.is_published}
+                  />
                   <div className="flex gap-3">
                     <Button type="submit" size="sm" variant="secondary">
                       {t("admin.homepage.save")}
@@ -164,19 +274,70 @@ export default async function AdminHomepagePage() {
         <Section title={t("admin.homepage.projects.title")} subtitle={t("admin.homepage.projects.subtitle")}>
           <Card className="space-y-4">
             <form action={createFeaturedProjectAction} className="grid gap-3 md:grid-cols-6">
-              <Input name="title_ar" placeholder={t("admin.homepage.projects.titleAr")} />
-              <Input name="title_en" placeholder={t("admin.homepage.projects.titleEn")} />
-              <Input name="location_ar" placeholder={t("admin.homepage.projects.locationAr")} />
-              <Input name="location_en" placeholder={t("admin.homepage.projects.locationEn")} />
-              <Input name="starting_price" placeholder={t("admin.homepage.projects.price")} type="number" />
-              <Input name="currency" placeholder={t("admin.homepage.projects.currency")} defaultValue="EGP" />
-              <Input name="image_url" placeholder={t("admin.homepage.projects.image")} className="md:col-span-2" />
-              <Input name="cta_url" placeholder={t("admin.homepage.projects.cta")} className="md:col-span-2" />
-              <Input name="sort_order" placeholder={t("admin.homepage.order")} type="number" />
-              <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" name="is_published" />
-                {t("admin.homepage.published")}
-              </label>
+              <FieldInput
+                name="title_ar"
+                label={t("admin.homepage.projects.titleAr")}
+                helpKey="admin.homepage.projects.title_ar"
+                placeholder={t("admin.homepage.projects.titleAr")}
+              />
+              <FieldInput
+                name="title_en"
+                label={t("admin.homepage.projects.titleEn")}
+                helpKey="admin.homepage.projects.title_en"
+                placeholder={t("admin.homepage.projects.titleEn")}
+              />
+              <FieldInput
+                name="location_ar"
+                label={t("admin.homepage.projects.locationAr")}
+                helpKey="admin.homepage.projects.location_ar"
+                placeholder={t("admin.homepage.projects.locationAr")}
+              />
+              <FieldInput
+                name="location_en"
+                label={t("admin.homepage.projects.locationEn")}
+                helpKey="admin.homepage.projects.location_en"
+                placeholder={t("admin.homepage.projects.locationEn")}
+              />
+              <FieldInput
+                name="starting_price"
+                label={t("admin.homepage.projects.price")}
+                helpKey="admin.homepage.projects.starting_price"
+                placeholder={t("admin.homepage.projects.price")}
+                type="number"
+              />
+              <FieldInput
+                name="currency"
+                label={t("admin.homepage.projects.currency")}
+                helpKey="admin.homepage.projects.currency"
+                placeholder={t("admin.homepage.projects.currency")}
+                defaultValue="EGP"
+              />
+              <FieldInput
+                name="image_url"
+                label={t("admin.homepage.projects.image")}
+                helpKey="admin.homepage.projects.image_url"
+                placeholder={t("admin.homepage.projects.image")}
+                wrapperClassName="md:col-span-2"
+              />
+              <FieldInput
+                name="cta_url"
+                label={t("admin.homepage.projects.cta")}
+                helpKey="admin.homepage.projects.cta_url"
+                placeholder={t("admin.homepage.projects.cta")}
+                wrapperClassName="md:col-span-2"
+              />
+              <FieldInput
+                name="sort_order"
+                label={t("admin.homepage.order")}
+                helpKey="admin.homepage.projects.sort_order"
+                placeholder={t("admin.homepage.order")}
+                type="number"
+              />
+              <FieldCheckbox
+                name="is_published"
+                label={t("admin.homepage.published")}
+                helpKey="admin.homepage.projects.is_published"
+              />
               <Button type="submit" size="sm">
                 {t("admin.homepage.add")}
               </Button>
@@ -187,19 +348,70 @@ export default async function AdminHomepagePage() {
               <Card key={project.id}>
                 <form action={updateFeaturedProjectAction} className="grid gap-3 md:grid-cols-6">
                   <input type="hidden" name="id" value={project.id} />
-                  <Input name="title_ar" defaultValue={project.title_ar} />
-                  <Input name="title_en" defaultValue={project.title_en} />
-                  <Input name="location_ar" defaultValue={project.location_ar} />
-                  <Input name="location_en" defaultValue={project.location_en} />
-                  <Input name="starting_price" defaultValue={project.starting_price ?? ""} type="number" />
-                  <Input name="currency" defaultValue={project.currency ?? "EGP"} />
-                  <Input name="image_url" defaultValue={project.image_url ?? ""} className="md:col-span-2" />
-                  <Input name="cta_url" defaultValue={project.cta_url ?? ""} className="md:col-span-2" />
-                  <Input name="sort_order" defaultValue={project.sort_order} type="number" />
-                  <label className="flex items-center gap-2 text-sm">
-                    <input type="checkbox" name="is_published" defaultChecked={project.is_published} />
-                    {t("admin.homepage.published")}
-                  </label>
+                  <FieldInput
+                    name="title_ar"
+                    label={t("admin.homepage.projects.titleAr")}
+                    helpKey="admin.homepage.projects.title_ar"
+                    defaultValue={project.title_ar}
+                  />
+                  <FieldInput
+                    name="title_en"
+                    label={t("admin.homepage.projects.titleEn")}
+                    helpKey="admin.homepage.projects.title_en"
+                    defaultValue={project.title_en}
+                  />
+                  <FieldInput
+                    name="location_ar"
+                    label={t("admin.homepage.projects.locationAr")}
+                    helpKey="admin.homepage.projects.location_ar"
+                    defaultValue={project.location_ar}
+                  />
+                  <FieldInput
+                    name="location_en"
+                    label={t("admin.homepage.projects.locationEn")}
+                    helpKey="admin.homepage.projects.location_en"
+                    defaultValue={project.location_en}
+                  />
+                  <FieldInput
+                    name="starting_price"
+                    label={t("admin.homepage.projects.price")}
+                    helpKey="admin.homepage.projects.starting_price"
+                    defaultValue={project.starting_price ?? ""}
+                    type="number"
+                  />
+                  <FieldInput
+                    name="currency"
+                    label={t("admin.homepage.projects.currency")}
+                    helpKey="admin.homepage.projects.currency"
+                    defaultValue={project.currency ?? "EGP"}
+                  />
+                  <FieldInput
+                    name="image_url"
+                    label={t("admin.homepage.projects.image")}
+                    helpKey="admin.homepage.projects.image_url"
+                    defaultValue={project.image_url ?? ""}
+                    wrapperClassName="md:col-span-2"
+                  />
+                  <FieldInput
+                    name="cta_url"
+                    label={t("admin.homepage.projects.cta")}
+                    helpKey="admin.homepage.projects.cta_url"
+                    defaultValue={project.cta_url ?? ""}
+                    wrapperClassName="md:col-span-2"
+                  />
+                  <FieldInput
+                    name="sort_order"
+                    label={t("admin.homepage.order")}
+                    helpKey="admin.homepage.projects.sort_order"
+                    defaultValue={project.sort_order}
+                    type="number"
+                  />
+                  <FieldCheckbox
+                    name="is_published"
+                    label={t("admin.homepage.published")}
+                    helpKey="admin.homepage.projects.is_published"
+                    defaultChecked={project.is_published}
+                  />
                   <div className="flex gap-3">
                     <Button type="submit" size="sm" variant="secondary">
                       {t("admin.homepage.save")}

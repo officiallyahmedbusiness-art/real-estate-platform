@@ -2,7 +2,8 @@ import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { requireRole } from "@/lib/auth";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
-import { Badge, Card, Select } from "@/components/ui";
+import { Badge, Card } from "@/components/ui";
+import { FieldSelect } from "@/components/FieldHelp";
 import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 import { updateApplicationStatusAction } from "./actions";
@@ -67,13 +68,19 @@ export default async function AdminCareersPage() {
                       {application.email ?? "-"} · {application.phone ?? "-"}
                     </p>
                   </div>
-                  <Select name="status" defaultValue={application.status}>
+                  <FieldSelect
+                    label={t("careers.admin.status")}
+                    helpKey="careers.admin.status"
+                    name="status"
+                    defaultValue={application.status}
+                    wrapperClassName="min-w-[180px]"
+                  >
                     {STATUS_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>
                         {t(option.key)}
                       </option>
                     ))}
-                  </Select>
+                  </FieldSelect>
                 </div>
                 {application.message ? (
                   <p className="text-sm text-[var(--muted)]">{application.message}</p>

@@ -232,10 +232,10 @@ export default async function Home() {
                 ))}
               </div>
             </div>
-            <Card className="space-y-3 bg-[var(--surface-elevated)]/90 p-3 backdrop-blur sm:space-y-4 sm:p-5">
-              <h2 className="text-lg font-semibold">{t("home.callback.title")}</h2>
-              <p className="text-sm text-[var(--muted)]">{t("home.callback.subtitle")}</p>
-              <form action={createPublicRequestAction} className="space-y-3">
+            <Card className="callback-card space-y-4 bg-[var(--surface-elevated)]/90 p-4 backdrop-blur sm:space-y-4 sm:p-5">
+              <h2 className="callback-title text-lg font-semibold">{t("home.callback.title")}</h2>
+              <p className="callback-subtitle text-sm text-[var(--muted)]">{t("home.callback.subtitle")}</p>
+              <form action={createPublicRequestAction} className="callback-form space-y-3">
                 <input
                   type="text"
                   name="company"
@@ -247,7 +247,7 @@ export default async function Home() {
                 />
                 <input type="hidden" name="source" value="web" />
                 <input type="hidden" name="intent" value="buy" />
-                <div className="grid gap-3 md:grid-cols-2">
+                <div className="callback-grid grid gap-3 md:grid-cols-2">
                   <FieldInput
                     name="name"
                     label={t("home.callback.name")}
@@ -271,7 +271,7 @@ export default async function Home() {
                   required
                   type="tel"
                 />
-                <Button type="submit" className="w-full">
+                <Button type="submit" size="lg" className="callback-submit w-full">
                   {t("home.callback.submit")}
                 </Button>
               </form>

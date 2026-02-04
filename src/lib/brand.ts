@@ -1,9 +1,12 @@
-export const BRAND_AR_NAME = "هارت" + "\u0686";
-export const BRAND_AR_NAME_FALLBACK = "هارتج";
-export const BRAND_EN_NAME = "HRTAJ";
+export const BRAND = {
+  ar: "\u0647\u0627\u0631\u062a\u0686",
+  en: "Hrtaj",
+  domain: "hrtaj.com",
+} as const;
+
+export const BRAND_AR_NAME = BRAND.ar;
+export const BRAND_EN_NAME = BRAND.en;
 
 export function getBrandArName() {
-  if (typeof document === "undefined") return BRAND_AR_NAME;
-  const flag = document.documentElement.getAttribute("data-brand-ar-fallback");
-  return flag === "1" ? BRAND_AR_NAME_FALLBACK : BRAND_AR_NAME;
+  return BRAND.ar;
 }

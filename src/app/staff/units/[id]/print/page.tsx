@@ -64,7 +64,9 @@ export default async function StaffPrintPage({
       <div className="mx-auto w-full max-w-4xl space-y-6 px-6 py-10">
         <div className="flex items-start justify-between gap-6">
           <div className="space-y-2">
-            <p className="text-xs text-[var(--muted)]">HRTAJ REAL ESTATE</p>
+            <p className="text-xs text-[var(--muted)]">
+              {t("brand.name")} {t("brand.domain")}
+            </p>
             <h1 className="text-3xl font-semibold">{listing.title}</h1>
             <div className="flex flex-wrap items-center gap-2">
               <Badge>{t(getPurposeLabelKey(listing.purpose))}</Badge>
