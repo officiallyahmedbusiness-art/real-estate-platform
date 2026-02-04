@@ -12,9 +12,11 @@
     "dev:clean": "node scripts/dev-clean.mjs && next dev",
     "dev:clean:web": "node scripts/dev-clean.mjs && set NEXT_DISABLE_TURBOPACK=1&& next dev",
     "dev:clean:windows": "node scripts/dev-clean.mjs && set NEXT_DISABLE_TURBOPACK=1&& next dev",
-    "build": "next build",
+    "build": "node scripts/check-brand-ar.mjs && node scripts/check-field-help.mjs && next build",
     "check:brand": "node scripts/check-brand-ar.mjs",
+    "check:help": "node scripts/check-field-help.mjs",
     "start": "next start",
+    "test:e2e": "playwright test",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit"
   },
@@ -26,6 +28,7 @@
     "react-dom": "19.0.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.54.2",
     "@tailwindcss/postcss": "^4.1.18",
     "@types/node": "^25.0.10",
     "@types/react": "^19.0.0",
