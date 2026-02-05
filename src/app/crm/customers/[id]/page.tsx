@@ -20,29 +20,63 @@ export default async function CrmCustomerDetailPage({
 }) {
   const { id } = await params;
   if (!isUuid(id)) notFound();
-  const { role } = await requireRole(
+  const { role, user } = await requireRole(
     ["owner", "admin", "ops", "staff", "agent"],
     `/crm/customers/${id}`
   );
   const isOwner = role === "owner";
+  const isAdmin = role === "admin";
+  const canManageCustomer = isOwner || isAdmin;
+  const canViewFullCustomer = isOwner || isAdmin;
 
   const supabase = await createSupabaseServerClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- dynamic select strings from masked views.
+  const supabaseAny = supabase as any;
   const locale = await getServerLocale();
   const t = createT(locale);
+  const leadsTable = canViewFullCustomer ? "leads" : "leads_masked";
+  const customersTable = canViewFullCustomer ? "customers" : "customers_masked";
 
-  const { data: customer } = await supabase
-    .from("customers")
-    .select("id, full_name, phone_raw, phone_e164, email, intent, preferred_areas, budget_min, budget_max, lead_source, created_at")
+  const customerSelect = canViewFullCustomer
+    ? "id, full_name, phone_raw, phone_e164, email, intent, preferred_areas, budget_min, budget_max, lead_source, created_at"
+    : "id, full_name, phone_e164, email, intent, preferred_areas, budget_min, budget_max, lead_source, created_at";
+
+  const { data: customer } = await supabaseAny
+    .from(customersTable)
+    .select(customerSelect)
     .eq("id", id)
     .maybeSingle();
   if (!customer) notFound();
 
+  const { data: piiRequestsData } = isAdmin
+    ? await supabase
+        .from("pii_change_requests")
+        .select("id, status, requested_at, review_note")
+        .eq("table_name", "customers")
+        .eq("row_id", id)
+        .eq("requested_by", user.id)
+        .order("requested_at", { ascending: false })
+        .limit(5)
+    : { data: [] as Array<{ id: string; status: string; requested_at: string; review_note: string | null }> };
+  const piiRequests = piiRequestsData ?? [];
+
+  const leadSelect = canViewFullCustomer
+    ? "id, status, lead_source, created_at, listings(title)"
+    : "id, status, lead_source, created_at, listing_title";
+  type LeadRow = {
+    id: string;
+    status: string | null;
+    lead_source: string | null;
+    created_at: string;
+    listings?: { title: string | null } | { title: string | null }[] | null;
+    listing_title?: string | null;
+  };
   const { data: leadsData } = await supabase
-    .from("leads")
-    .select("id, status, lead_source, created_at, listings(title)")
+    .from(leadsTable)
+    .select(leadSelect)
     .eq("customer_id", id)
     .order("created_at", { ascending: false });
-  const leads = leadsData ?? [];
+  const leads = (leadsData ?? []) as LeadRow[];
 
   const { data: activitiesData } = await supabase
     .from("lead_activities")
@@ -90,9 +124,14 @@ export default async function CrmCustomerDetailPage({
           </Card>
         </div>
 
-        {isOwner ? (
+        {canManageCustomer ? (
           <Section title={t("crm.customers.edit.title")} subtitle={t("crm.customers.edit.subtitle")}>
             <Card className="space-y-4">
+              {!isOwner ? (
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 text-xs text-[var(--muted)]">
+                  {t("crm.customers.piiNotice")}
+                </div>
+              ) : null}
               <form action={updateCustomerAction} className="grid gap-3 md:grid-cols-2">
                 <input type="hidden" name="customer_id" value={customer.id} />
                 <input type="hidden" name="next_path" value={`/crm/customers/${customer.id}`} />
@@ -166,19 +205,48 @@ export default async function CrmCustomerDetailPage({
                   <Button type="submit" size="sm" variant="secondary">
                     {t("crm.customers.form.save")}
                   </Button>
-                  <OwnerDeleteDialog
-                    entityId={customer.id}
-                    endpoint="/api/owner/customers/delete"
-                    title={t("crm.customers.delete.title")}
-                    description={t("crm.customers.delete.subtitle")}
-                  />
+                  {isOwner ? (
+                    <OwnerDeleteDialog
+                      entityId={customer.id}
+                      endpoint="/api/owner/customers/delete"
+                      title={t("crm.customers.delete.title")}
+                      description={t("crm.customers.delete.subtitle")}
+                    />
+                  ) : (
+                    <OwnerDeleteDialog
+                      entityId={customer.id}
+                      endpoint="/api/pii-requests"
+                      title={t("crm.customers.delete.requestTitle")}
+                      description={t("crm.customers.delete.requestSubtitle")}
+                      mode="request"
+                      payload={{ table_name: "customers", action: "hard_delete_request" }}
+                    />
+                  )}
                 </div>
               </form>
+              {isAdmin ? (
+                <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 text-xs text-[var(--muted)]">
+                  <p className="mb-2 font-semibold text-[var(--text)]">{t("admin.pii.title")}</p>
+                  {piiRequests.length === 0 ? (
+                    <p>{t("admin.pii.empty")}</p>
+                  ) : (
+                    <ul className="grid gap-1">
+                      {piiRequests.map((request) => (
+                        <li key={request.id} className="flex flex-wrap justify-between gap-2">
+                          <span>#{request.id.slice(0, 8)}</span>
+                          <span>{request.status}</span>
+                          <span>{new Date(request.requested_at).toLocaleString(locale)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ) : null}
             </Card>
           </Section>
         ) : (
           <Card className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--muted)]">
-            {t("crm.customers.ownerOnly")}
+            {t("crm.customers.adminOnly")}
           </Card>
         )}
 
@@ -188,7 +256,13 @@ export default async function CrmCustomerDetailPage({
               <p className="text-sm text-[var(--muted)]">{t("crm.leads.empty")}</p>
             ) : (
               leads.map((lead) => {
-                const listing = Array.isArray(lead.listings) ? lead.listings[0] : lead.listings;
+                const listing = canViewFullCustomer
+                  ? Array.isArray(lead.listings)
+                    ? lead.listings[0]
+                    : lead.listings
+                  : lead.listing_title
+                    ? { title: lead.listing_title }
+                    : null;
                 return (
                   <Card key={lead.id} className="flex flex-wrap items-center justify-between gap-3">
                     <div>

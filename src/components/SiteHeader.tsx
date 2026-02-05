@@ -7,6 +7,8 @@ import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { getSiteSettings } from "@/lib/settings";
 import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
+import { getFlags } from "@/lib/flags";
+import { buildWhatsAppLink, buildWhatsAppMessageEncoded, getBrandForLocale } from "@/lib/whatsapp/message";
 
 type HeaderRole =
   | "guest"
@@ -45,7 +47,18 @@ export async function SiteHeader() {
   const showDeveloperAds = role === "developer";
   const showAdminAds = isAdmin;
   const settings = await getSiteSettings();
-  const whatsappLink = settings.whatsapp_link || null;
+  const flags = getFlags();
+  const messageLocale =
+    settings.whatsapp_message_language === "ar" || settings.whatsapp_message_language === "en"
+      ? settings.whatsapp_message_language
+      : locale;
+  const whatsappMessage = buildWhatsAppMessageEncoded(
+    { brand: getBrandForLocale(messageLocale) },
+    settings.whatsapp_message_template,
+    messageLocale
+  );
+  const whatsappLink = buildWhatsAppLink(settings.whatsapp_number, whatsappMessage);
+  const logoUrl = settings.logo_url;
 
   const themeLabels = {
     dark: t("theme.dark"),
@@ -86,7 +99,12 @@ export async function SiteHeader() {
         <div className="site-header-inner flex items-center justify-between gap-3 py-2 sm:py-3 lg:py-4">
           <div className="flex items-center gap-3">
             <Link href="/">
-              <Logo name={t("brand.name")} imageClassName="h-7 sm:h-9 md:h-12" />
+              <Logo
+                name={t("brand.name")}
+                logoUrl={logoUrl}
+                showText={!logoUrl}
+                imageClassName="h-7 sm:h-9 md:h-12"
+              />
             </Link>
             <span className="hidden rounded-full border border-[var(--border)] bg-[var(--accent-soft)] px-3 py-1 text-xs font-semibold text-[var(--accent)] lg:inline-flex">
               {t("brand.tagline")}
@@ -111,9 +129,9 @@ export async function SiteHeader() {
                 ))}
               </div>
             </details>
-            <LanguageSwitcher locale={locale} labels={langLabels} />
+            {flags.enableEnglish ? <LanguageSwitcher locale={locale} labels={langLabels} /> : null}
             <ThemeSwitcher labels={themeLabels} />
-            <HelpModeToggle />
+            <HelpModeToggle locale={locale} />
             {isAuthed ? (
               <Link
                 href="/dashboard"
@@ -194,9 +212,9 @@ export async function SiteHeader() {
                   {t("layer.current")}: {currentLayer}
                 </div>
                 <div className="flex items-center gap-2 pt-2">
-                  <LanguageSwitcher locale={locale} labels={langLabels} />
+                  {flags.enableEnglish ? <LanguageSwitcher locale={locale} labels={langLabels} /> : null}
                   <ThemeSwitcher labels={themeLabels} />
-                  <HelpModeToggle />
+                  <HelpModeToggle locale={locale} />
                 </div>
               </div>
             </div>

@@ -1,4 +1,6 @@
 import { BRAND, getBrandArName } from "./brand";
+import arExtra from "@/i18n/ar.json";
+import enExtra from "@/i18n/en.json";
 
 export const LOCALES = ["ar", "en"] as const;
 export type Locale = (typeof LOCALES)[number];
@@ -157,6 +159,7 @@ const ar: Dictionary = {
   "listings.loginPrompt": "سجل الدخول لحفظ المفضلة",
   "listings.empty": "لا توجد عقارات مطابقة لبحثك.",
   "listings.filters.apply": "تطبيق الفلاتر",
+  "listings.filters.reset": "مسح الفلاتر",
   "listings.view.grid": "شبكة",
   "listings.view.list": "قائمة",
 
@@ -164,6 +167,17 @@ const ar: Dictionary = {
   "listing.card.save": "حفظ",
   "listing.card.saved": "محفوظ",
   "listing.card.noImage": "لا توجد صورة",
+  "listing.badge.new": "جديد",
+  "listing.badge.furnished": "مفروش",
+  "listing.action.whatsapp": "واتساب",
+  "listing.action.call": "اتصل",
+  "listing.action.share": "مشاركة",
+  "amenity.elevator": "مصعد",
+  "amenity.parking": "جراج",
+  "amenity.security": "أمن",
+  "amenity.balcony": "بلكونة",
+  "amenity.generator": "مولد",
+  "amenity.seaView": "إطلالة بحر",
 
   "filters.city": "المدينة",
   "filters.area": "الحي / المنطقة",
@@ -174,6 +188,12 @@ const ar: Dictionary = {
   "filters.beds": "عدد الغرف",
   "filters.baths": "عدد الحمامات",
   "filters.sort": "ترتيب النتائج",
+  "filters.transaction": "نوع العملية",
+  "filters.priceMin": "السعر من",
+  "filters.priceMax": "السعر إلى",
+  "filters.areaMin": "المساحة من",
+  "filters.areaMax": "المساحة إلى",
+  "filters.amenities": "المرافق",
 
   "detail.back": "العودة للعقارات",
   "detail.contact.title": "جهة الاتصال",
@@ -192,12 +212,30 @@ const ar: Dictionary = {
   "detail.stats.rooms": "غرف",
   "detail.stats.baths": "حمامات",
   "detail.stats.unknown": "غير محدد",
+  "detail.facts.title": "تفاصيل العقار",
+  "detail.facts.area": "المساحة",
+  "detail.facts.floor": "الدور",
+  "detail.facts.view": "الإطلالة",
+  "detail.facts.building": "المبنى",
+  "detail.facts.finishing": "التشطيب",
+  "detail.facts.meters": "العدادات",
+  "detail.facts.reception": "الريسبشن",
+  "detail.facts.kitchen": "المطبخ",
+  "detail.facts.elevator": "مصعد",
+  "detail.facts.code": "كود العقار",
+  "detail.cta.whatsapp": "واتساب",
+  "detail.cta.call": "اتصال",
+  "detail.cta.book": "احجز معاينة",
   "detail.lead.title": "إرسال طلب اهتمام",
   "detail.lead.name": "الاسم الكامل",
   "detail.lead.phone": "رقم الهاتف",
   "detail.lead.email": "البريد الإلكتروني",
   "detail.lead.message": "اكتب رسالتك",
   "detail.lead.submit": "إرسال الطلب",
+  "detail.lead.submitting": "جارٍ الإرسال...",
+  "detail.lead.successTitle": "تم إرسال الطلب",
+  "detail.lead.successBody": "هنرجعلك في أقرب وقت.",
+  "detail.lead.error": "حصل خطأ أثناء الإرسال. حاول مرة أخرى.",
   "detail.lead.guest.prefix": "يمكنك إرسال الطلب كزائر. إذا رغبت بمتابعة الحالة،",
   "detail.lead.guest.action": "سجّل الدخول",
 
@@ -710,6 +748,8 @@ const ar: Dictionary = {
   "sort.newest": "الأحدث",
   "sort.priceAsc": "السعر: من الأقل للأعلى",
   "sort.priceDesc": "السعر: من الأعلى للأقل",
+  "sort.areaAsc": "المساحة: من الأقل للأعلى",
+  "sort.areaDesc": "المساحة: من الأعلى للأقل",
 
   "category.rent.title": "عقارات للإيجار",
   "category.rent.desc": "خيارات تناسب نمط حياتك وميزانيتك.",
@@ -1113,6 +1153,7 @@ const en: Dictionary = {
   "listings.loginPrompt": "Sign in to save favorites",
   "listings.empty": "No listings match your filters.",
   "listings.filters.apply": "Apply filters",
+  "listings.filters.reset": "Reset filters",
   "listings.view.grid": "Grid",
   "listings.view.list": "List",
 
@@ -1148,12 +1189,30 @@ const en: Dictionary = {
   "detail.stats.rooms": "Rooms",
   "detail.stats.baths": "Bathrooms",
   "detail.stats.unknown": "Not specified",
+  "detail.facts.title": "Property details",
+  "detail.facts.area": "Area",
+  "detail.facts.floor": "Floor",
+  "detail.facts.view": "View",
+  "detail.facts.building": "Building",
+  "detail.facts.finishing": "Finishing",
+  "detail.facts.meters": "Meters",
+  "detail.facts.reception": "Reception",
+  "detail.facts.kitchen": "Kitchen",
+  "detail.facts.elevator": "Elevator",
+  "detail.facts.code": "Listing code",
+  "detail.cta.whatsapp": "WhatsApp",
+  "detail.cta.call": "Call",
+  "detail.cta.book": "Book a viewing",
   "detail.lead.title": "Submit request",
   "detail.lead.name": "Full name",
   "detail.lead.phone": "Phone number",
   "detail.lead.email": "Email address",
   "detail.lead.message": "Your message",
   "detail.lead.submit": "Submit request",
+  "detail.lead.submitting": "Sending...",
+  "detail.lead.successTitle": "Request sent",
+  "detail.lead.successBody": "We will reach out shortly.",
+  "detail.lead.error": "We couldn't send your request. Please try again.",
   "detail.lead.guest.prefix": "You can submit a request as a guest. If you want to track it,",
   "detail.lead.guest.action": "sign in",
 
@@ -1917,11 +1976,33 @@ const en: Dictionary = {
   "about.coverage.item3": "New Capital",
   "about.coverage.item4": "North Coast",
   "about.coverage.item5": "Ain Sokhna",
+  "filters.transaction": "Transaction type",
+  "filters.priceMin": "Price from",
+  "filters.priceMax": "Price to",
+  "filters.areaMin": "Area from",
+  "filters.areaMax": "Area to",
+  "filters.amenities": "Amenities",
+  "sort.areaAsc": "Area: low to high",
+  "sort.areaDesc": "Area: high to low",
+  "listing.badge.new": "New",
+  "listing.badge.furnished": "Furnished",
+  "listing.action.whatsapp": "WhatsApp",
+  "listing.action.call": "Call",
+  "listing.action.share": "Share",
+  "amenity.elevator": "Elevator",
+  "amenity.parking": "Parking",
+  "amenity.security": "Security",
+  "amenity.balcony": "Balcony",
+  "amenity.generator": "Generator",
+  "amenity.seaView": "Sea view",
 };
 
-export const DICTIONARY: Record<Locale, Dictionary> = { ar, en };
+const arMerged: Dictionary = { ...ar, ...(arExtra as Dictionary) };
+const enMerged: Dictionary = { ...en, ...(enExtra as Dictionary) };
 
-export type TranslationKey = keyof typeof ar;
+export const DICTIONARY: Record<Locale, Dictionary> = { ar: arMerged, en: enMerged };
+
+export type TranslationKey = keyof typeof arMerged;
 
 export function createT(locale: Locale) {
   return (key: TranslationKey, params?: Record<string, string | number>) => {
@@ -1987,4 +2068,6 @@ export function getSubmissionStatusLabelKey(value: string) {
   };
   return map[value] ?? "submission.status.draft";
 }
+
+
 

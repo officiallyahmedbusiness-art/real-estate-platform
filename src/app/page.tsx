@@ -6,16 +6,24 @@ import { Button, Card, Badge, Section } from "@/components/ui";
 import { FieldInput, FieldSelect, FieldTextarea } from "@/components/FieldHelp";
 import { formatPrice } from "@/lib/format";
 import { FEATURE_CATEGORIES, PROPERTY_TYPE_OPTIONS, PURPOSE_OPTIONS } from "@/lib/constants";
-import { getPublicImageUrl } from "@/lib/storage";
-import { createT, getPropertyTypeLabelKey, getPurposeLabelKey } from "@/lib/i18n";
+import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 import { createPublicRequestAction } from "@/app/actions/marketplace";
 import { PartnerMarquee } from "@/components/PartnerMarquee";
 import { AdsCarousel, type AdCampaignCard } from "@/components/AdsCarousel";
+import { RecentlyViewedStrip } from "@/components/listings/RecentlyViewedStrip";
+import { Hero } from "@/components/home/Hero";
+import { FeaturedListings } from "@/components/home/FeaturedListings";
+import { Areas } from "@/components/home/Areas";
+import { Trust, type TrustItem } from "@/components/home/Trust";
+import { FAQ } from "@/components/home/FAQ";
+import { buildFaqJsonLd } from "@/lib/seo/schema";
+import { getSiteSettings } from "@/lib/settings";
 
 export default async function Home() {
   const locale = await getServerLocale();
   const t = createT(locale);
+  const settings = await getSiteSettings();
 
   const supabase = await createSupabaseServerClient();
   const { data: mediaData } = await supabase
@@ -167,117 +175,47 @@ export default async function Home() {
     { value: "evening", label: t("home.request.contact.evening") },
     { value: "any", label: t("home.request.contact.any") },
   ];
+  const faqItems = [
+    { question: t("home.faq.q1"), answer: t("home.faq.a1") },
+    { question: t("home.faq.q2"), answer: t("home.faq.a2") },
+    { question: t("home.faq.q3"), answer: t("home.faq.a3") },
+    { question: t("home.faq.q4"), answer: t("home.faq.a4") },
+    { question: t("home.faq.q5"), answer: t("home.faq.a5") },
+    { question: t("home.faq.q6"), answer: t("home.faq.a6") },
+  ];
+  const areas = [
+    { key: "smouha", href: "/listings?area=سموحة" },
+    { key: "gleem", href: "/listings?area=جليم" },
+    { key: "stanley", href: "/listings?area=ستانلي" },
+    { key: "miami", href: "/listings?area=ميامي" },
+    { key: "sidiBishr", href: "/listings?area=سيدي%20بشر" },
+    { key: "agami", href: "/listings?area=العجمي" },
+  ];
+  const faqJsonLd = buildFaqJsonLd(faqItems);
+  const trustItems: TrustItem[] = [
+    settings.office_address
+      ? { title: t("trust.address.title"), value: settings.office_address }
+      : null,
+    settings.working_hours
+      ? { title: t("trust.hours.title"), value: settings.working_hours }
+      : null,
+    settings.response_sla
+      ? { title: t("trust.response.title"), value: settings.response_sla }
+      : null,
+  ].filter(Boolean) as TrustItem[];
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
       <SiteHeader />
       <main className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:space-y-12 sm:px-6 sm:py-10 lg:px-8">
-        <section className="relative overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface)]/90 p-4 shadow-[var(--shadow)] fade-up sm:rounded-[32px] sm:p-8 hero-shell">
-          <div className="absolute inset-0">
-            {heroVideo ? (
-              <video
-                className="hero-video"
-                autoPlay
-                muted
-                loop
-                playsInline
-                poster={heroVideo.poster_url ?? undefined}
-              >
-                <source src={heroVideo.url} />
-              </video>
-            ) : heroImages.length > 0 ? (
-              <div className="hero-carousel">
-                <div className="hero-track">
-                  {[...heroImages, ...heroImages].map((item, index) => (
-                    <div className="hero-slide" key={`${item.id}-${index}`}>
-                      <img src={item.url} alt={item.title ?? t("home.hero.badge")} />
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-            <div className="hero-overlay" />
-          </div>
-          <div className="relative z-10 grid gap-5 sm:gap-10 lg:grid-cols-[1.1fr,0.9fr]">
-            <div className="space-y-4 sm:space-y-6">
-              <Badge>{t("home.hero.badge")}</Badge>
-              <h1 className="max-w-[18ch] text-3xl font-semibold leading-tight text-balance sm:max-w-[22ch] sm:text-5xl lg:text-5xl">
-                {t("home.hero.title")}
-              </h1>
-              <p className="max-w-lg text-sm leading-relaxed text-[var(--muted)] sm:text-base">
-                {t("home.hero.subtitle")}
-              </p>
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <Link href="/listings">
-                  <Button size="lg" className="w-full sm:w-auto">
-                    {t("home.hero.ctaPrimary")}
-                  </Button>
-                </Link>
-                <Link href="/developer">
-                  <Button size="lg" variant="secondary" className="w-full sm:w-auto">
-                    {t("home.hero.ctaSecondary")}
-                  </Button>
-                </Link>
-              </div>
-              <div className="flex items-center gap-2 overflow-x-auto whitespace-nowrap pb-1 text-xs text-[var(--muted)]">
-                <span className="font-semibold text-[var(--text)]">{t("home.hero.quick")}</span>
-                {FEATURE_CATEGORIES.map((cat) => (
-                  <Link
-                    key={cat.purpose}
-                    href={`/listings?purpose=${cat.purpose}`}
-                    className="shrink-0 rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-[var(--text)] transition hover:border-[var(--accent)]"
-                  >
-                    {t(cat.titleKey)}
-                  </Link>
-                ))}
-              </div>
-            </div>
-            <Card className="callback-card space-y-4 bg-[var(--surface-elevated)]/90 p-4 backdrop-blur sm:space-y-4 sm:p-5">
-              <h2 className="callback-title text-lg font-semibold">{t("home.callback.title")}</h2>
-              <p className="callback-subtitle text-sm text-[var(--muted)]">{t("home.callback.subtitle")}</p>
-              <form action={createPublicRequestAction} className="callback-form space-y-3">
-                <input
-                  type="text"
-                  name="company"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  className="sr-only"
-                  aria-hidden="true"
-                  data-no-help
-                />
-                <input type="hidden" name="source" value="web" />
-                <input type="hidden" name="intent" value="buy" />
-                <div className="callback-grid grid gap-3 md:grid-cols-2">
-                  <FieldInput
-                    name="name"
-                    label={t("home.callback.name")}
-                    helpKey="home.callback.name"
-                    placeholder={t("home.callback.name")}
-                    required
-                  />
-                  <FieldInput
-                    name="email"
-                    label={t("home.callback.email")}
-                    helpKey="home.callback.email"
-                    placeholder={t("home.callback.email")}
-                    type="email"
-                  />
-                </div>
-                <FieldInput
-                  name="phone"
-                  label={t("home.callback.phone")}
-                  helpKey="home.callback.phone"
-                  placeholder={t("home.callback.phone")}
-                  required
-                  type="tel"
-                />
-                <Button type="submit" size="lg" className="callback-submit w-full">
-                  {t("home.callback.submit")}
-                </Button>
-              </form>
-            </Card>
-          </div>
-        </section>
+        <Hero
+          t={t}
+          heroVideo={heroVideo}
+          heroImages={heroImages}
+          featureCategories={FEATURE_CATEGORIES}
+          onRequestAction={createPublicRequestAction}
+          purposeOptions={PURPOSE_OPTIONS}
+        />
 
         <Section title={t("home.search.title")} subtitle={t("home.search.subtitle")}>
           <Card className="space-y-4 bg-[var(--surface-elevated)]/90">
@@ -360,6 +298,16 @@ export default async function Home() {
             ))}
           </div>
         </Section>
+
+        <Section title={t("home.areas.title")} subtitle={t("home.areas.subtitle")}>
+          <Areas t={t} areas={areas} />
+        </Section>
+
+        {trustItems.length ? (
+          <Section title={t("trust.title")} subtitle={t("home.trust.subtitle")}>
+            <Trust items={trustItems} />
+          </Section>
+        ) : null}
 
         <Section title={t("home.proof.title")} subtitle={t("home.proof.subtitle")}>
           <div className="grid gap-4 md:grid-cols-3">
@@ -456,63 +404,15 @@ export default async function Home() {
         </Section>
 
         <Section title={t("home.featured.title")} subtitle={t("home.featured.subtitle")}>
-          {listings.length === 0 ? (
-            <Card className="p-3 sm:p-4">
-              <p className="text-sm text-[var(--muted)]">{t("home.featured.empty")}</p>
-            </Card>
-          ) : (
-            <div className="grid gap-4 sm:gap-6 md:grid-cols-3">
-              {listings.map((listing, index) => {
-                const cover =
-                  listing.listing_images?.sort((a, b) => a.sort - b.sort)[0]?.path ?? null;
-                const coverUrl = getPublicImageUrl(cover);
-                return (
-                  <Card
-                    key={listing.id}
-                    className="group flex flex-col gap-4 fade-up hrtaj-card"
-                    style={{ animationDelay: `${index * 80}ms` }}
-                  >
-                    <Link href={`/listing/${listing.id}`}>
-                      <div className="aspect-[4/3] overflow-hidden rounded-xl bg-[var(--surface)]">
-                        {coverUrl ? (
-                          <img
-                            src={coverUrl}
-                            alt={listing.title}
-                            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                          />
-                        ) : (
-                          <div className="flex h-full items-center justify-center text-sm text-[var(--muted)]">
-                            {t("general.noImage")}
-                          </div>
-                        )}
-                      </div>
-                    </Link>
-                    <div className="space-y-2">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <Badge>{t(getPurposeLabelKey(listing.purpose))}</Badge>
-                        <Badge>{t(getPropertyTypeLabelKey(listing.type))}</Badge>
-                        <Badge>
-                          {listing.beds} {t("detail.stats.rooms")} - {listing.baths} {t("detail.stats.baths")}
-                        </Badge>
-                      </div>
-                      <Link href={`/listing/${listing.id}`}>
-                        <h3 className="text-lg font-semibold hover:text-[var(--accent)]">
-                          {listing.title}
-                        </h3>
-                      </Link>
-                      <p className="text-sm text-[var(--muted)]">
-                        {listing.city}
-                        {listing.area ? ` - ${listing.area}` : ""}
-                      </p>
-                      <p className="text-lg font-semibold text-[var(--accent)]">
-                        {formatPrice(listing.price, listing.currency, locale)}
-                      </p>
-                    </div>
-                  </Card>
-                );
-              })}
-            </div>
-          )}
+          <FeaturedListings t={t} locale={locale} listings={listings} />
+        </Section>
+
+        <Section title={t("home.faq.title")} subtitle={t("home.faq.subtitle")}>
+          <FAQ items={faqItems} />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+          />
         </Section>
 
         <Section title={t("home.process.title")} subtitle={t("home.process.subtitle")}>
@@ -651,7 +551,14 @@ export default async function Home() {
           </Card>
         </Section>
       </main>
-      <SiteFooter showFloating />
+      <div className="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
+        <RecentlyViewedStrip
+          locale={locale}
+          title={t("recent.title")}
+          empty={t("recent.empty")}
+        />
+      </div>
+      <SiteFooter showFloating showCompare />
     </div>
   );
 }

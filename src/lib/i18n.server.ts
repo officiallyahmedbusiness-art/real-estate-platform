@@ -11,6 +11,9 @@ async function detectFromAcceptLanguage(): Promise<Locale> {
 }
 
 export async function getServerLocale(): Promise<Locale> {
+  const headerStore = await headers();
+  const forced = headerStore.get("x-locale");
+  if (forced === "en" || forced === "ar") return forced;
   const cookieStore = await cookies();
   const cookie = cookieStore.get(COOKIE_NAME)?.value;
   if (cookie === "en" || cookie === "ar") return cookie;

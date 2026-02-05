@@ -5,12 +5,25 @@ import { updateSession } from "./src/lib/supabaseMiddleware";
 import { LOCALE_COOKIE } from "./src/lib/i18n.server";
 
 export async function middleware(request: NextRequest) {
-  const response = NextResponse.next();
+  const url = request.nextUrl.clone();
+  const langParam = url.searchParams.get("lang");
 
   const existing = request.cookies.get(LOCALE_COOKIE)?.value;
   const acceptLanguage = request.headers.get("accept-language") ?? "";
   const inferred = acceptLanguage.toLowerCase().includes("en") ? "en" : "ar";
-  const locale = existing === "en" || existing === "ar" ? existing : inferred;
+  const localeCandidate = existing === "en" || existing === "ar" ? existing : inferred;
+  const locale = langParam === "en" || langParam === "ar" ? langParam : localeCandidate;
+
+  const requestHeaders = new Headers(request.headers);
+  if (langParam === "en" || langParam === "ar") {
+    requestHeaders.set("x-locale", langParam);
+  }
+
+  const response = NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
 
   response.cookies.set(LOCALE_COOKIE, locale, {
     path: "/",

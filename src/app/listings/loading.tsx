@@ -46,7 +46,7 @@ export default function ListingsLoading() {
           ))}
         </div>
       </main>
-      <SiteFooter showFloating />
+      <SiteFooter showFloating showCompare />
     </div>
   );
 }

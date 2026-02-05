@@ -66,27 +66,20 @@ export async function POST(request: Request) {
   const admin = createSupabaseAdminClient();
   const redirectTo = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL || undefined;
 
-  const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
-    type: "invite",
+  const { data: inviteData, error: inviteError } = await admin.auth.admin.inviteUserByEmail(
     email,
-    options: {
+    {
       data: { full_name, phone: phone || null, role },
       redirectTo,
-    },
-  });
+    }
+  );
 
-  if (linkError) {
+  if (inviteError) {
     return NextResponse.json({ ok: false, error: "invite_failed" }, { status: 400 });
   }
 
-  const inviteLink =
-    (linkData as { properties?: { action_link?: string } })?.properties?.action_link ??
-    (linkData as { action_link?: string })?.action_link ??
-    null;
-
-  let targetUserId =
-    (linkData as { user?: { id?: string } })?.user?.id ??
-    null;
+  const inviteLink = null;
+  let targetUserId = inviteData?.user?.id ?? null;
 
   if (!targetUserId) {
     let page = 1;

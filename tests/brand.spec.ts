@@ -1,4 +1,4 @@
-﻿import { test, expect } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
 test.use({ locale: "ar-EG" });
 
@@ -16,6 +16,11 @@ test("brand stays هارتچ after hydration and navigation", async ({ page }) =
   expect(bodyText).not.toContain("هارتج");
 
   await page.goto("/about");
+  bodyText = await page.textContent("body");
+  expect(bodyText).toContain("هارتچ");
+  expect(bodyText).not.toContain("هارتج");
+
+  await page.goto("/listings");
   bodyText = await page.textContent("body");
   expect(bodyText).toContain("هارتچ");
   expect(bodyText).not.toContain("هارتج");

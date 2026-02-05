@@ -15,12 +15,16 @@ export function OwnerDeleteDialog({
   title,
   description,
   confirmLabel,
+  mode = "delete",
+  payload,
 }: {
   entityId: string;
   endpoint: string;
   title: string;
   description: string;
   confirmLabel?: string;
+  mode?: "delete" | "request";
+  payload?: Record<string, unknown>;
 }) {
   const router = useRouter();
   const locale = getClientLocale();
@@ -42,7 +46,7 @@ export function OwnerDeleteDialog({
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: entityId, confirm: required }),
+        body: JSON.stringify({ ...payload, id: entityId, confirm: required }),
       });
       const data = (await res.json()) as DeleteResponse;
       if (!res.ok || !data.ok) {
@@ -59,10 +63,17 @@ export function OwnerDeleteDialog({
     }
   }
 
+  const triggerLabel =
+    mode === "request" ? t("owner.delete.requestButton") : t("owner.delete.button");
+  const submitLabel =
+    mode === "request" ? t("owner.delete.requestConfirm") : t("owner.delete.confirm");
+  const loadingLabel =
+    mode === "request" ? t("owner.delete.requestLoading") : t("owner.delete.loading");
+
   return (
     <>
       <Button type="button" variant="danger" size="sm" onClick={() => setOpen(true)}>
-        {t("owner.delete.button")}
+        {triggerLabel}
       </Button>
       {open ? (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/40 px-4">
@@ -93,7 +104,7 @@ export function OwnerDeleteDialog({
                 {t("owner.delete.cancel")}
               </Button>
               <Button type="button" variant="danger" size="sm" disabled={!canSubmit || loading} onClick={handleDelete}>
-                {loading ? t("owner.delete.loading") : t("owner.delete.confirm")}
+                {loading ? loadingLabel : submitLabel}
               </Button>
             </div>
           </Card>

@@ -55,6 +55,12 @@ async function upsertCustomer({
   return data?.id ?? null;
 }
 
+export type LeadActionState = {
+  ok: boolean;
+  error: "rate_limit" | "invalid" | "server" | null;
+  submitted: boolean;
+};
+
 export async function toggleFavoriteAction(listingId: string, nextPath: string) {
   if (!isUuid(listingId)) return;
 
@@ -84,10 +90,10 @@ export async function toggleFavoriteAction(listingId: string, nextPath: string) 
   revalidatePath(`/listing/${listingId}`);
 }
 
-export async function createLeadAction(formData: FormData) {
+async function handleLeadForm(formData: FormData): Promise<LeadActionState> {
   const honeypot = String(formData.get("company") ?? "").trim();
   if (honeypot) {
-    return;
+    return { ok: true, error: null, submitted: true };
   }
 
   const headerStore = await headers();
@@ -96,7 +102,7 @@ export async function createLeadAction(formData: FormData) {
     headerStore.get("x-real-ip") ??
     "unknown";
   const ua = headerStore.get("user-agent") ?? "unknown";
-  const rate = checkRateLimit(`lead:${ip}:${ua}`, 5, 60_000);
+  const rate = checkRateLimit(`lead:${ip}:${ua}`, 10, 60_000);
   if (!rate.allowed) {
     const supabase = await createSupabaseServerClient();
     const { data } = await supabase.auth.getUser();
@@ -108,7 +114,7 @@ export async function createLeadAction(formData: FormData) {
         metadata: { ip, ua, retry_after_ms: rate.retryAfterMs },
       });
     }
-    return;
+    return { ok: false, error: "rate_limit", submitted: true };
   }
 
   const payload = {
@@ -121,7 +127,9 @@ export async function createLeadAction(formData: FormData) {
   };
 
   const parsed = parseLeadInput(payload);
-  if (!parsed) return;
+  if (!parsed) {
+    return { ok: false, error: "invalid", submitted: true };
+  }
 
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase.auth.getUser();
@@ -136,7 +144,7 @@ export async function createLeadAction(formData: FormData) {
     source: parsed.source || "web",
   });
 
-  await supabase.from("leads").insert({
+  const { error: leadError } = await supabase.from("leads").insert({
     listing_id: parsed.listingId,
     user_id: data?.user?.id ?? null,
     customer_id: customerId,
@@ -151,7 +159,24 @@ export async function createLeadAction(formData: FormData) {
     status: "new",
   });
 
+  if (leadError) {
+    return { ok: false, error: "server", submitted: true };
+  }
+
   revalidatePath(`/listing/${parsed.listingId}`);
+  return { ok: true, error: null, submitted: true };
+}
+
+export async function createLeadAction(formData: FormData) {
+  await handleLeadForm(formData);
+}
+
+export async function createLeadActionWithState(
+  prevState: LeadActionState,
+  formData: FormData
+): Promise<LeadActionState> {
+  void prevState;
+  return handleLeadForm(formData);
 }
 
 export async function createPublicRequestAction(formData: FormData) {
@@ -166,7 +191,7 @@ export async function createPublicRequestAction(formData: FormData) {
     headerStore.get("x-real-ip") ??
     "unknown";
   const ua = headerStore.get("user-agent") ?? "unknown";
-  const rate = checkRateLimit(`public-lead:${ip}:${ua}`, 5, 60_000);
+  const rate = checkRateLimit(`public-lead:${ip}:${ua}`, 10, 60_000);
   if (!rate.allowed) {
     const supabase = await createSupabaseServerClient();
     const { data } = await supabase.auth.getUser();

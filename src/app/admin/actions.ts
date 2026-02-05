@@ -153,7 +153,7 @@ export async function updateListingStatusAction(formData: FormData) {
 
 export async function updateLeadStatusAction(formData: FormData) {
   const { supabase, userId, role } = await requireStaff("/admin");
-  if (role !== "owner") return;
+  if (role !== "owner" && role !== "admin") return;
   const leadId = String(formData.get("lead_id") ?? "");
   const status = parseLeadStatus(formData.get("status"));
 
@@ -180,7 +180,7 @@ export async function updateLeadStatusAction(formData: FormData) {
 
 export async function assignLeadAction(formData: FormData) {
   const { supabase, userId, role } = await requireStaff("/admin");
-  if (role !== "owner") return;
+  if (role !== "owner" && role !== "admin") return;
   const leadId = String(formData.get("lead_id") ?? "");
   const assignedRaw = String(formData.get("assigned_to") ?? "");
   const assignedTo = assignedRaw && isUuid(assignedRaw) ? assignedRaw : null;
@@ -222,7 +222,7 @@ export async function assignLeadAction(formData: FormData) {
 
 export async function addLeadNoteAction(formData: FormData) {
   const { supabase, userId, role } = await requireStaff("/admin");
-  if (role !== "owner") return;
+  if (role !== "owner" && role !== "admin") return;
   const leadId = String(formData.get("lead_id") ?? "");
   const note = String(formData.get("note") ?? "").trim();
 

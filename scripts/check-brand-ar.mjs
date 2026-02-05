@@ -28,13 +28,16 @@ function collectFiles(dir) {
   return results;
 }
 
-const forbidden = "هارتج";
+const forbidden = ["هارتج", "Ù‡Ø§Ø±ØªØ¬"];
 const files = collectFiles(path.join(process.cwd(), "src")).concat(
   collectFiles(path.join(process.cwd(), "public"))
 );
-const offenders = files.filter((file) => fs.readFileSync(file, "utf8").includes(forbidden));
+const offenders = files.filter((file) => {
+  const content = fs.readFileSync(file, "utf8");
+  return forbidden.some((token) => content.includes(token));
+});
 if (offenders.length > 0) {
-  console.error(`Forbidden Arabic brand spelling found (${forbidden}) in:`);
+  console.error(`Forbidden Arabic brand spelling found (${forbidden.join(", ")}) in:`);
   offenders.forEach((file) => console.error(`- ${path.relative(process.cwd(), file)}`));
   process.exit(1);
 }

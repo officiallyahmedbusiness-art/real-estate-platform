@@ -26,8 +26,9 @@ function applyTheme(nextTheme: ThemeId) {
 }
 
 export function ThemeSwitcher({ labels }: { labels: ThemeLabels }) {
-  const [theme, setTheme] = useState<ThemeId>(() => {
-    if (typeof window === "undefined") return "dark";
+  const [theme, setTheme] = useState<ThemeId>("dark");
+
+  useEffect(() => {
     let stored: string | null = null;
     try {
       stored = localStorage.getItem("theme");
@@ -35,8 +36,9 @@ export function ThemeSwitcher({ labels }: { labels: ThemeLabels }) {
       stored = null;
     }
     const fromDom = document.documentElement.dataset.theme ?? null;
-    return normalizeTheme(stored ?? fromDom);
-  });
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate from persisted user preference.
+    setTheme(normalizeTheme(stored ?? fromDom));
+  }, []);
 
   useEffect(() => {
     applyTheme(theme);

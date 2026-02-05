@@ -13,7 +13,11 @@ type InviteResponse = {
   error?: string;
 };
 
-export function InviteUserForm() {
+type InviteUserFormProps = {
+  endpoint?: string;
+};
+
+export function InviteUserForm({ endpoint = "/api/owner/users" }: InviteUserFormProps) {
   const locale = getClientLocale();
   const t = createT(locale);
 
@@ -21,12 +25,14 @@ export function InviteUserForm() {
   const [error, setError] = useState<string>("");
   const [inviteLink, setInviteLink] = useState<string>("");
   const [copied, setCopied] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     setInviteLink("");
     setCopied(false);
+    setSuccess(false);
     setLoading(true);
 
     const form = event.currentTarget;
@@ -39,7 +45,7 @@ export function InviteUserForm() {
     };
 
     try {
-      const res = await fetch("/api/owner/users", {
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
@@ -54,6 +60,9 @@ export function InviteUserForm() {
       }
       if (data.inviteLink) {
         setInviteLink(data.inviteLink);
+      }
+      if (!data.inviteLink) {
+        setSuccess(true);
       }
       form.reset();
     } catch {
@@ -130,6 +139,11 @@ export function InviteUserForm() {
       {error ? (
         <div className="rounded-xl border border-[rgba(244,63,94,0.35)] bg-[rgba(244,63,94,0.15)] p-3 text-sm">
           {error}
+        </div>
+      ) : null}
+      {success ? (
+        <div className="rounded-xl border border-[rgba(34,197,94,0.35)] bg-[rgba(34,197,94,0.12)] p-3 text-sm">
+          {t("owner.users.invite.success")}
         </div>
       ) : null}
     </Card>

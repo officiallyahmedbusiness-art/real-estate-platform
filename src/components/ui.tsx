@@ -1,53 +1,8 @@
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
-
-type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
-type ButtonSize = "sm" | "md" | "lg";
-
-const buttonVariants: Record<ButtonVariant, string> = {
-  primary:
-    "bg-[var(--primary)] text-[var(--primary-contrast)] shadow-[var(--shadow)] hover:brightness-105 border border-transparent",
-  secondary:
-    "bg-[var(--surface-elevated)] text-[var(--text)] hover:bg-[var(--surface)] border border-[var(--border)]",
-  ghost:
-    "bg-transparent text-[var(--text)] hover:bg-[var(--accent-soft)] border border-transparent",
-  danger:
-    "bg-[rgba(244,63,94,0.15)] text-[var(--danger)] hover:bg-[rgba(244,63,94,0.25)] border border-[rgba(244,63,94,0.35)]",
-};
-
-const buttonSizes: Record<ButtonSize, string> = {
-  sm: "h-9 px-3 text-sm",
-  md: "h-11 px-4 text-sm",
-  lg: "h-12 px-5 text-base",
-};
-
-export function Button({
-  className = "",
-  variant = "primary",
-  size = "md",
-  ...props
-}: ComponentPropsWithoutRef<"button"> & {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-}) {
-  return (
-    <button
-      className={`inline-flex items-center justify-center gap-2 rounded-xl font-semibold transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--focus)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--bg)] active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60 ${buttonSizes[size]} ${buttonVariants[variant]} ${className}`}
-      {...props}
-    />
-  );
-}
-
-export function Card({
-  className = "",
-  ...props
-}: ComponentPropsWithoutRef<"div">) {
-  return (
-    <div
-      className={`rounded-2xl border border-[var(--border)] bg-[var(--card)] p-4 shadow-[var(--shadow)] sm:p-5 ${className}`}
-      {...props}
-    />
-  );
-}
+import { Badge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { Card } from "@/components/ui/Card";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 export function Section({
   title,
@@ -91,7 +46,7 @@ export function Input({
 }: ComponentPropsWithoutRef<"input">) {
   return (
     <input
-      className={`h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 text-sm text-[var(--text)] placeholder:text-[var(--muted)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition focus:outline-none focus:ring-2 focus:ring-[var(--focus)] ${className}`}
+      className={`h-11 w-full rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] px-4 text-sm text-[var(--text)] placeholder:text-[var(--muted)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition focus:outline-none focus:ring-2 focus:ring-[var(--focus)] ${className}`}
       {...props}
     />
   );
@@ -103,7 +58,7 @@ export function Select({
 }: ComponentPropsWithoutRef<"select">) {
   return (
     <select
-      className={`h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 text-sm text-[var(--text)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition focus:outline-none focus:ring-2 focus:ring-[var(--focus)] ${className}`}
+      className={`h-11 w-full rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] px-4 text-sm text-[var(--text)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition focus:outline-none focus:ring-2 focus:ring-[var(--focus)] ${className}`}
       {...props}
     />
   );
@@ -115,19 +70,13 @@ export function Textarea({
 }: ComponentPropsWithoutRef<"textarea">) {
   return (
     <textarea
-      className={`min-h-[120px] w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] placeholder:text-[var(--muted)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition focus:outline-none focus:ring-2 focus:ring-[var(--focus)] ${className}`}
+      className={`min-h-[120px] w-full rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] placeholder:text-[var(--muted)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition focus:outline-none focus:ring-2 focus:ring-[var(--focus)] ${className}`}
       {...props}
     />
   );
 }
 
-export function Badge({ children }: { children: ReactNode }) {
-  return (
-    <span className="inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--surface)] px-3 py-1 text-xs font-semibold text-[var(--muted)]">
-      {children}
-    </span>
-  );
-}
+export { Button, Card, Badge, Skeleton };
 
 export function Stat({
   label,

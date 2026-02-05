@@ -20,10 +20,13 @@ const ACTIVITY_TYPES = [
 ];
 
 export default async function CrmActivitiesPage() {
-  await requireRole(["owner", "admin", "ops", "staff", "agent"], "/crm/activities");
+  const { role } = await requireRole(["owner", "admin", "ops", "staff", "agent"], "/crm/activities");
   const supabase = await createSupabaseServerClient();
   const locale = await getServerLocale();
   const t = createT(locale);
+  const canViewFull = role === "owner" || role === "admin";
+  const leadsTable = canViewFull ? "leads" : "leads_masked";
+  const customersTable = canViewFull ? "customers" : "customers_masked";
 
   const { data: activitiesData } = await supabase
     .from("lead_activities")
@@ -33,14 +36,14 @@ export default async function CrmActivitiesPage() {
   const activities = activitiesData ?? [];
 
   const { data: leadsData } = await supabase
-    .from("leads")
+    .from(leadsTable)
     .select("id, name")
     .order("created_at", { ascending: false })
     .limit(60);
   const leads = leadsData ?? [];
 
   const { data: customersData } = await supabase
-    .from("customers")
+    .from(customersTable)
     .select("id, full_name, phone_e164")
     .order("created_at", { ascending: false })
     .limit(60);

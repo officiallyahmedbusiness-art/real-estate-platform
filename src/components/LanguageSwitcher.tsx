@@ -1,7 +1,5 @@
 ﻿"use client";
 
-import { usePathname, useSearchParams } from "next/navigation";
-
 type LanguageSwitcherProps = {
   locale: "ar" | "en";
   labels: {
@@ -11,17 +9,13 @@ type LanguageSwitcherProps = {
 };
 
 export function LanguageSwitcher({ locale, labels }: LanguageSwitcherProps) {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
   const nextLocale = locale === "ar" ? "en" : "ar";
   const label = locale === "ar" ? labels.en : labels.ar;
 
   function setLocale(next: "ar" | "en") {
-    const params = searchParams?.toString();
-    const url = `${pathname}${params ? `?${params}` : ""}`;
-    document.cookie = `locale=${next}; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
-    localStorage.setItem("locale", next);
-    window.location.assign(url);
+    const url = new URL(window.location.href);
+    url.searchParams.set("lang", next);
+    window.location.assign(url.toString());
   }
 
   return (

@@ -19,6 +19,48 @@ import {
 } from "./actions";
 
 type SearchParams = Record<string, string | string[] | undefined>;
+type LeadRow = {
+  id: string;
+  name: string | null;
+  phone: string | null;
+  phone_e164: string | null;
+  phone_normalized?: string | null;
+  email: string | null;
+  message: string | null;
+  status: string | null;
+  lead_source: string | null;
+  assigned_to: string | null;
+  created_at: string;
+  listing_id: string | null;
+  intent: string | null;
+  preferred_area: string | null;
+  budget_min: number | null;
+  budget_max: number | null;
+  lost_reason: string | null;
+  lost_reason_note: string | null;
+  next_action_at: string | null;
+  listing_title?: string | null;
+  listing_city?: string | null;
+  listing_area?: string | null;
+  listings?: { title?: string | null; city?: string | null; area?: string | null } | { title?: string | null; city?: string | null; area?: string | null }[] | null;
+  customer?: {
+    id: string;
+    full_name: string | null;
+    phone_e164: string | null;
+    intent: string | null;
+    preferred_areas: string[] | null;
+    budget_min: number | null;
+    budget_max: number | null;
+  } | {
+    id: string;
+    full_name: string | null;
+    phone_e164: string | null;
+    intent: string | null;
+    preferred_areas: string[] | null;
+    budget_min: number | null;
+    budget_max: number | null;
+  }[] | null;
+};
 
 function getParam(searchParams: SearchParams, key: string) {
   const value = searchParams[key];
@@ -40,6 +82,8 @@ export default async function CrmPage({
 }) {
   const { role } = await requireRole(["owner", "admin", "ops", "staff", "agent"], "/crm");
   const supabase = await createSupabaseServerClient();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const supabaseAny = supabase as any;
   const locale = await getServerLocale();
   const t = createT(locale);
 
@@ -51,6 +95,13 @@ export default async function CrmPage({
   const overdueFilter = getParam(params, "overdue");
   const query = getParam(params, "q");
   const isOwner = role === "owner";
+  const isAdmin = role === "admin";
+  const canManageLeads = isOwner || isAdmin;
+  const canViewFullLeads = isOwner || isAdmin;
+  const leadsTable = canViewFullLeads ? "leads" : "leads_masked";
+  const leadSelect = canViewFullLeads
+    ? "id, name, phone, phone_e164, phone_normalized, email, message, status, lead_source, assigned_to, created_at, listing_id, intent, preferred_area, budget_min, budget_max, lost_reason, lost_reason_note, next_action_at, listings(title, city, area), customer: customers(id, full_name, phone_e164, intent, preferred_areas, budget_min, budget_max)"
+    : "id, name, phone, phone_e164, email, message, status, lead_source, assigned_to, created_at, listing_id, intent, preferred_area, budget_min, budget_max, lost_reason, lost_reason_note, next_action_at, listing_title, listing_city, listing_area";
   const canExport = isOwner;
   const exportParams = new URLSearchParams({
     status: statusFilter,
@@ -62,13 +113,10 @@ export default async function CrmPage({
   });
   const exportUrl = `/api/crm-export?${exportParams.toString()}`;
 
-  let leadsQuery = supabase
-    .from("leads")
-    .select(
-      "id, name, phone, phone_e164, phone_normalized, status, lead_source, assigned_to, created_at, listing_id, intent, preferred_area, budget_min, budget_max, lost_reason, lost_reason_note, next_action_at, listings(title, city, area), customer: customers(id, full_name, phone_e164, intent, preferred_areas, budget_min, budget_max)"
-    )
-    .order("created_at", { ascending: false })
-    .limit(120);
+  let leadsQuery = supabaseAny
+    .from(leadsTable)
+    .select(leadSelect);
+  leadsQuery = leadsQuery.order("created_at", { ascending: false }).limit(120);
 
   if (statusFilter) leadsQuery = leadsQuery.eq("status", statusFilter);
   if (sourceFilter) leadsQuery = leadsQuery.eq("lead_source", sourceFilter);
@@ -82,13 +130,17 @@ export default async function CrmPage({
     leadsQuery = leadsQuery.lt("next_action_at", new Date().toISOString());
   }
   if (query) {
-    leadsQuery = leadsQuery.or(
-      `name.ilike.%${query}%,phone.ilike.%${query}%,phone_normalized.ilike.%${query}%,phone_e164.ilike.%${query}%`
-    );
+    if (canViewFullLeads) {
+      leadsQuery = leadsQuery.or(
+        `name.ilike.%${query}%,phone.ilike.%${query}%,phone_normalized.ilike.%${query}%,phone_e164.ilike.%${query}%`
+      );
+    } else {
+      leadsQuery = leadsQuery.or(`name.ilike.%${query}%,listing_id.eq.${query}`);
+    }
   }
 
   const { data: leadsData } = await leadsQuery;
-  const leads = leadsData ?? [];
+  const leads = (leadsData ?? []) as LeadRow[];
 
   const { data: profilesData } = await supabase
     .from("profiles")
@@ -105,11 +157,15 @@ export default async function CrmPage({
   });
 
   const duplicates = new Map<string, number>();
-  leads.forEach((lead) => {
-    if (!lead.phone_normalized) return;
-    duplicates.set(lead.phone_normalized, (duplicates.get(lead.phone_normalized) ?? 0) + 1);
-  });
-  const duplicateCount = [...duplicates.values()].filter((count) => count > 1).length;
+  if (canViewFullLeads) {
+    leads.forEach((lead) => {
+      if (!lead.phone_normalized) return;
+      duplicates.set(lead.phone_normalized, (duplicates.get(lead.phone_normalized) ?? 0) + 1);
+    });
+  }
+  const duplicateCount = canViewFullLeads
+    ? [...duplicates.values()].filter((count) => count > 1).length
+    : 0;
 
   const now = new Date();
   const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -353,8 +409,22 @@ export default async function CrmPage({
               <p className="text-sm text-[var(--muted)]">{t("crm.leads.empty")}</p>
             ) : (
               leads.map((lead) => {
-                const listing = Array.isArray(lead.listings) ? lead.listings[0] : lead.listings;
-                const customer = Array.isArray(lead.customer) ? lead.customer[0] : lead.customer;
+                const listing = canViewFullLeads
+                  ? Array.isArray(lead.listings)
+                    ? lead.listings[0]
+                    : lead.listings
+                  : lead.listing_title || lead.listing_city || lead.listing_area
+                    ? {
+                        title: lead.listing_title,
+                        city: lead.listing_city,
+                        area: lead.listing_area,
+                      }
+                    : null;
+                const customer = canViewFullLeads
+                  ? Array.isArray(lead.customer)
+                    ? lead.customer[0]
+                    : lead.customer
+                  : null;
                 const assignedName = lead.assigned_to
                   ? profileNameById.get(lead.assigned_to) ?? lead.assigned_to
                   : t("crm.leads.unassigned");
@@ -372,6 +442,10 @@ export default async function CrmPage({
                 const contextLine = listing
                   ? [listing.city, listing.area].filter(Boolean).join(" - ")
                   : [intent, preferredArea, budgetLabel].filter(Boolean).join(" · ");
+                const phoneValue = lead.phone_e164 ?? lead.phone ?? "";
+                const whatsappDigits = phoneValue ? phoneValue.replace(/\D/g, "") : "";
+                const whatsappLink = whatsappDigits ? `https://wa.me/${whatsappDigits}` : null;
+                const callLink = phoneValue ? `tel:${phoneValue.replace(/[^\d+]/g, "")}` : null;
                 return (
                   <Card key={lead.id} className="space-y-3">
                     <div className="flex flex-wrap items-center justify-between gap-3">
@@ -394,7 +468,34 @@ export default async function CrmPage({
                         <span>{t(`lead.loss_reason.${lead.lost_reason}`)}</span>
                       ) : null}
                     </div>
-                    {isOwner ? (
+                    <details className="lead-drawer">
+                      <summary>{t("crm.leads.details")}</summary>
+                      <div className="lead-drawer-body">
+                        <span>{t("detail.lead.phone")}: {lead.phone_e164 ?? lead.phone ?? "-"}</span>
+                        <span>{t("detail.lead.email")}: {lead.email ?? "-"}</span>
+                        {lead.message ? (
+                          <span>{t("detail.lead.message")}: {lead.message}</span>
+                        ) : null}
+                        {!canViewFullLeads ? <span>{t("crm.leads.masked")}</span> : null}
+                        {canViewFullLeads && (whatsappLink || callLink) ? (
+                          <div className="flex flex-wrap items-center gap-2">
+                            {whatsappLink ? (
+                              <a href={whatsappLink} target="_blank" rel="noreferrer">
+                                <Button size="sm">{t("detail.cta.whatsapp")}</Button>
+                              </a>
+                            ) : null}
+                            {callLink ? (
+                              <a href={callLink}>
+                                <Button size="sm" variant="secondary">
+                                  {t("detail.cta.call")}
+                                </Button>
+                              </a>
+                            ) : null}
+                          </div>
+                        ) : null}
+                      </div>
+                    </details>
+                    {canManageLeads ? (
                       <>
                         <div className="grid gap-3 md:grid-cols-2">
                           <form action={updateLeadStatusAction} className="flex flex-wrap items-end gap-3">
@@ -487,17 +588,28 @@ export default async function CrmPage({
                           </Button>
                         </form>
                         <div className="flex justify-end">
-                          <OwnerDeleteDialog
-                            entityId={lead.id}
-                            endpoint="/api/owner/leads/delete"
-                            title={t("crm.leads.delete.title")}
-                            description={t("crm.leads.delete.subtitle")}
-                          />
+                          {isOwner ? (
+                            <OwnerDeleteDialog
+                              entityId={lead.id}
+                              endpoint="/api/owner/leads/delete"
+                              title={t("crm.leads.delete.title")}
+                              description={t("crm.leads.delete.subtitle")}
+                            />
+                          ) : (
+                            <OwnerDeleteDialog
+                              entityId={lead.id}
+                              endpoint="/api/pii-requests"
+                              title={t("crm.leads.delete.requestTitle")}
+                              description={t("crm.leads.delete.requestSubtitle")}
+                              mode="request"
+                              payload={{ table_name: "leads", action: "hard_delete_request" }}
+                            />
+                          )}
                         </div>
                       </>
                     ) : (
                       <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 text-xs text-[var(--muted)]">
-                        {t("crm.ownerOnly")}
+                        {t("crm.adminOnly")}
                       </div>
                     )}
                   </Card>

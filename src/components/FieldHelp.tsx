@@ -16,14 +16,17 @@ type HelpModeContextValue = {
 const HelpModeContext = createContext<HelpModeContextValue | null>(null);
 
 export function HelpModeProvider({ children }: { children: React.ReactNode }) {
-  const [helpMode, setHelpMode] = useState(() => {
-    if (typeof window === "undefined") return false;
+  const [helpMode, setHelpMode] = useState(false);
+
+  useEffect(() => {
     try {
-      return window.localStorage.getItem(HELP_MODE_KEY) === "1";
+      const stored = window.localStorage.getItem(HELP_MODE_KEY) === "1";
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate from persisted user preference.
+      setHelpMode(stored);
     } catch {
-      return false;
+      // ignore
     }
-  });
+  }, []);
 
   useEffect(() => {
     try {
@@ -185,7 +188,7 @@ export function FieldInput({
     <FieldWrapper label={label} helpKey={helpKey} className={wrapperClassName}>
       <input
         {...props}
-        className={`h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 text-sm text-[var(--text)] placeholder:text-[var(--muted)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition focus:outline-none focus:ring-2 focus:ring-[var(--focus)] ${className}`}
+        className={`h-11 w-full rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] px-4 text-sm text-[var(--text)] placeholder:text-[var(--muted)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition focus:outline-none focus:ring-2 focus:ring-[var(--focus)] ${className}`}
       />
     </FieldWrapper>
   );
@@ -208,7 +211,7 @@ export function FieldSelect({
     <FieldWrapper label={label} helpKey={helpKey} className={wrapperClassName}>
       <select
         {...props}
-        className={`h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 text-sm text-[var(--text)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition focus:outline-none focus:ring-2 focus:ring-[var(--focus)] ${className}`}
+        className={`h-11 w-full rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] px-4 text-sm text-[var(--text)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition focus:outline-none focus:ring-2 focus:ring-[var(--focus)] ${className}`}
       >
         {children}
       </select>
@@ -231,7 +234,7 @@ export function FieldTextarea({
     <FieldWrapper label={label} helpKey={helpKey} className={wrapperClassName}>
       <textarea
         {...props}
-        className={`min-h-[120px] w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] placeholder:text-[var(--muted)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition focus:outline-none focus:ring-2 focus:ring-[var(--focus)] ${className}`}
+        className={`min-h-[120px] w-full rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] placeholder:text-[var(--muted)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition focus:outline-none focus:ring-2 focus:ring-[var(--focus)] ${className}`}
       />
     </FieldWrapper>
   );
@@ -274,16 +277,22 @@ export function FieldFile({
       <input
         type="file"
         {...props}
-        className="w-full rounded-xl border border-dashed border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
+        className="w-full rounded-[var(--radius-lg)] border border-dashed border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-sm"
       />
     </FieldWrapper>
   );
 }
 
-export function HelpModeToggle({ className = "" }: { className?: string }) {
+export function HelpModeToggle({
+  className = "",
+  locale,
+}: {
+  className?: string;
+  locale?: "ar" | "en";
+}) {
   const { helpMode, setHelpMode } = useHelpMode();
-  const locale = getClientLocale();
-  const t = createT(locale);
+  const resolvedLocale = locale ?? getClientLocale();
+  const t = createT(resolvedLocale);
 
   return (
     <Button

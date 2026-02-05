@@ -21,16 +21,19 @@ export default async function CrmCustomersPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  await requireRole(["owner", "admin", "ops", "staff", "agent"], "/crm/customers");
+  const { role } = await requireRole(["owner", "admin", "ops", "staff", "agent"], "/crm/customers");
+  const canViewFullCustomers = role === "owner" || role === "admin";
   const supabase = await createSupabaseServerClient();
   const locale = await getServerLocale();
   const t = createT(locale);
+  const leadsTable = canViewFullCustomers ? "leads" : "leads_masked";
+  const customersTable = canViewFullCustomers ? "customers" : "customers_masked";
 
   const params = await searchParams;
   const query = getParam(params, "q");
 
   let customersQuery = supabase
-    .from("customers")
+    .from(customersTable)
     .select("id, full_name, phone_e164, email, intent, preferred_areas, budget_min, budget_max, created_at")
     .order("created_at", { ascending: false })
     .limit(120);
@@ -44,7 +47,7 @@ export default async function CrmCustomersPage({
   const customers = customersData ?? [];
 
   const { data: leadsData } = await supabase
-    .from("leads")
+    .from(leadsTable)
     .select("customer_id")
     .in("customer_id", customers.map((c) => c.id));
   const leadCounts = new Map<string, number>();

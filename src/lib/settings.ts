@@ -1,38 +1,75 @@
-import { createSupabaseServerClient } from "@/lib/supabaseServer";
+import "server-only";
+
+import { createSupabaseAdminClient } from "@/lib/supabaseAdmin";
 
 export type SiteSettings = {
-  facebook_url: string;
-  instagram_url: string;
-  linkedin_url: string;
-  tiktok_url: string;
-  public_email: string;
-  whatsapp_number: string;
-  whatsapp_link: string;
+  office_address: string | null;
+  working_hours: string | null;
+  response_sla: string | null;
+  logo_url: string | null;
+  whatsapp_number: string | null;
+  primary_phone: string | null;
+  secondary_phone: string | null;
+  contact_email: string | null;
+  instagram_url: string | null;
+  facebook_url: string | null;
+  tiktok_url: string | null;
+  youtube_url: string | null;
+  linkedin_url: string | null;
+  whatsapp_message_template: string | null;
+  whatsapp_message_language: string | null;
 };
 
-const defaults: SiteSettings = {
-  facebook_url: "https://www.facebook.com/share/1C1fQLJD2W/",
-  instagram_url: "https://www.instagram.com/hrtaj.co",
-  linkedin_url: "https://www.linkedin.com/in/hrtaj-real-estate-519564307",
-  tiktok_url: "https://www.tiktok.com/@hrtajrealestate?_r=1&_t=ZS-93ZFLAWsstD",
-  public_email: "hrtajrealestate@gmail.com",
-  whatsapp_number: "+201020614022",
-  whatsapp_link: "https://wa.me/201020614022",
-};
+const SETTINGS_KEYS: Array<keyof SiteSettings> = [
+  "office_address",
+  "working_hours",
+  "response_sla",
+  "logo_url",
+  "whatsapp_number",
+  "primary_phone",
+  "secondary_phone",
+  "contact_email",
+  "instagram_url",
+  "facebook_url",
+  "tiktok_url",
+  "youtube_url",
+  "linkedin_url",
+  "whatsapp_message_template",
+  "whatsapp_message_language",
+];
+
+const EMPTY_SETTINGS: SiteSettings = SETTINGS_KEYS.reduce((acc, key) => {
+  acc[key] = null;
+  return acc;
+}, {} as SiteSettings);
 
 export async function getSiteSettings(): Promise<SiteSettings> {
-  const supabase = await createSupabaseServerClient();
-  const { data } = await supabase.from("site_settings").select("key, value");
-  const settings = { ...defaults };
+  let supabase;
+  try {
+    supabase = createSupabaseAdminClient();
+  } catch (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("[settings] Falling back to empty settings:", (error as Error).message);
+    }
+    return { ...EMPTY_SETTINGS };
+  }
+
+  const { data, error } = await supabase.from("site_settings").select("key, value");
+  if (error) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("[settings] Failed to load settings, using empty defaults:", error.message);
+    }
+    return { ...EMPTY_SETTINGS };
+  }
+
+  const settings: SiteSettings = { ...EMPTY_SETTINGS };
   (data ?? []).forEach((row) => {
-    if (row.key in settings) {
-      settings[row.key as keyof SiteSettings] =
-        row.value ?? settings[row.key as keyof SiteSettings];
+    const key = row.key as keyof SiteSettings;
+    if (SETTINGS_KEYS.includes(key)) {
+      const value = typeof row.value === "string" ? row.value.trim() : null;
+      settings[key] = value || null;
     }
   });
-  const normalizedEmail = (settings.public_email ?? "").trim().toLowerCase();
-  if (normalizedEmail && normalizedEmail.includes("hrtaj4realestate")) {
-    settings.public_email = "hrtajrealestate@gmail.com";
-  }
+
   return settings;
 }

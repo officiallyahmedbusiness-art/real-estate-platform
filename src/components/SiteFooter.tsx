@@ -1,17 +1,40 @@
 ﻿import { Logo } from "@/components/Logo";
+import { CompareBar } from "@/components/compare/CompareBar";
 import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 import { getSiteSettings } from "@/lib/settings";
+import { getFlags } from "@/lib/flags";
+import { buildWhatsAppLink, buildWhatsAppMessageEncoded, getBrandForLocale } from "@/lib/whatsapp/message";
 
-export async function SiteFooter({ showFloating = false }: { showFloating?: boolean } = {}) {
+export async function SiteFooter({
+  showFloating = false,
+  showCompare = false,
+}: {
+  showFloating?: boolean;
+  showCompare?: boolean;
+} = {}) {
   const locale = await getServerLocale();
   const t = createT(locale);
   const settings = await getSiteSettings();
-  const whatsappLink = settings.whatsapp_link || null;
+  const flags = getFlags();
+  const messageLocale =
+    settings.whatsapp_message_language === "ar" || settings.whatsapp_message_language === "en"
+      ? settings.whatsapp_message_language
+      : locale;
+  const whatsappMessage = buildWhatsAppMessageEncoded(
+    { brand: getBrandForLocale(messageLocale) },
+    settings.whatsapp_message_template,
+    messageLocale
+  );
+  const whatsappLink = buildWhatsAppLink(settings.whatsapp_number, whatsappMessage);
   const instagramLink = settings.instagram_url || null;
   const linkedinLink = settings.linkedin_url || null;
   const tiktokLink = settings.tiktok_url || null;
-  const contactEmail = settings.public_email || t("footer.email");
+  const youtubeLink = settings.youtube_url || null;
+  const contactEmail = settings.contact_email || null;
+  const primaryPhone = settings.primary_phone || null;
+  const secondaryPhone = settings.secondary_phone || null;
+  const logoUrl = settings.logo_url || null;
   const year = new Date().getFullYear();
 
   return (
@@ -22,7 +45,13 @@ export async function SiteFooter({ showFloating = false }: { showFloating?: bool
     >
       <div className="mx-auto grid w-full max-w-7xl gap-5 px-4 py-6 text-xs text-[var(--muted)] sm:gap-8 sm:px-6 sm:py-10 sm:text-sm lg:px-8 md:grid-cols-[1.4fr,1fr,1fr]">
         <div className="space-y-3">
-          <Logo name={t("brand.name")} className="text-[var(--text)]" imageClassName="h-8 sm:h-10 md:h-12" />
+          <Logo
+            name={t("brand.name")}
+            logoUrl={logoUrl}
+            showText={!logoUrl}
+            className="text-[var(--text)]"
+            imageClassName="h-8 sm:h-10 md:h-12"
+          />
           <p className="max-w-md">{t("brand.tagline")}</p>
         </div>
         <div className="space-y-3">
@@ -60,14 +89,31 @@ export async function SiteFooter({ showFloating = false }: { showFloating?: bool
                 {t("footer.tiktok")}
               </a>
             ) : null}
+            {youtubeLink ? (
+              <a href={youtubeLink} target="_blank" rel="noreferrer" className="hover:text-[var(--text)]">
+                {t("footer.youtube")}
+              </a>
+            ) : null}
             {whatsappLink ? (
               <a href={whatsappLink} target="_blank" rel="noreferrer" className="hover:text-[var(--text)]">
                 {t("footer.whatsapp")}
               </a>
             ) : null}
-            <a href={`mailto:${contactEmail}`} className="text-[var(--text)] hover:text-[var(--accent)]">
-              {contactEmail}
-            </a>
+            {contactEmail ? (
+              <a href={`mailto:${contactEmail}`} className="text-[var(--text)] hover:text-[var(--accent)]">
+                {contactEmail}
+              </a>
+            ) : null}
+            {primaryPhone ? (
+              <a href={`tel:${primaryPhone}`} className="text-[var(--text)] hover:text-[var(--accent)]">
+                {primaryPhone}
+              </a>
+            ) : null}
+            {secondaryPhone ? (
+              <a href={`tel:${secondaryPhone}`} className="text-[var(--text)] hover:text-[var(--accent)]">
+                {secondaryPhone}
+              </a>
+            ) : null}
           </div>
         </div>
       </div>
@@ -95,6 +141,9 @@ export async function SiteFooter({ showFloating = false }: { showFloating?: bool
           </svg>
           {t("footer.whatsapp")}
         </a>
+      ) : null}
+      {showCompare && flags.enableCompare ? (
+        <CompareBar labels={{ title: t("compare.bar"), action: t("compare.action") }} />
       ) : null}
     </footer>
   );

@@ -146,6 +146,7 @@ const FIELD_HELP_KEYS = [
   "account.profile.full_name",
   "account.profile.phone",
   "admin.approvals.status",
+  "admin.pii.reject.reason",
   "admin.ads.body_ar",
   "admin.ads.body_en",
   "admin.ads.cta_label_ar",
@@ -186,6 +187,21 @@ const FIELD_HELP_KEYS = [
   "admin.partners.user_id",
   "admin.review.note",
   "admin.review.submission_status",
+  "admin.settings.office_address",
+  "admin.settings.working_hours",
+  "admin.settings.response_sla",
+  "admin.settings.logo",
+  "admin.settings.whatsapp_number",
+  "admin.settings.primary_phone",
+  "admin.settings.secondary_phone",
+  "admin.settings.contact_email",
+  "admin.settings.instagram_url",
+  "admin.settings.facebook_url",
+  "admin.settings.tiktok_url",
+  "admin.settings.youtube_url",
+  "admin.settings.linkedin_url",
+  "admin.settings.whatsapp_message_template",
+  "admin.settings.whatsapp_message_language",
   "admin.users.role",
   "attachments.item.category",
   "attachments.item.note",
@@ -305,6 +321,15 @@ const FIELD_HELP_KEYS = [
   "filters.purpose",
   "filters.sort",
   "filters.type",
+  "filters.transaction",
+  "filters.priceMin",
+  "filters.priceMax",
+  "filters.areaMin",
+  "filters.areaMax",
+  "filters.amenities",
+  "home.hero.search.transaction",
+  "home.hero.search.area",
+  "home.hero.search.budget",
   "home.callback.email",
   "home.callback.name",
   "home.callback.phone",
@@ -413,7 +438,9 @@ const defaultHelpForKey = (key: string): FieldHelpEntry => {
 const PURPOSE_BY_PREFIX: Record<string, string> = {
   "account.profile": "\u062a\u062c\u0647\u064a\u0632 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u062d\u0633\u0627\u0628 \u0644\u0644\u062a\u0648\u0627\u0635\u0644.",
   "admin.approvals": "\u062a\u062d\u062f\u064a\u062f \u062d\u0627\u0644\u0629 \u0627\u0644\u0646\u0634\u0631 \u0644\u0644\u0648\u062d\u062f\u0627\u062a.",
+  "admin.pii": "\u0645\u0631\u0627\u062c\u0639\u0629 \u0637\u0644\u0628\u0627\u062a \u062a\u0639\u062f\u064a\u0644 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u062d\u0633\u0627\u0633\u0629.",
   "admin.partners": "\u0625\u062f\u0627\u0631\u0629 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0634\u0631\u0643\u0627\u0621 \u0648\u0631\u0628\u0637 \u0627\u0644\u062d\u0633\u0627\u0628\u0627\u062a.",
+  "admin.settings": "\u062a\u062d\u062f\u064a\u062b \u0645\u0639\u0644\u0648\u0645\u0627\u062a \u0627\u0644\u0634\u0631\u0643\u0629 \u0648\u0642\u0646\u0648\u0627\u062a \u0627\u0644\u062a\u0648\u0627\u0635\u0644.",
   "admin.review": "\u062a\u0646\u0638\u064a\u0645 \u0645\u0631\u0627\u062c\u0639\u0629 \u0627\u0644\u0637\u0644\u0628\u0627\u062a \u0642\u0628\u0644 \u0627\u0644\u0646\u0634\u0631.",
   "admin.users": "\u062a\u062d\u062f\u064a\u062f \u0635\u0644\u0627\u062d\u064a\u0627\u062a \u0627\u0644\u0645\u0633\u062a\u062e\u062f\u0645\u064a\u0646.",
   "admin.ads": "\u0645\u0631\u0627\u062c\u0639\u0629 \u0627\u0644\u062d\u0645\u0644\u0627\u062a \u0642\u0628\u0644 \u0627\u0644\u0646\u0634\u0631.",
@@ -501,9 +528,18 @@ const RULES_BY_KEY: Record<string, string[]> = {
 };
 
 const TOGGLE_FIELDS = new Set(["is_active", "primary", "published", "requested", "elevator", "kitchen", "is_published"]);
-const FILE_FIELDS = new Set(["file", "images", "cv"]);
-const EMAIL_FIELDS = new Set(["email"]);
-const PHONE_FIELDS = new Set(["phone", "phone_raw", "phone_e164", "owner_phone", "whatsappNumber"]);
+const FILE_FIELDS = new Set(["file", "images", "cv", "logo"]);
+const EMAIL_FIELDS = new Set(["email", "contact_email"]);
+const PHONE_FIELDS = new Set([
+  "phone",
+  "phone_raw",
+  "phone_e164",
+  "owner_phone",
+  "whatsappNumber",
+  "whatsapp_number",
+  "primary_phone",
+  "secondary_phone",
+]);
 const URL_FIELDS = new Set([
   "url",
   "logo_url",
@@ -511,9 +547,15 @@ const URL_FIELDS = new Set([
   "poster_url",
   "cta_url",
   "facebook",
+  "facebook_url",
   "instagram",
+  "instagram_url",
   "linkedin",
+  "linkedin_url",
   "tiktok",
+  "tiktok_url",
+  "youtube",
+  "youtube_url",
   "whatsappLink",
   "image_url",
   "poster",
@@ -543,6 +585,10 @@ const NUMBER_FIELDS = new Set([
   "floor",
   "minPrice",
   "maxPrice",
+  "priceMin",
+  "priceMax",
+  "areaMin",
+  "areaMax",
   "starting_price",
 ]);
 const SELECT_FIELDS = new Set([
@@ -555,6 +601,8 @@ const SELECT_FIELDS = new Set([
   "assigned",
   "assigned_to",
   "source",
+  "transaction",
+  "amenities",
   "sort",
   "submission_status",
   "lead_source",
@@ -579,6 +627,7 @@ const SELECT_FIELDS = new Set([
   "lostReason",
   "lost_reason",
   "overdue",
+  "whatsapp_message_language",
 ]);
 
 type HelpType =

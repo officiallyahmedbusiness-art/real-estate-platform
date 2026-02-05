@@ -9,6 +9,7 @@ import { LEAD_STATUS_OPTIONS, SUBMISSION_STATUS_OPTIONS } from "@/lib/constants"
 import { createT, getLeadStatusLabelKey, getSubmissionStatusLabelKey } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 import { InviteUserForm } from "@/components/InviteUserForm";
+import { UserManagementList } from "@/components/UserManagementList";
 import {
   addDeveloperMemberAction,
   addLeadNoteAction,
@@ -16,7 +17,6 @@ import {
   createDeveloperAction,
   updateLeadStatusAction,
   updateListingStatusAction,
-  updateUserRoleAction,
   updateListingSubmissionStatusAction,
   updateProjectSubmissionStatusAction,
 } from "./actions";
@@ -28,8 +28,9 @@ function startOfToday() {
 
 export default async function AdminPage() {
   const { role } = await requireRole(["owner", "admin"], "/admin");
-  const isOwner = role === "owner";
   const isAdmin = role === "admin" || role === "owner";
+  const canViewFullLeads = isAdmin;
+  const leadsTable = canViewFullLeads ? "leads" : "leads_masked";
   const supabase = await createSupabaseServerClient();
 
   const locale = await getServerLocale();
@@ -50,12 +51,12 @@ export default async function AdminPage() {
     .gte("created_at", weekAgo.toISOString());
 
   const { count: leadsToday = 0 } = await supabase
-    .from("leads")
+    .from(leadsTable)
     .select("id", { count: "exact", head: true })
     .gte("created_at", today.toISOString());
 
   const { count: leadsWeek = 0 } = await supabase
-    .from("leads")
+    .from(leadsTable)
     .select("id", { count: "exact", head: true })
     .gte("created_at", weekAgo.toISOString());
 
@@ -91,7 +92,7 @@ export default async function AdminPage() {
 
   const { data: profilesData } = await supabase
     .from("profiles")
-    .select("id, full_name, phone, email, role, created_at")
+    .select("id, full_name, phone, email, role, created_at, is_active")
     .order("created_at", { ascending: false })
     .limit(20);
   const profiles = profilesData ?? [];
@@ -102,12 +103,30 @@ export default async function AdminPage() {
     .order("name", { ascending: true });
   const developers = developersData ?? [];
 
+  const leadSelect = canViewFullLeads
+    ? "id, name, phone, email, message, status, assigned_to, created_at, listing_id, listings(title)"
+    : "id, name, phone, email, message, status, assigned_to, created_at, listing_id, listing_title";
+
+  type LeadRow = {
+    id: string;
+    name: string | null;
+    phone: string | null;
+    email: string | null;
+    message: string | null;
+    status: string | null;
+    assigned_to: string | null;
+    created_at: string;
+    listing_id: string | null;
+    listings?: { title: string | null } | { title: string | null }[] | null;
+    listing_title?: string | null;
+  };
+
   const { data: leadsData } = await supabase
-    .from("leads")
-    .select("id, name, phone, email, status, assigned_to, created_at, listing_id, listings(title)")
+    .from(leadsTable)
+    .select(leadSelect)
     .order("created_at", { ascending: false })
     .limit(20);
-  const leads = leadsData ?? [];
+  const leads = (leadsData ?? []) as LeadRow[];
 
   const leadIds = leads.map((lead) => lead.id);
   const leadNotesById = new Map<string, { note: string; created_at: string }>();
@@ -156,6 +175,16 @@ export default async function AdminPage() {
             <Link href="/admin/homepage">
               <Button size="sm" variant="secondary">
                 {t("admin.homepage.manage")}
+              </Button>
+            </Link>
+            <Link href="/admin/settings">
+              <Button size="sm" variant="secondary">
+                {t("settings.manage")}
+              </Button>
+            </Link>
+            <Link href="/admin/flags">
+              <Button size="sm" variant="secondary">
+                {t("admin.flags.manage")}
               </Button>
             </Link>
             <Badge>{t(badgeRoleKey)}</Badge>
@@ -339,7 +368,13 @@ export default async function AdminPage() {
           ) : (
             <div className="grid gap-4">
               {leads.map((lead) => {
-                const listing = Array.isArray(lead.listings) ? lead.listings[0] : lead.listings;
+                const listing = canViewFullLeads
+                  ? Array.isArray(lead.listings)
+                    ? lead.listings[0]
+                    : lead.listings
+                  : lead.listing_title
+                    ? { title: lead.listing_title }
+                    : null;
                 const statusLabel = t(getLeadStatusLabelKey(lead.status ?? "new"));
                 const assignedName = lead.assigned_to
                   ? profileNameById.get(lead.assigned_to) ?? lead.assigned_to
@@ -351,7 +386,7 @@ export default async function AdminPage() {
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <div>
                         <p className="text-sm text-[var(--muted)]">
-                          {t("account.leads.listing", { title: listing?.title ?? lead.listing_id })}
+                          {t("account.leads.listing", { title: listing?.title ?? lead.listing_id ?? "" })}
                         </p>
                         <p className="text-base font-semibold">{lead.name}</p>
                       </div>
@@ -369,7 +404,7 @@ export default async function AdminPage() {
                     ) : (
                       <p className="text-xs text-[var(--muted)]">{t("developer.leads.noNote")}</p>
                     )}
-                    {isOwner ? (
+                    {isAdmin ? (
                       <>
                         <div className="grid gap-3 md:grid-cols-[1fr,1fr]">
                           <form action={updateLeadStatusAction} className="flex flex-wrap items-end gap-3">
@@ -428,7 +463,7 @@ export default async function AdminPage() {
                       </>
                     ) : (
                       <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 text-xs text-[var(--muted)]">
-                        {t("crm.ownerOnly")}
+                        {t("crm.adminOnly")}
                       </div>
                     )}
                   </Card>
@@ -490,55 +525,11 @@ export default async function AdminPage() {
           </Section>
         ) : null}
 
-        {isOwner ? (
+        {isAdmin ? (
           <Section title={t("admin.users.title")} subtitle={t("admin.users.subtitle")}>
             <div className="space-y-4">
-              <InviteUserForm />
-              <Card className="space-y-4">
-              {profiles.map((profile) => (
-                <form
-                  key={profile.id}
-                  action={updateUserRoleAction}
-                  className="flex flex-col gap-3 border-b border-[var(--border)] pb-4 last:border-none"
-                >
-                  <input type="hidden" name="user_id" value={profile.id} />
-                  <input type="hidden" name="next_path" value="/admin" />
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold">{profile.full_name ?? "-"}</p>
-                      <p className="text-xs text-[var(--muted)]">{profile.id}</p>
-                      <p className="text-xs text-[var(--muted)]">{profile.created_at ?? "-"}</p>
-                      <p className="text-xs text-[var(--muted)]">{profile.email ?? "-"}</p>
-                      <p className="text-xs text-[var(--muted)]">{profile.phone ?? "-"}</p>
-                    </div>
-                    <div className="flex items-end gap-3">
-                      <FieldSelect
-                        label={t("admin.users.role")}
-                        helpKey="admin.users.role"
-                        name="role"
-                        defaultValue={profile.role}
-                        disabled={profile.role === "owner"}
-                        wrapperClassName="min-w-[180px]"
-                      >
-                        <option value="developer">{t("role.developer")}</option>
-                        <option value="staff">{t("role.staff")}</option>
-                        <option value="ops">{t("role.ops")}</option>
-                        <option value="agent">{t("role.agent")}</option>
-                        <option value="admin">{t("role.admin")}</option>
-                      </FieldSelect>
-                      <Button
-                        size="sm"
-                        variant="secondary"
-                        type="submit"
-                        disabled={profile.role === "owner"}
-                      >
-                        {t("admin.users.update")}
-                      </Button>
-                    </div>
-                  </div>
-                </form>
-              ))}
-              </Card>
+              <InviteUserForm endpoint="/api/admin/users/invite" />
+              <UserManagementList profiles={profiles} actorRole={role} />
             </div>
           </Section>
         ) : null}

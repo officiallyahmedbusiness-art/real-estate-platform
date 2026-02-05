@@ -18,6 +18,8 @@ export const SORT_OPTIONS = [
   { value: "newest", labelKey: "sort.newest" },
   { value: "price_asc", labelKey: "sort.priceAsc" },
   { value: "price_desc", labelKey: "sort.priceDesc" },
+  { value: "area_asc", labelKey: "sort.areaAsc" },
+  { value: "area_desc", labelKey: "sort.areaDesc" },
 ] as const;
 
 export const FEATURE_CATEGORIES = [

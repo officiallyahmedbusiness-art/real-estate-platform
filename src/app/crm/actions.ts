@@ -16,9 +16,13 @@ async function requireCrmAccess(nextPath: string) {
   return { user, role };
 }
 
+function canManageLeads(role: string) {
+  return role === "owner" || role === "admin";
+}
+
 export async function updateLeadStatusAction(formData: FormData) {
   const { user, role } = await requireCrmAccess("/crm");
-  if (role !== "owner") return;
+  if (!canManageLeads(role)) return;
   const supabase = await createSupabaseServerClient();
 
   const leadId = clean(formData.get("lead_id"));
@@ -51,7 +55,7 @@ export async function updateLeadStatusAction(formData: FormData) {
 
 export async function assignLeadAction(formData: FormData) {
   const { user, role } = await requireCrmAccess("/crm");
-  if (role !== "owner") return;
+  if (!canManageLeads(role)) return;
   const supabase = await createSupabaseServerClient();
 
   const leadId = clean(formData.get("lead_id"));
@@ -91,7 +95,7 @@ export async function assignLeadAction(formData: FormData) {
 
 export async function addLeadNoteAction(formData: FormData) {
   const { user, role } = await requireCrmAccess("/crm");
-  if (role !== "owner") return;
+  if (!canManageLeads(role)) return;
   const supabase = await createSupabaseServerClient();
 
   const leadId = clean(formData.get("lead_id"));
@@ -113,7 +117,7 @@ export async function addLeadNoteAction(formData: FormData) {
 
 export async function updateLeadNextAction(formData: FormData) {
   const { user, role } = await requireCrmAccess("/crm");
-  if (role !== "owner") return;
+  if (!canManageLeads(role)) return;
   const supabase = await createSupabaseServerClient();
 
   const leadId = clean(formData.get("lead_id"));

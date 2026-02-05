@@ -17,10 +17,12 @@ const STATUS_OPTIONS = [
 ];
 
 export default async function VisitsPage() {
-  await requireRole(["owner", "admin", "ops", "staff", "agent"], "/crm/visits");
+  const { role } = await requireRole(["owner", "admin", "ops", "staff", "agent"], "/crm/visits");
   const supabase = await createSupabaseServerClient();
   const locale = await getServerLocale();
   const t = createT(locale);
+  const canViewFull = role === "owner" || role === "admin";
+  const leadsTable = canViewFull ? "leads" : "leads_masked";
 
   const { data: visitsData } = await supabase
     .from("field_visits")
@@ -37,7 +39,7 @@ export default async function VisitsPage() {
   const listings = listingsData ?? [];
 
   const { data: leadsData } = await supabase
-    .from("leads")
+    .from(leadsTable)
     .select("id, name")
     .order("created_at", { ascending: false })
     .limit(40);

@@ -34,6 +34,7 @@ export default async function DeveloperPage() {
   const { user, role } = await requireRole(["owner", "developer", "admin"], "/developer");
   const supabase = await createSupabaseServerClient();
   const isAdmin = role === "admin";
+  const leadsTable = role === "owner" ? "leads" : "leads_masked";
 
   const locale = await getServerLocale();
   const t = createT(locale);
@@ -118,7 +119,7 @@ export default async function DeveloperPage() {
 
   const leadCounts = new Map<string, number>();
   if (listingIds.length > 0) {
-    const { data: leadsData } = await supabase.from("leads").select("listing_id").in(
+    const { data: leadsData } = await supabase.from(leadsTable).select("listing_id").in(
       "listing_id",
       listingIds
     );
@@ -138,11 +139,15 @@ export default async function DeveloperPage() {
     status: string | null;
     created_at: string;
     listings: { title: string } | { title: string }[] | null;
+    listing_title?: string | null;
   }> = [];
   if (listingIds.length > 0) {
+    const leadSelect = role === "owner"
+      ? "id, listing_id, name, phone, email, message, status, created_at, listings(title)"
+      : "id, listing_id, name, phone, email, message, status, created_at, listing_title";
     const { data: leadsData } = await supabase
-      .from("leads")
-      .select("id, listing_id, name, phone, email, message, status, created_at, listings(title)")
+      .from(leadsTable)
+      .select(leadSelect)
       .in("listing_id", listingIds)
       .order("created_at", { ascending: false })
       .limit(20);
@@ -666,7 +671,14 @@ export default async function DeveloperPage() {
           ) : (
             <div className="grid gap-4">
               {recentLeads.map((lead) => {
-                const listing = Array.isArray(lead.listings) ? lead.listings[0] : lead.listings;
+                const listing =
+                  role === "owner"
+                    ? Array.isArray(lead.listings)
+                      ? lead.listings[0]
+                      : lead.listings
+                    : lead.listing_title
+                      ? { title: lead.listing_title }
+                      : null;
                 return (
                   <Card key={lead.id} className="space-y-3">
                     <div className="flex flex-wrap items-center justify-between gap-2">
