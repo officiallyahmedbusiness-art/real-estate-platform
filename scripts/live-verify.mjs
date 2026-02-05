@@ -3,16 +3,23 @@ import { execFileSync } from "node:child_process";
 function runCheck(label, url) {
   const command =
     `$u='${url}?t='+[guid]::NewGuid(); ` +
-    "$h=(Invoke-WebRequest -Headers @{'Cache-Control'='no-cache'} -Uri $u).Content; " +
+    "$h=(Invoke-WebRequest -UseBasicParsing -ErrorAction Stop -Headers @{'Cache-Control'='no-cache'} -Uri $u).Content; " +
     `'${label} has_QQQ=' + [bool]($h -match '\\?{3,}') ; ` +
     `'${label} has_home_dot=' + [bool]($h -match 'home\\.') ; ` +
     `'${label} has_fake_trust=' + [bool]($h -match 'Nasr City|Abbas|10 AM|10 minutes|Trust & Contact')`;
 
-  const output = execFileSync(
-    "powershell",
-    ["-NoProfile", "-Command", command],
-    { encoding: "utf8" }
-  );
+  let output = "";
+  try {
+    output = execFileSync("powershell", ["-NoProfile", "-Command", command], {
+      encoding: "utf8",
+    });
+  } catch (error) {
+    const stdout = error?.stdout?.toString?.() ?? "";
+    const stderr = error?.stderr?.toString?.() ?? error?.message ?? "";
+    if (stdout) process.stdout.write(stdout);
+    if (stderr) process.stderr.write(stderr);
+    process.exit(1);
+  }
   process.stdout.write(output);
 
   const flags = {
