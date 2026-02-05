@@ -92,39 +92,49 @@ export function Hero({
               </Button>
             </a>
           </div>
-          <Card className="hero-search-card space-y-2 bg-[var(--surface)]/90 p-3 sm:space-y-3 sm:p-4">
-            <p className="text-xs font-semibold sm:text-sm">{t("home.hero.searchTitle")}</p>
-            <form action="/listings" className="hero-search-form grid gap-2 sm:gap-3 md:grid-cols-3">
-              <FieldSelect
-                name="transaction"
-                label={t("home.hero.search.transaction")}
-                defaultValue=""
-              >
-                <option value="">{t("home.hero.search.transaction")}</option>
-                {purposeOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {t(option.labelKey)}
-                  </option>
-                ))}
-              </FieldSelect>
-              <FieldInput
-                name="area"
-                label={t("home.hero.search.area")}
-                placeholder={t("home.hero.search.area")}
-              />
-              <FieldInput
-                name="priceMax"
-                label={t("home.hero.search.budget")}
-                placeholder={t("home.hero.search.budget")}
-                type="number"
-              />
-              <div className="md:col-span-3 flex justify-end">
-                <Button type="submit" size="sm">
-                  {t("home.hero.search.cta")}
-                </Button>
-              </div>
-            </form>
-          </Card>
+          <details className="hero-details hero-details-search">
+            <summary className="hero-details-summary">
+              {t("home.hero.searchTitle")}
+              <span className="hero-details-caret" aria-hidden="true" />
+            </summary>
+            <div className="hero-details-body">
+              <Card className="hero-search-card space-y-2 bg-[var(--surface)]/90 p-3 sm:space-y-3 sm:p-4">
+                <p className="hero-search-title text-xs font-semibold sm:text-sm">
+                  {t("home.hero.searchTitle")}
+                </p>
+                <form action="/listings" className="hero-search-form grid gap-2 sm:gap-3 md:grid-cols-3">
+                  <FieldSelect
+                    name="transaction"
+                    label={t("home.hero.search.transaction")}
+                    defaultValue=""
+                  >
+                    <option value="">{t("home.hero.search.transaction")}</option>
+                    {purposeOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {t(option.labelKey)}
+                      </option>
+                    ))}
+                  </FieldSelect>
+                  <FieldInput
+                    name="area"
+                    label={t("home.hero.search.area")}
+                    placeholder={t("home.hero.search.area")}
+                  />
+                  <FieldInput
+                    name="priceMax"
+                    label={t("home.hero.search.budget")}
+                    placeholder={t("home.hero.search.budget")}
+                    type="number"
+                  />
+                  <div className="md:col-span-3 flex justify-end">
+                    <Button type="submit" size="sm">
+                      {t("home.hero.search.cta")}
+                    </Button>
+                  </div>
+                </form>
+              </Card>
+            </div>
+          </details>
           <div className="hero-quick flex items-center gap-2 overflow-x-auto whitespace-nowrap pb-1 text-xs text-[var(--muted)]">
             <span className="font-semibold text-[var(--text)]">{t("home.hero.quick")}</span>
             {featureCategories.map((cat) => (
@@ -138,47 +148,55 @@ export function Hero({
             ))}
           </div>
         </div>
-        <Card className="callback-card hero-callback space-y-3 bg-[var(--surface-elevated)]/90 p-3 backdrop-blur sm:space-y-4 sm:p-5">
-          <h2 className="callback-title text-lg font-semibold">{t("home.callback.title")}</h2>
-          <p className="callback-subtitle text-sm text-[var(--muted)]">{t("home.callback.subtitle")}</p>
-          <form action={onRequestAction} className="callback-form space-y-2 sm:space-y-3">
-            <input
-              type="text"
-              name="company"
-              tabIndex={-1}
-              autoComplete="off"
-              className="sr-only"
-              aria-hidden="true"
-              data-no-help
-            />
-            <input type="hidden" name="source" value="web" />
-            <input type="hidden" name="intent" value="buy" />
-            <div className="callback-grid grid gap-2 sm:gap-3 md:grid-cols-2">
-              <FieldInput
-                name="name"
-                label={t("home.callback.name")}
-                placeholder={t("home.callback.name")}
-                required
-              />
-              <FieldInput
-                name="email"
-                label={t("home.callback.email")}
-                placeholder={t("home.callback.email")}
-                type="email"
-              />
-            </div>
-            <FieldInput
-              name="phone"
-              label={t("home.callback.phone")}
-              placeholder={t("home.callback.phone")}
-              required
-              type="tel"
-            />
-            <Button type="submit" size="md" className="callback-submit w-full sm:h-12 sm:text-base">
-              {t("home.callback.submit")}
-            </Button>
-          </form>
-        </Card>
+        <details className="hero-details hero-details-callback">
+          <summary className="hero-details-summary">
+            {t("home.callback.title")}
+            <span className="hero-details-caret" aria-hidden="true" />
+          </summary>
+          <div className="hero-details-body">
+            <Card className="callback-card hero-callback space-y-3 bg-[var(--surface-elevated)]/90 p-3 backdrop-blur sm:space-y-4 sm:p-5">
+              <h2 className="callback-title text-lg font-semibold">{t("home.callback.title")}</h2>
+              <p className="callback-subtitle text-sm text-[var(--muted)]">{t("home.callback.subtitle")}</p>
+              <form action={onRequestAction} className="callback-form space-y-2 sm:space-y-3">
+                <input
+                  type="text"
+                  name="company"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  className="sr-only"
+                  aria-hidden="true"
+                  data-no-help
+                />
+                <input type="hidden" name="source" value="web" />
+                <input type="hidden" name="intent" value="buy" />
+                <div className="callback-grid grid gap-2 sm:gap-3 md:grid-cols-2">
+                  <FieldInput
+                    name="name"
+                    label={t("home.callback.name")}
+                    placeholder={t("home.callback.name")}
+                    required
+                  />
+                  <FieldInput
+                    name="email"
+                    label={t("home.callback.email")}
+                    placeholder={t("home.callback.email")}
+                    type="email"
+                  />
+                </div>
+                <FieldInput
+                  name="phone"
+                  label={t("home.callback.phone")}
+                  placeholder={t("home.callback.phone")}
+                  required
+                  type="tel"
+                />
+                <Button type="submit" size="md" className="callback-submit w-full sm:h-12 sm:text-base">
+                  {t("home.callback.submit")}
+                </Button>
+              </form>
+            </Card>
+          </div>
+        </details>
       </div>
     </section>
   );
