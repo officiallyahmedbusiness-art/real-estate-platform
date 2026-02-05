@@ -17,7 +17,7 @@ test.beforeAll(async () => {
   const supabase = createClient(supabaseUrl, anonKey, {
     auth: { autoRefreshToken: false, persistSession: false },
   });
-  const { error } = await supabase.from("supply_developer_requests").select("id").limit(1);
+  const { error } = await supabase.from("supply_owner_requests").select("id").limit(1);
   if (error && /does not exist|undefined_table/i.test(error.message)) {
     supplyTablesReady = false;
   }
@@ -29,26 +29,15 @@ test("supply nav link routes to /supply", async ({ page }) => {
   await expect(supplyLink).toHaveAttribute("href", "/supply");
 });
 
-test("supply page shows developer and owner options", async ({ page }) => {
+test("supply page shows developer portal and owner options", async ({ page }) => {
   await page.goto("/supply");
-  await expect(page.getByText(/أنا مطور عقاري|I'?m a developer/i)).toBeVisible();
-  await expect(page.getByText(/أنا مالك\/وسيط|I'?m an owner/i)).toBeVisible();
+  await expect(page.locator('main a[href="/team/login"]').first()).toBeVisible();
+  await expect(page.locator('main a[href="/supply/owner"]').first()).toBeVisible();
 });
 
-test("developer supply form submits", async ({ page }) => {
-  test.skip(!supplyTablesReady, "Supply tables not available in this environment.");
+test("developer supply page points to team portal", async ({ page }) => {
   await page.goto("/supply/developer");
-
-  await page.fill('input[name="company_name"]', "شركة اختبار");
-  await page.fill('input[name="contact_person_name"]', "محمود علي");
-  await page.fill('input[name="phone"]', "01000000000");
-  await page.selectOption('select[name="contact_method"]', "call");
-  await page.selectOption('select[name="preferred_time"]', "morning");
-  await page.fill('textarea[name="projects_summary"]', "مشروع تجريبي لاختبار نموذج التوريد.");
-  await page.selectOption('select[name="inventory_type"]', "مشروع كامل");
-
-  await page.getByRole("button", { name: /إرسال طلب التوريد|Submit supply request/i }).click();
-  await expect(page.getByText(/تم استلام طلبك|Request received/i)).toBeVisible();
+  await expect(page.locator('main a[href="/team/login"]').first()).toBeVisible();
 });
 
 test("owner supply form submits", async ({ page }) => {

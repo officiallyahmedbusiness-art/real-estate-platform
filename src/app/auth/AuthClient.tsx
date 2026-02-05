@@ -21,15 +21,29 @@ function safeMsg(err: unknown) {
   }
 }
 
-export default function AuthClient() {
+type AuthClientProps = {
+  defaultNext?: string;
+  noticeTitle?: string;
+  noticeDescription?: string;
+  errorNote?: string;
+  embedded?: boolean;
+};
+
+export default function AuthClient({
+  defaultNext = "/dashboard",
+  noticeTitle,
+  noticeDescription,
+  errorNote,
+  embedded = false,
+}: AuthClientProps) {
   const locale = getClientLocale();
   const t = createT(locale);
 
   const sp = useSearchParams();
 
   const nextPath = useMemo(
-    () => safeNextPath(sp.get("next"), "/dashboard"),
-    [sp]
+    () => safeNextPath(sp.get("next"), defaultNext),
+    [sp, defaultNext]
   );
 
   const [email, setEmail] = useState("");
@@ -123,14 +137,29 @@ export default function AuthClient() {
   }
 
   const disabledEmail = loading || email.trim().length === 0 || password.length < 6;
+  const Wrapper = embedded ? "div" : "main";
+  const wrapperClass = embedded ? "" : "min-h-screen bg-[var(--bg)] text-[var(--text)]";
+  const containerClass = embedded
+    ? "mx-auto flex w-full max-w-6xl items-start justify-center"
+    : "mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center px-6 py-12";
+
   return (
-    <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
-      <div className="mx-auto flex min-h-screen w-full max-w-6xl items-center justify-center px-6 py-12">
+    <Wrapper className={wrapperClass}>
+      <div className={containerClass}>
         <Card className="w-full max-w-xl space-y-6">
           <div className="space-y-2">
             <h1 className="text-2xl font-semibold">{t("auth.title")}</h1>
             <p className="text-sm text-[var(--muted)]">{t("auth.subtitle")}</p>
           </div>
+
+          {noticeTitle ? (
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+              <p className="text-sm font-semibold">{noticeTitle}</p>
+              {noticeDescription ? (
+                <p className="mt-1 text-xs text-[var(--muted)]">{noticeDescription}</p>
+              ) : null}
+            </div>
+          ) : null}
 
           {sessionEmail ? (
             <Card className="space-y-3">
@@ -197,7 +226,8 @@ export default function AuthClient() {
               ) : null}
               {error ? (
                 <div className="rounded-xl border border-[rgba(244,63,94,0.35)] bg-[rgba(244,63,94,0.15)] p-3 text-sm">
-                  {error}
+                  <p>{error}</p>
+                  {errorNote ? <p className="mt-2 text-xs text-[var(--muted)]">{errorNote}</p> : null}
                 </div>
               ) : null}
             </div>
@@ -208,6 +238,6 @@ export default function AuthClient() {
           </footer>
         </Card>
       </div>
-    </main>
+    </Wrapper>
   );
 }

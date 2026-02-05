@@ -22,9 +22,10 @@ export default async function SupplyLandingPage() {
           <Card className="space-y-3">
             <h2 className="text-lg font-semibold">{t("supply.card.developer.title")}</h2>
             <p className="text-sm text-[var(--muted)]">{t("supply.card.developer.subtitle")}</p>
-            <Link href="/supply/developer">
+            <Link href="/team/login">
               <Button size="md">{t("supply.card.developer.cta")}</Button>
             </Link>
+            <p className="text-xs text-[var(--muted)]">{t("supply.card.developer.note")}</p>
           </Card>
 
           <Card className="space-y-3">

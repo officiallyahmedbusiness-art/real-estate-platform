@@ -281,7 +281,7 @@ export default async function Home() {
               <p className="text-sm text-[var(--muted)]">
                 {t("home.supply.developer.subtitle")}
               </p>
-              <Link href="/supply/developer">
+              <Link href="/team/login">
                 <Button size="sm">{t("home.supply.developer.cta")}</Button>
               </Link>
             </Card>

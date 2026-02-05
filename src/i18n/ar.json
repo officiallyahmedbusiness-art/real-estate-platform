@@ -192,5 +192,94 @@
   "home.request.contact.evening": "مساءً",
   "home.request.contact.any": "أي وقت",
   "home.request.notes": "ملاحظات إضافية",
-  "home.request.submit": "إرسال الطلب"
+  "home.request.submit": "إرسال الطلب",
+  "nav.teamLogin": "تسجيل دخول فريق العمل 🔒",
+  "team.login.title": "تسجيل دخول فريق العمل",
+  "team.login.subtitle": "هذه البوابة مخصصة لفريق العمل والشركاء فقط.",
+  "team.login.errorNote": "هذه البوابة مخصصة للحسابات المدعوة فقط.",
+  "team.notice.title": "مخصص لفريق العمل والشركاء",
+  "team.notice.subtitle": "للاستخدام الداخلي فقط.",
+  "team.portal.title": "بوابة فريق العمل والشركاء",
+  "team.portal.subtitle": "دخول داخلي لفريق العمل والشركاء.",
+  "team.portal.stats.title": "ملخص الطلبات",
+  "team.portal.stats.subtitle": "وحدات ومشروعات الشركاء في لمحة سريعة.",
+  "team.portal.stats.new": "جديد",
+  "team.portal.stats.review": "قيد المراجعة",
+  "team.portal.stats.approved": "معتمد",
+  "team.portal.stats.rejected": "يحتاج تعديلات",
+  "team.portal.shortcuts.title": "روابط سريعة",
+  "team.portal.shortcuts.subtitle": "انتقل إلى الأقسام الداخلية.",
+  "team.portal.card.units.title": "وحدات الشركاء",
+  "team.portal.card.units.subtitle": "إدارة مشروعات ووحدات الشركاء.",
+  "team.portal.card.units.cta": "فتح الوحدات",
+  "team.portal.card.crm.title": "صندوق CRM",
+  "team.portal.card.crm.subtitle": "متابعة طلبات العملاء والمتابعات.",
+  "team.portal.card.crm.cta": "فتح CRM",
+  "team.portal.card.partners.title": "جهات الشركاء",
+  "team.portal.card.partners.subtitle": "إدارة جهات المطورين والأعضاء.",
+  "team.portal.card.partners.cta": "إدارة الشركاء",
+  "team.portal.card.users.title": "المستخدمون والأدوار",
+  "team.portal.card.users.subtitle": "دعوة أعضاء الفريق وتحديث الأدوار.",
+  "team.portal.card.users.cta": "إدارة المستخدمين",
+  "team.portal.back": "العودة للبوابة",
+  "team.units.title": "طلبات الشركاء",
+  "team.units.subtitle": "مراجعة مشروعات ووحدات الشركاء.",
+  "team.units.projects.title": "مشروعات الشركاء",
+  "team.units.projects.subtitle": "مشروعات جديدة وقيد المراجعة.",
+  "team.units.projects.label": "مشروع",
+  "team.units.listings.title": "وحدات الشركاء",
+  "team.units.listings.subtitle": "وحدات جديدة وقيد المراجعة.",
+  "team.units.listings.label": "وحدة",
+  "team.units.empty": "لا توجد طلبات بعد.",
+  "team.units.developer": "المطور: {{name}}",
+  "team.users.title": "مستخدمو الفريق",
+  "team.users.subtitle": "دعوة وإدارة الوصول الداخلي.",
+  "team.users.invite.title": "دعوة مستخدم",
+  "team.users.invite.subtitle": "أرسل دعوة لعضو فريق أو شريك.",
+  "team.users.list.title": "قائمة المستخدمين",
+  "team.users.list.subtitle": "تحديث الأدوار أو تعطيل الحسابات.",
+  "team.partners.title": "جهات الشركاء",
+  "team.partners.subtitle": "إدارة المطورين وأعضاء الشركاء.",
+  "team.partners.create.title": "إضافة شريك",
+  "team.partners.create.subtitle": "إنشاء جهة شريك وربط الأعضاء.",
+  "team.partners.create.org": "إنشاء جهة",
+  "team.partners.create.name": "اسم الجهة",
+  "team.partners.create.submit": "حفظ",
+  "team.partners.create.member": "ربط عضو",
+  "team.partners.create.selectOrg": "اختر الجهة",
+  "team.partners.create.userId": "معرّف المستخدم",
+  "team.partners.create.role": "دور العضو (اختياري)",
+  "team.partners.list.title": "الجهات",
+  "team.partners.list.subtitle": "جهات المطورين وأعضاؤها.",
+  "team.partners.list.empty": "لا يوجد شركاء بعد.",
+  "team.partners.list.noMembers": "لا يوجد أعضاء مرتبطون بعد.",
+  "team.partners.list.role": "الدور: {{role}}",
+  "home.supply.subtitle": "توريد المطورين متاح بالدعوة فقط عبر بوابة الشركاء.",
+  "home.supply.developer.subtitle": "توريد الشركاء يتم عبر البوابة الداخلية.",
+  "home.supply.developer.cta": "فتح بوابة الشركاء",
+  "supply.page.subtitle": "توريد المطورين متاح بالدعوة فقط عبر بوابة الشركاء.",
+  "supply.card.developer.subtitle": "توريد الشركاء متاح بالدعوة فقط عبر البوابة.",
+  "supply.card.developer.cta": "تسجيل دخول الفريق",
+  "supply.card.developer.note": "الدخول يحتاج دعوة.",
+  "supply.developer.portal.title": "بوابة شريك مطور",
+  "supply.developer.portal.subtitle": "طلبات التوريد تتم عبر البوابة الداخلية.",
+  "supply.developer.portal.note": "إذا كان لديك دعوة، سجّل الدخول. إذا لم تكن لديك، اطلب مكالمة.",
+  "supply.developer.portal.cta": "فتح بوابة الشركاء",
+  "supply.developer.portal.callback": "طلب مكالمة",
+  "team.portal.card.cleanup.title": "أداة التنظيف",
+  "team.portal.card.cleanup.subtitle": "إزالة القيم التجريبية من الإعدادات.",
+  "team.portal.card.cleanup.cta": "فتح أداة التنظيف",
+  "team.cleanup.title": "تنظيف الإعدادات",
+  "team.cleanup.subtitle": "أداة للمالك فقط لإزالة القيم التجريبية.",
+  "team.cleanup.body": "تحذف القيم التجريبية لبيانات التواصل/الثقة من إعدادات الموقع وتُبقي القيم الفارغة NULL.",
+  "team.cleanup.button": "تشغيل التنظيف",
+  "team.cleanup.running": "جارٍ التنظيف...",
+  "team.cleanup.before": "قبل",
+  "team.cleanup.after": "بعد",
+  "team.cleanup.present": "موجود",
+  "team.cleanup.empty": "فارغ",
+  "team.cleanup.success": "تم التنظيف بنجاح.",
+  "team.cleanup.error.unauthorized": "يرجى تسجيل الدخول أولاً.",
+  "team.cleanup.error.forbidden": "هذه الأداة للمالك فقط.",
+  "team.cleanup.error.generic": "تعذر تنفيذ التنظيف: {{message}}"
 }

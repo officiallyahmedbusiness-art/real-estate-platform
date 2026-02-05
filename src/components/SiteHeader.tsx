@@ -161,6 +161,9 @@ export async function SiteHeader() {
                 <Link href="/supply" className="rounded-lg px-2 py-2 hover:bg-[var(--surface-2)]">
                   {t("nav.supply")}
                 </Link>
+                <Link href="/team/login" className="rounded-lg px-2 py-2 text-xs font-semibold text-[var(--muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]">
+                  {t("nav.teamLogin")}
+                </Link>
                 {whatsappLink ? (
                   <a
                     href={whatsappLink}
@@ -236,6 +239,9 @@ export async function SiteHeader() {
           </Link>
           <Link href="/supply" className="hover:text-[var(--text)]">
             {t("nav.supply")}
+          </Link>
+          <Link href="/team/login" className="text-xs font-semibold text-[var(--muted)] hover:text-[var(--text)]">
+            {t("nav.teamLogin")}
           </Link>
           {whatsappLink ? (
             <a href={whatsappLink} target="_blank" rel="noreferrer" className="hover:text-[var(--text)]">

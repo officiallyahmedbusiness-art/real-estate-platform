@@ -116,6 +116,9 @@ export function InviteUserForm({ endpoint = "/api/owner/users" }: InviteUserForm
         >
           <option value="staff">{t("role.staff")}</option>
           <option value="admin">{t("role.admin")}</option>
+          <option value="ops">{t("role.ops")}</option>
+          <option value="agent">{t("role.agent")}</option>
+          <option value="developer">{t("role.developer")}</option>
         </FieldSelect>
         <div className="md:col-span-2">
           <Button type="submit" disabled={loading}>

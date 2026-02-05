@@ -51,7 +51,7 @@ export async function POST(request: Request) {
   if (!email || !email.includes("@") || email.length > 120) {
     return NextResponse.json({ ok: false, error: "invalid_input" }, { status: 400 });
   }
-  if (role !== "admin" && role !== "staff" && role !== "ops" && role !== "agent") {
+  if (role !== "admin" && role !== "staff" && role !== "ops" && role !== "agent" && role !== "developer") {
     return NextResponse.json({ ok: false, error: "invalid_role" }, { status: 400 });
   }
 
