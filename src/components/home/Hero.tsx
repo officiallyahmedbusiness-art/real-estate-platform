@@ -22,7 +22,6 @@ type HeroProps = {
   heroVideo: HeroMediaItem | null;
   heroImages: HeroMediaItem[];
   featureCategories: ReadonlyArray<FeatureCategory>;
-  onRequestAction: (formData: FormData) => Promise<void>;
   purposeOptions: ReadonlyArray<{ value: string; labelKey: string }>;
 };
 
@@ -31,7 +30,6 @@ export function Hero({
   heroVideo,
   heroImages,
   featureCategories,
-  onRequestAction,
   purposeOptions,
 }: HeroProps) {
   return (
@@ -82,7 +80,7 @@ export function Hero({
                 {t("home.hero.ctaPrimary")}
               </Button>
             </Link>
-            <a href="https://wa.me/201020614022" target="_blank" rel="noreferrer">
+            <Link href="/callback">
               <Button
                 size="md"
                 variant="secondary"
@@ -90,7 +88,7 @@ export function Hero({
               >
                 {t("home.hero.ctaSecondary")}
               </Button>
-            </a>
+            </Link>
           </div>
           <details className="hero-details hero-details-search">
             <summary className="hero-details-summary">
@@ -157,43 +155,11 @@ export function Hero({
             <Card className="callback-card hero-callback space-y-3 bg-[var(--surface-elevated)]/90 p-3 backdrop-blur sm:space-y-4 sm:p-5">
               <h2 className="callback-title text-lg font-semibold">{t("home.callback.title")}</h2>
               <p className="callback-subtitle text-sm text-[var(--muted)]">{t("home.callback.subtitle")}</p>
-              <form action={onRequestAction} className="callback-form space-y-2 sm:space-y-3">
-                <input
-                  type="text"
-                  name="company"
-                  tabIndex={-1}
-                  autoComplete="off"
-                  className="sr-only"
-                  aria-hidden="true"
-                  data-no-help
-                />
-                <input type="hidden" name="source" value="web" />
-                <input type="hidden" name="intent" value="buy" />
-                <div className="callback-grid grid gap-2 sm:gap-3 md:grid-cols-2">
-                  <FieldInput
-                    name="name"
-                    label={t("home.callback.name")}
-                    placeholder={t("home.callback.name")}
-                    required
-                  />
-                  <FieldInput
-                    name="email"
-                    label={t("home.callback.email")}
-                    placeholder={t("home.callback.email")}
-                    type="email"
-                  />
-                </div>
-                <FieldInput
-                  name="phone"
-                  label={t("home.callback.phone")}
-                  placeholder={t("home.callback.phone")}
-                  required
-                  type="tel"
-                />
-                <Button type="submit" size="md" className="callback-submit w-full sm:h-12 sm:text-base">
-                  {t("home.callback.submit")}
+              <Link href="/callback">
+                <Button type="button" size="md" className="callback-submit w-full sm:h-12 sm:text-base">
+                  {t("home.callback.cta")}
                 </Button>
-              </form>
+              </Link>
             </Card>
           </div>
         </details>

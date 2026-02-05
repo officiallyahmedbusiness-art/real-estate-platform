@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const ROUTES = ["/", "/listings"];
+const ROUTES = ["/", "/listings", "/supply", "/supply/developer", "/supply/owner", "/callback"];
 
 test.describe("No corrupted Arabic or raw i18n keys", () => {
   for (const route of ROUTES) {

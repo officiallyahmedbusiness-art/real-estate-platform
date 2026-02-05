@@ -13,7 +13,7 @@ export function FAQ({ items }: FAQProps) {
       {items.map((item) => (
         <details
           key={item.question}
-          className="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)]/90 p-4"
+          className="faq-item rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)]/90 p-4"
         >
           <summary className="cursor-pointer text-sm font-semibold text-[var(--text)]">
             {item.question}

@@ -641,6 +641,81 @@ html[dir="rtl"] .ads-card:hover {
   .hero-details[open] .hero-details-body {
     display: block;
   }
+
+  .hero-actions button,
+  .hero-details .callback-submit,
+  .home-button-md {
+    height: 38px;
+    padding-inline: 12px;
+    font-size: 0.82rem;
+    border-radius: 12px;
+    letter-spacing: 0.01em;
+    box-shadow: 0 8px 18px rgba(8, 12, 24, 0.28);
+  }
+
+  .hero-actions {
+    gap: 8px;
+  }
+
+  .hero-details-summary {
+    padding: 8px 10px;
+    font-size: 0.85rem;
+  }
+
+  .hero-details-caret {
+    width: 7px;
+    height: 7px;
+  }
+
+  .home-main > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 1.25rem;
+  }
+
+  .home-search-details .hero-details-body {
+    padding: 0;
+  }
+
+  .home-search-card {
+    padding: 12px;
+  }
+
+  .home-main .hrtaj-card {
+    padding: 12px;
+  }
+
+  .home-main .faq-item {
+    padding: 12px;
+  }
+
+  .home-main .partner-track,
+  .home-main .ads-track {
+    gap: 12px;
+  }
+
+  .home-main .partner-card {
+    min-width: 190px;
+    padding: 12px;
+    border-radius: 16px;
+  }
+
+  .home-main .ads-card {
+    min-width: 200px;
+    padding: 12px;
+    border-radius: 18px;
+  }
+
+  .home-main .ads-media {
+    border-radius: 12px;
+  }
+
+  .home-recently .recently-track {
+    grid-auto-columns: minmax(180px, 1fr);
+  }
+
+  .home-recently .recently-card-body {
+    padding: 8px 10px;
+    font-size: 0.8rem;
+  }
 }
 
 @media (min-width: 768px) {
@@ -1042,6 +1117,11 @@ html[dir="rtl"] .hero-track {
 
   .hero-quick {
     font-size: 11px;
+    gap: 6px;
+  }
+
+  .hero-quick a {
+    padding-inline: 10px;
   }
 
   .hero-track {

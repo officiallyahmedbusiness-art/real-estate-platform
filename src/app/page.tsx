@@ -193,74 +193,108 @@ export default async function Home() {
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <SiteHeader />
-      <main className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:space-y-12 sm:px-6 sm:py-10 lg:px-8">
+      <main className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:space-y-12 sm:px-6 sm:py-10 lg:px-8 home-main">
         <Hero
           t={t}
           heroVideo={heroVideo}
           heroImages={heroImages}
           featureCategories={FEATURE_CATEGORIES}
-          onRequestAction={createPublicRequestAction}
           purposeOptions={PURPOSE_OPTIONS}
         />
 
-        <Section title={t("home.search.title")} subtitle={t("home.search.subtitle")}>
-          <Card className="space-y-4 bg-[var(--surface-elevated)]/90">
-            <form action="/listings" className="space-y-3">
-              <div className="grid gap-3 md:grid-cols-2">
-                <FieldInput
-                  name="city"
-                  label={t("home.search.city")}
-                  placeholder={t("home.search.city")}
-                />
-                <FieldInput
-                  name="area"
-                  label={t("home.search.area")}
-                  placeholder={t("home.search.area")}
-                />
-              </div>
-              <div className="grid gap-3 md:grid-cols-2">
-                <FieldSelect
-                  name="purpose"
-                  label={t("home.search.purpose")}
-                  defaultValue=""
-                >
-                  <option value="">{t("home.search.purpose")}</option>
-                  {PURPOSE_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {t(option.labelKey)}
-                    </option>
-                  ))}
-                </FieldSelect>
-                <FieldSelect
-                  name="type"
-                  label={t("filters.type")}
-                  defaultValue=""
-                >
-                  <option value="">{t("filters.type")}</option>
-                  {PROPERTY_TYPE_OPTIONS.map((option) => (
-                    <option key={option.value} value={option.value}>
-                      {t(option.labelKey)}
-                    </option>
-                  ))}
-                </FieldSelect>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <FieldInput
-                  name="minPrice"
-                  label={t("home.search.minPrice")}
-                  placeholder={t("home.search.minPrice")}
-                />
-                <FieldInput
-                  name="maxPrice"
-                  label={t("home.search.maxPrice")}
-                  placeholder={t("home.search.maxPrice")}
-                />
-              </div>
-              <Button type="submit" className="w-full">
-                {t("home.search.submit")}
-              </Button>
-            </form>
-          </Card>
+        <Section
+          title={t("home.search.title")}
+          subtitle={t("home.search.subtitle")}
+          className="home-search-section"
+        >
+          <details className="hero-details home-search-details">
+            <summary className="hero-details-summary">
+              {t("home.search.title")}
+              <span className="hero-details-caret" aria-hidden="true" />
+            </summary>
+            <div className="hero-details-body">
+              <Card className="home-search-card space-y-4 bg-[var(--surface-elevated)]/90">
+                <form action="/listings" className="space-y-3">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <FieldInput
+                      name="city"
+                      label={t("home.search.city")}
+                      placeholder={t("home.search.city")}
+                    />
+                    <FieldInput
+                      name="area"
+                      label={t("home.search.area")}
+                      placeholder={t("home.search.area")}
+                    />
+                  </div>
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <FieldSelect
+                      name="purpose"
+                      label={t("home.search.purpose")}
+                      defaultValue=""
+                    >
+                      <option value="">{t("home.search.purpose")}</option>
+                      {PURPOSE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {t(option.labelKey)}
+                        </option>
+                      ))}
+                    </FieldSelect>
+                    <FieldSelect
+                      name="type"
+                      label={t("filters.type")}
+                      defaultValue=""
+                    >
+                      <option value="">{t("filters.type")}</option>
+                      {PROPERTY_TYPE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {t(option.labelKey)}
+                        </option>
+                      ))}
+                    </FieldSelect>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <FieldInput
+                      name="minPrice"
+                      label={t("home.search.minPrice")}
+                      placeholder={t("home.search.minPrice")}
+                    />
+                    <FieldInput
+                      name="maxPrice"
+                      label={t("home.search.maxPrice")}
+                      placeholder={t("home.search.maxPrice")}
+                    />
+                  </div>
+                  <Button type="submit" className="w-full home-button-md">
+                    {t("home.search.submit")}
+                  </Button>
+                </form>
+              </Card>
+            </div>
+          </details>
+        </Section>
+
+        <Section title={t("home.supply.title")} subtitle={t("home.supply.subtitle")}>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card className="space-y-3 hrtaj-card">
+              <h3 className="text-lg font-semibold">{t("home.supply.developer.title")}</h3>
+              <p className="text-sm text-[var(--muted)]">
+                {t("home.supply.developer.subtitle")}
+              </p>
+              <Link href="/supply/developer">
+                <Button size="sm">{t("home.supply.developer.cta")}</Button>
+              </Link>
+            </Card>
+            <Card className="space-y-3 hrtaj-card">
+              <h3 className="text-lg font-semibold">{t("home.supply.owner.title")}</h3>
+              <p className="text-sm text-[var(--muted)]">{t("home.supply.owner.subtitle")}</p>
+              <Link href="/supply/owner">
+                <Button size="sm" variant="secondary">
+                  {t("home.supply.owner.cta")}
+                </Button>
+              </Link>
+            </Card>
+          </div>
         </Section>
 
         <Section title={t("home.categories.title")} subtitle={t("home.categories.subtitle")}>
@@ -271,8 +305,8 @@ export default async function Home() {
                   className="hrtaj-card transition hover:-translate-y-1 hover:border-[var(--accent)] fade-up"
                   style={{ animationDelay: `${index * 80}ms` }}
                 >
-                  <h3 className="text-lg font-semibold">{t(cat.titleKey)}</h3>
-                  <p className="text-sm text-[var(--muted)]">{t(cat.descKey)}</p>
+                  <h3 className="text-lg font-semibold line-clamp-2">{t(cat.titleKey)}</h3>
+                  <p className="text-sm text-[var(--muted)] line-clamp-3">{t(cat.descKey)}</p>
                 </Card>
               </Link>
             ))}
@@ -353,7 +387,7 @@ export default async function Home() {
                     )}
                   </div>
                   <div className="space-y-1">
-                    <p className="text-lg font-semibold">
+                    <p className="text-lg font-semibold line-clamp-2">
                       {locale === "ar" ? project.title_ar : project.title_en}
                     </p>
                     <p className="text-sm text-[var(--muted)]">
@@ -509,7 +543,7 @@ export default async function Home() {
                 />
               </div>
               <div className="md:col-span-2">
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full home-button-md">
                   {t("home.request.submit")}
                 </Button>
               </div>
@@ -517,7 +551,7 @@ export default async function Home() {
           </Card>
         </Section>
       </main>
-      <div className="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-6 lg:px-8 home-recently">
         <RecentlyViewedStrip
           locale={locale}
           title={t("recent.title")}

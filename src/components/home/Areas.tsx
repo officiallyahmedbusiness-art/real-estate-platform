@@ -23,8 +23,12 @@ export function Areas({ t, areas }: AreasProps) {
             style={{ animationDelay: `${index * 70}ms` }}
           >
             <div className="space-y-2">
-              <p className="text-base font-semibold">{t(`home.areas.${area.key}.title`)}</p>
-              <p className="text-sm text-[var(--muted)]">{t(`home.areas.${area.key}.subtitle`)}</p>
+              <p className="text-base font-semibold line-clamp-2">
+                {t(`home.areas.${area.key}.title`)}
+              </p>
+              <p className="text-sm text-[var(--muted)] line-clamp-2">
+                {t(`home.areas.${area.key}.subtitle`)}
+              </p>
             </div>
             <span className="mt-3 inline-flex text-xs font-semibold text-[var(--accent)]">
               {t("home.areas.cta")}

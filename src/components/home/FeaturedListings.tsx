@@ -71,7 +71,9 @@ export function FeaturedListings({ t, locale, listings }: FeaturedListingsProps)
                 </Badge>
               </div>
               <Link href={`/listing/${listing.id}`}>
-                <h3 className="text-lg font-semibold hover:text-[var(--accent)]">{listing.title}</h3>
+                <h3 className="text-lg font-semibold hover:text-[var(--accent)] line-clamp-2">
+                  {listing.title}
+                </h3>
               </Link>
               <p className="text-sm text-[var(--muted)]">
                 {listing.city}

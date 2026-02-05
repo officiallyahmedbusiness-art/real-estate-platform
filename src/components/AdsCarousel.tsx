@@ -55,7 +55,7 @@ export function AdsCarousel({
               </div>
             </div>
             <div className="space-y-2">
-              <p className="text-sm font-semibold">{item.title}</p>
+              <p className="text-sm font-semibold line-clamp-2">{item.title}</p>
               <p className="text-xs text-[var(--muted)] line-clamp-2">{item.body}</p>
             </div>
             <Link href={item.ctaUrl}>
