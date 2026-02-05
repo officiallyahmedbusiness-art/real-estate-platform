@@ -884,18 +884,18 @@ html[dir="rtl"] .ads-card:hover {
 }
 
 .callback-title {
-  font-size: clamp(1.05rem, 0.95rem + 1vw, 1.35rem);
+  font-size: clamp(1rem, 0.95rem + 0.8vw, 1.3rem);
 }
 
 .callback-subtitle {
-  font-size: clamp(0.9rem, 0.85rem + 0.6vw, 1rem);
+  font-size: clamp(0.85rem, 0.8rem + 0.6vw, 1rem);
   line-height: 1.6;
 }
 
 @media (max-width: 640px) {
   .callback-card {
     border-radius: 20px;
-    padding: 16px;
+    padding: 14px;
   }
 
   .callback-grid {
@@ -904,6 +904,14 @@ html[dir="rtl"] .ads-card:hover {
 
   .callback-submit {
     min-height: 48px;
+  }
+
+  .callback-title {
+    font-size: 1rem;
+  }
+
+  .callback-subtitle {
+    font-size: 0.85rem;
   }
 }
 

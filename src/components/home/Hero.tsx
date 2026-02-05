@@ -35,7 +35,7 @@ export function Hero({
   purposeOptions,
 }: HeroProps) {
   return (
-    <section className="relative overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface)]/90 p-4 shadow-[var(--shadow)] fade-up sm:rounded-[32px] sm:p-8 hero-shell">
+    <section className="relative overflow-hidden rounded-[28px] border border-[var(--border)] bg-[var(--surface)]/90 p-3 shadow-[var(--shadow)] fade-up sm:rounded-[32px] sm:p-6 lg:p-8 hero-shell">
       <div className="absolute inset-0">
         {heroVideo ? (
           <video
@@ -61,10 +61,10 @@ export function Hero({
         ) : null}
         <div className="hero-overlay" />
       </div>
-      <div className="relative z-10 grid gap-5 sm:gap-10 lg:grid-cols-[1.1fr,0.9fr]">
-        <div className="space-y-4 sm:space-y-6">
+      <div className="relative z-10 grid gap-4 sm:gap-8 lg:grid-cols-[1.1fr,0.9fr]">
+        <div className="space-y-3 sm:space-y-6">
           <Badge>{t("home.hero.badge")}</Badge>
-          <h1 className="max-w-[18ch] text-3xl font-semibold leading-tight text-balance sm:max-w-[22ch] sm:text-5xl lg:text-5xl">
+          <h1 className="max-w-none text-2xl font-semibold leading-tight text-balance sm:max-w-[22ch] sm:text-4xl lg:text-5xl">
             {t("home.hero.title")}
           </h1>
           <p className="max-w-lg text-sm leading-relaxed text-[var(--muted)] sm:text-base">
@@ -72,19 +72,23 @@ export function Hero({
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Link href="/listings">
-              <Button size="lg" className="w-full sm:w-auto">
+              <Button size="md" className="w-full sm:w-auto sm:h-12 sm:px-5 sm:text-base">
                 {t("home.hero.ctaPrimary")}
               </Button>
             </Link>
             <a href="https://wa.me/201020614022" target="_blank" rel="noreferrer">
-              <Button size="lg" variant="secondary" className="w-full sm:w-auto">
+              <Button
+                size="md"
+                variant="secondary"
+                className="w-full sm:w-auto sm:h-12 sm:px-5 sm:text-base"
+              >
                 {t("home.hero.ctaSecondary")}
               </Button>
             </a>
           </div>
-          <Card className="space-y-3 bg-[var(--surface)]/90 p-4">
-            <p className="text-sm font-semibold">{t("home.hero.searchTitle")}</p>
-            <form action="/listings" className="grid gap-3 md:grid-cols-3">
+          <Card className="space-y-2 bg-[var(--surface)]/90 p-3 sm:space-y-3 sm:p-4">
+            <p className="text-xs font-semibold sm:text-sm">{t("home.hero.searchTitle")}</p>
+            <form action="/listings" className="grid gap-2 sm:gap-3 md:grid-cols-3">
               <FieldSelect
                 name="transaction"
                 label={t("home.hero.search.transaction")}
@@ -128,10 +132,10 @@ export function Hero({
             ))}
           </div>
         </div>
-        <Card className="callback-card space-y-4 bg-[var(--surface-elevated)]/90 p-4 backdrop-blur sm:space-y-4 sm:p-5">
+        <Card className="callback-card space-y-3 bg-[var(--surface-elevated)]/90 p-3 backdrop-blur sm:space-y-4 sm:p-5">
           <h2 className="callback-title text-lg font-semibold">{t("home.callback.title")}</h2>
           <p className="callback-subtitle text-sm text-[var(--muted)]">{t("home.callback.subtitle")}</p>
-          <form action={onRequestAction} className="callback-form space-y-3">
+          <form action={onRequestAction} className="callback-form space-y-2 sm:space-y-3">
             <input
               type="text"
               name="company"
@@ -143,7 +147,7 @@ export function Hero({
             />
             <input type="hidden" name="source" value="web" />
             <input type="hidden" name="intent" value="buy" />
-            <div className="callback-grid grid gap-3 md:grid-cols-2">
+            <div className="callback-grid grid gap-2 sm:gap-3 md:grid-cols-2">
               <FieldInput
                 name="name"
                 label={t("home.callback.name")}
@@ -164,7 +168,7 @@ export function Hero({
               required
               type="tel"
             />
-            <Button type="submit" size="lg" className="callback-submit w-full">
+            <Button type="submit" size="md" className="callback-submit w-full sm:h-12 sm:text-base">
               {t("home.callback.submit")}
             </Button>
           </form>
