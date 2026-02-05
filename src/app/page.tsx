@@ -210,13 +210,11 @@ export default async function Home() {
                 <FieldInput
                   name="city"
                   label={t("home.search.city")}
-                  helpKey="home.search.city"
                   placeholder={t("home.search.city")}
                 />
                 <FieldInput
                   name="area"
                   label={t("home.search.area")}
-                  helpKey="home.search.area"
                   placeholder={t("home.search.area")}
                 />
               </div>
@@ -224,7 +222,6 @@ export default async function Home() {
                 <FieldSelect
                   name="purpose"
                   label={t("home.search.purpose")}
-                  helpKey="home.search.purpose"
                   defaultValue=""
                 >
                   <option value="">{t("home.search.purpose")}</option>
@@ -237,7 +234,6 @@ export default async function Home() {
                 <FieldSelect
                   name="type"
                   label={t("filters.type")}
-                  helpKey="home.search.type"
                   defaultValue=""
                 >
                   <option value="">{t("filters.type")}</option>
@@ -252,13 +248,11 @@ export default async function Home() {
                 <FieldInput
                   name="minPrice"
                   label={t("home.search.minPrice")}
-                  helpKey="home.search.minPrice"
                   placeholder={t("home.search.minPrice")}
                 />
                 <FieldInput
                   name="maxPrice"
                   label={t("home.search.maxPrice")}
-                  helpKey="home.search.maxPrice"
                   placeholder={t("home.search.maxPrice")}
                 />
               </div>
@@ -453,14 +447,12 @@ export default async function Home() {
               <FieldInput
                 name="name"
                 label={t("home.request.name")}
-                helpKey="home.request.name"
                 required
                 placeholder={t("home.request.name")}
               />
               <FieldInput
                 name="phone"
                 label={t("home.request.phone")}
-                helpKey="home.request.phone"
                 required
                 placeholder={t("home.request.phone")}
                 type="tel"
@@ -468,7 +460,6 @@ export default async function Home() {
               <FieldSelect
                 name="intent"
                 label={t("home.request.intent")}
-                helpKey="home.request.intent"
                 defaultValue=""
                 required
               >
@@ -482,27 +473,23 @@ export default async function Home() {
               <FieldInput
                 name="preferred_area"
                 label={t("home.request.area")}
-                helpKey="home.request.area"
                 placeholder={t("home.request.area")}
               />
               <FieldInput
                 name="budget_min"
                 label={t("home.request.budgetMin")}
-                helpKey="home.request.budgetMin"
                 placeholder={t("home.request.budgetMin")}
                 type="number"
               />
               <FieldInput
                 name="budget_max"
                 label={t("home.request.budgetMax")}
-                helpKey="home.request.budgetMax"
                 placeholder={t("home.request.budgetMax")}
                 type="number"
               />
               <FieldSelect
                 name="preferred_contact_time"
                 label={t("home.request.contactTime")}
-                helpKey="home.request.contactTime"
                 defaultValue=""
                 wrapperClassName="md:col-span-2"
               >
@@ -517,7 +504,6 @@ export default async function Home() {
                 <FieldTextarea
                   name="notes"
                   label={t("home.request.notes")}
-                  helpKey="home.request.notes"
                   placeholder={t("home.request.notes")}
                   className="min-h-[120px]"
                 />

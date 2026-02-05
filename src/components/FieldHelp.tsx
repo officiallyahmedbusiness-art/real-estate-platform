@@ -156,7 +156,7 @@ export function FieldWrapper({
   labelClassName = "",
 }: {
   label: string;
-  helpKey: string;
+  helpKey?: string;
   children: React.ReactNode;
   className?: string;
   labelClassName?: string;
@@ -165,10 +165,10 @@ export function FieldWrapper({
     <div className={`space-y-2 ${className}`}>
       <div className={`flex flex-wrap items-center gap-2 ${labelClassName}`}>
         <label className="text-sm text-[var(--muted)]">{label}</label>
-        <FieldHelpIcon helpKey={helpKey} label={label} />
+        {helpKey ? <FieldHelpIcon helpKey={helpKey} label={label} /> : null}
       </div>
       {children}
-      <FieldHelpBlock helpKey={helpKey} label={label} />
+      {helpKey ? <FieldHelpBlock helpKey={helpKey} label={label} /> : null}
     </div>
   );
 }
@@ -181,7 +181,7 @@ export function FieldInput({
   ...props
 }: React.ComponentPropsWithoutRef<"input"> & {
   label: string;
-  helpKey: string;
+  helpKey?: string;
   wrapperClassName?: string;
 }) {
   return (
@@ -203,7 +203,7 @@ export function FieldSelect({
   ...props
 }: React.ComponentPropsWithoutRef<"select"> & {
   label: string;
-  helpKey: string;
+  helpKey?: string;
   wrapperClassName?: string;
   children: React.ReactNode;
 }) {
@@ -227,7 +227,7 @@ export function FieldTextarea({
   ...props
 }: React.ComponentPropsWithoutRef<"textarea"> & {
   label: string;
-  helpKey: string;
+  helpKey?: string;
   wrapperClassName?: string;
 }) {
   return (
@@ -247,7 +247,7 @@ export function FieldCheckbox({
   ...props
 }: React.ComponentPropsWithoutRef<"input"> & {
   label: string;
-  helpKey: string;
+  helpKey?: string;
   wrapperClassName?: string;
 }) {
   return (
@@ -255,9 +255,9 @@ export function FieldCheckbox({
       <label className="flex items-center gap-2 text-sm text-[var(--muted)]">
         <input type="checkbox" {...props} />
         <span>{label}</span>
-        <FieldHelpIcon helpKey={helpKey} label={label} />
+        {helpKey ? <FieldHelpIcon helpKey={helpKey} label={label} /> : null}
       </label>
-      <FieldHelpBlock helpKey={helpKey} label={label} />
+      {helpKey ? <FieldHelpBlock helpKey={helpKey} label={label} /> : null}
     </div>
   );
 }
@@ -269,7 +269,7 @@ export function FieldFile({
   ...props
 }: React.ComponentPropsWithoutRef<"input"> & {
   label: string;
-  helpKey: string;
+  helpKey?: string;
   wrapperClassName?: string;
 }) {
   return (

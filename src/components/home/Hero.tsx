@@ -88,7 +88,6 @@ export function Hero({
               <FieldSelect
                 name="transaction"
                 label={t("home.hero.search.transaction")}
-                helpKey="home.hero.search.transaction"
                 defaultValue=""
               >
                 <option value="">{t("home.hero.search.transaction")}</option>
@@ -101,13 +100,11 @@ export function Hero({
               <FieldInput
                 name="area"
                 label={t("home.hero.search.area")}
-                helpKey="home.hero.search.area"
                 placeholder={t("home.hero.search.area")}
               />
               <FieldInput
                 name="priceMax"
                 label={t("home.hero.search.budget")}
-                helpKey="home.hero.search.budget"
                 placeholder={t("home.hero.search.budget")}
                 type="number"
               />
@@ -150,14 +147,12 @@ export function Hero({
               <FieldInput
                 name="name"
                 label={t("home.callback.name")}
-                helpKey="home.callback.name"
                 placeholder={t("home.callback.name")}
                 required
               />
               <FieldInput
                 name="email"
                 label={t("home.callback.email")}
-                helpKey="home.callback.email"
                 placeholder={t("home.callback.email")}
                 type="email"
               />
@@ -165,7 +160,6 @@ export function Hero({
             <FieldInput
               name="phone"
               label={t("home.callback.phone")}
-              helpKey="home.callback.phone"
               placeholder={t("home.callback.phone")}
               required
               type="tel"
