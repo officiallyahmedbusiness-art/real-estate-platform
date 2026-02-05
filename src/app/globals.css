@@ -528,6 +528,19 @@ html[dir="rtl"] .ads-card:hover {
   position: relative;
 }
 
+.hero-badge {
+  font-size: 11px;
+  padding-inline: 10px;
+}
+
+.hero-title {
+  font-size: clamp(1.35rem, 4vw, 2.2rem);
+}
+
+.hero-subtitle {
+  line-height: 1.5;
+}
+
 .hero-video,
 .hero-carousel {
   width: 100%;
@@ -931,6 +944,40 @@ html[dir="rtl"] .hero-track {
 @media (prefers-reduced-motion: reduce) {
   .hero-track {
     animation: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero-badge {
+    font-size: 10px;
+  }
+
+  .hero-title {
+    font-size: clamp(1.25rem, 4.2vw, 1.8rem);
+  }
+
+  .hero-subtitle {
+    font-size: 0.85rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .hero-search-card {
+    padding: 10px;
+  }
+
+  .hero-quick {
+    font-size: 11px;
+  }
+
+  .hero-track {
+    animation: none;
+  }
+
+  .hero-callback {
+    max-width: 100%;
   }
 }
 
