@@ -113,18 +113,6 @@ export default async function ListingsPage({
   const whatsappNumber = settings.whatsapp_number ?? null;
   const callNumber = settings.primary_phone ?? settings.whatsapp_number ?? null;
   const flags = getFlags();
-  const trustItems = [
-    settings.office_address
-      ? { title: t("trust.address.title"), value: settings.office_address }
-      : null,
-    settings.working_hours
-      ? { title: t("trust.hours.title"), value: settings.working_hours }
-      : null,
-    settings.response_sla
-      ? { title: t("trust.response.title"), value: settings.response_sla }
-      : null,
-  ].filter(Boolean) as Array<{ title: string; value: string }>;
-
   const transactionOptions = PURPOSE_OPTIONS.map((option) => ({
     value: option.value,
     label: t(option.labelKey),
@@ -522,22 +510,6 @@ export default async function ListingsPage({
             </div>
           </form>
         </Card>
-
-        {trustItems.length ? (
-          <Card className="hrtaj-card">
-            <div className="space-y-2">
-              <h2 className="text-lg font-semibold">{t("trust.title")}</h2>
-              <div className="trust-strip text-sm">
-                {trustItems.map((item) => (
-                  <div key={item.title} className="trust-item">
-                    <strong>{item.title}</strong>
-                    <span className="text-[var(--muted)]">{item.value}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Card>
-        ) : null}
 
         {chipItems.length ? (
           <div className="flex flex-wrap items-center gap-2">

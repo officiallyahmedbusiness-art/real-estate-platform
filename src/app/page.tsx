@@ -15,15 +15,12 @@ import { RecentlyViewedStrip } from "@/components/listings/RecentlyViewedStrip";
 import { Hero } from "@/components/home/Hero";
 import { FeaturedListings } from "@/components/home/FeaturedListings";
 import { Areas } from "@/components/home/Areas";
-import { Trust, type TrustItem } from "@/components/home/Trust";
 import { FAQ } from "@/components/home/FAQ";
 import { buildFaqJsonLd } from "@/lib/seo/schema";
-import { getSiteSettings } from "@/lib/settings";
 
 export default async function Home() {
   const locale = await getServerLocale();
   const t = createT(locale);
-  const settings = await getSiteSettings();
 
   const supabase = await createSupabaseServerClient();
   const { data: mediaData } = await supabase
@@ -192,17 +189,6 @@ export default async function Home() {
     { key: "agami", href: "/listings?area=العجمي" },
   ];
   const faqJsonLd = buildFaqJsonLd(faqItems);
-  const trustItems: TrustItem[] = [
-    settings.office_address
-      ? { title: t("trust.address.title"), value: settings.office_address }
-      : null,
-    settings.working_hours
-      ? { title: t("trust.hours.title"), value: settings.working_hours }
-      : null,
-    settings.response_sla
-      ? { title: t("trust.response.title"), value: settings.response_sla }
-      : null,
-  ].filter(Boolean) as TrustItem[];
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
@@ -302,12 +288,6 @@ export default async function Home() {
         <Section title={t("home.areas.title")} subtitle={t("home.areas.subtitle")}>
           <Areas t={t} areas={areas} />
         </Section>
-
-        {trustItems.length ? (
-          <Section title={t("trust.title")} subtitle={t("home.trust.subtitle")}>
-            <Trust items={trustItems} />
-          </Section>
-        ) : null}
 
         <Section title={t("home.proof.title")} subtitle={t("home.proof.subtitle")}>
           <div className="grid gap-4 md:grid-cols-3">
