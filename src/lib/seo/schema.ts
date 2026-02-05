@@ -8,7 +8,7 @@ export function buildLocalBusinessJsonLd({
 }: {
   name: string;
   url: string | null;
-  address: string;
+  address?: string | null;
   locale: "ar" | "en";
 }) {
   const normalizedAddress = address?.trim();

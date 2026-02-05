@@ -9,6 +9,7 @@ test.describe("No corrupted Arabic or raw i18n keys", () => {
       const bodyText = await page.evaluate(() => document.body.innerText || "");
       expect(bodyText).not.toMatch(/\?{3,}/);
       expect(bodyText).not.toContain("home.");
+      expect(bodyText).not.toMatch(/Nasr City|Abbas|10 AM|10 minutes|Trust & Contact/);
     });
   }
 });

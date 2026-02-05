@@ -13,6 +13,7 @@ import { getServerDir, getServerLocale } from "@/lib/i18n.server";
 import { THEME_COOKIE, normalizeTheme, themeToColorScheme } from "@/lib/theme";
 import { getPublicBaseUrl } from "@/lib/paths";
 import { buildLocalBusinessJsonLd } from "@/lib/seo/schema";
+import { getSiteSettings } from "@/lib/settings";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -73,10 +74,11 @@ export default async function RootLayout({
   const colorScheme = themeToColorScheme(theme);
   const showDebugCursor = process.env.NODE_ENV === "development";
   const baseUrl = getPublicBaseUrl() || null;
+  const settings = await getSiteSettings();
   const localBusinessJsonLd = buildLocalBusinessJsonLd({
     name: t("brand.name"),
     url: baseUrl,
-    address: t("trust.address.value"),
+    address: settings.office_address ?? null,
     locale,
   });
 

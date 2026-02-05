@@ -5,7 +5,7 @@ const VIEWPORTS = [
   { width: 320, height: 720 },
 ];
 
-const ROUTES = ["/", "/supply", "/supply/developer", "/supply/owner", "/callback"];
+const ROUTES = ["/", "/listings", "/supply", "/supply/developer", "/supply/owner", "/callback"];
 
 test("mobile viewports have no horizontal overflow", async ({ page }) => {
   for (const viewport of VIEWPORTS) {

@@ -19,6 +19,7 @@
     "seed:admin": "node scripts/seed_admin_user.mjs",
     "start": "next start",
     "test:e2e": "playwright test",
+    "live:verify": "node scripts/live-verify.mjs",
     "lint": "eslint src",
     "typecheck": "tsc --noEmit"
   },
