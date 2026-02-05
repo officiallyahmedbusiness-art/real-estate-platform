@@ -46,12 +46,15 @@ Running 21 tests using 6 workers
 ```
 
 ## Live curl verification (after deploy)
-(Will be updated after production deploy)
+Outputs from the required commands were captured to files (single-line HTML responses):
+- `docs/codex/p0-curl-home.txt`
+- `docs/codex/p0-curl-listings.txt`
 
+Additional UTF-8 verification (same HTML decoded as UTF-8):
 ```
-curl.exe -sL https://hrtaj.com/ | findstr /I "??? home."
-
-curl.exe -sL https://hrtaj.com/listings | findstr /I "??? home."
+hasBrand=True
+hasQ=False
+hasHome=False
 ```
 
 ## Commands to re-run
