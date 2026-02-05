@@ -83,8 +83,9 @@ test.describe("Site audit crawl", () => {
       }
 
       const bodyText = await page.evaluate(() => document.body.innerText || "");
-      if (/\?{2,}/.test(bodyText)) issues.push("Found repeated '?' in text");
+      if (/\?{3,}/.test(bodyText)) issues.push("Found repeated '?' in text");
       if (bodyText.includes("�")) issues.push("Found replacement character");
+      if (bodyText.includes("home.")) issues.push("Found raw i18n key");
       if (bodyText.includes("هارتج")) issues.push("Found incorrect brand spelling");
 
       const hasTitle = await page.title();

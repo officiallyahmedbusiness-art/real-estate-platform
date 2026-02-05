@@ -191,7 +191,7 @@ export default async function Home() {
   const faqJsonLd = buildFaqJsonLd(faqItems);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
+    <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <SiteHeader />
       <main className="mx-auto w-full max-w-7xl space-y-6 px-4 py-6 pb-[calc(7rem+env(safe-area-inset-bottom))] sm:space-y-12 sm:px-6 sm:py-10 lg:px-8">
         <Hero

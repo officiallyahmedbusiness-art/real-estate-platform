@@ -2005,8 +2005,18 @@ export const DICTIONARY: Record<Locale, Dictionary> = { ar: arMerged, en: enMerg
 export type TranslationKey = keyof typeof arMerged;
 
 export function createT(locale: Locale) {
+  const isProd = process.env.NODE_ENV === "production";
+  const isCorrupt = (value: string | undefined) =>
+    !value || /\?{3,}/.test(value) || value.includes("�");
+
   return (key: TranslationKey, params?: Record<string, string | number>) => {
-    const template = DICTIONARY[locale][key] ?? DICTIONARY[DEFAULT_LOCALE][key] ?? key;
+    let template = DICTIONARY[locale][key];
+    if (isCorrupt(template) && locale !== "en") {
+      template = DICTIONARY.en[key];
+    }
+    if (isCorrupt(template)) {
+      template = isProd ? "" : key;
+    }
     const injected = {
       brand: locale === "ar" ? getBrandArName() : BRAND.en,
       domain: BRAND.domain,

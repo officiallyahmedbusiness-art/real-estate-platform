@@ -11,17 +11,20 @@ export function buildLocalBusinessJsonLd({
   address: string;
   locale: "ar" | "en";
 }) {
+  const normalizedAddress = address?.trim();
   return {
     "@context": "https://schema.org",
     "@type": ["LocalBusiness", "RealEstateAgent"],
     name,
     url: url ?? undefined,
     areaServed: locale === "ar" ? "مصر" : "Egypt",
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: address,
-      addressCountry: "EG",
-    },
+    address: normalizedAddress
+      ? {
+          "@type": "PostalAddress",
+          streetAddress: normalizedAddress,
+          addressCountry: "EG",
+        }
+      : undefined,
   };
 }
 
