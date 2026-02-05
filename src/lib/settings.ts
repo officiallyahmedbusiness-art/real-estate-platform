@@ -38,6 +38,15 @@ const SETTINGS_KEYS: Array<keyof SiteSettings> = [
   "whatsapp_message_language",
 ];
 
+const PLACEHOLDER_COMPANY_INFO = new Set([
+  "مدينة نصر - شارع عباس العقاد",
+  "يوميًا 10 ص - 9 م",
+  "نرد خلال 10 دقائق",
+  "مدينة نصر - شارع عباس العقاد.",
+  "يوميًا 10 ص - 9 م.",
+  "نرد خلال 10 دقائق.",
+]);
+
 const EMPTY_SETTINGS: SiteSettings = SETTINGS_KEYS.reduce((acc, key) => {
   acc[key] = null;
   return acc;
@@ -67,7 +76,15 @@ export async function getSiteSettings(): Promise<SiteSettings> {
     const key = row.key as keyof SiteSettings;
     if (SETTINGS_KEYS.includes(key)) {
       const value = typeof row.value === "string" ? row.value.trim() : null;
-      settings[key] = value || null;
+      if (
+        value &&
+        (key === "office_address" || key === "working_hours" || key === "response_sla") &&
+        PLACEHOLDER_COMPANY_INFO.has(value)
+      ) {
+        settings[key] = null;
+      } else {
+        settings[key] = value || null;
+      }
     }
   });
 
