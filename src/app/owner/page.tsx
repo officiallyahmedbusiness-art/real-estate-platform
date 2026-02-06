@@ -129,13 +129,13 @@ export default async function OwnerPage({
   const now = Date.now();
   const recentCutoff = new Date(now - 14 * 24 * 60 * 60 * 1000).toISOString();
 
-  const { data: sessionsData } = await supabase
+  const { data: sessionsData, error: sessionsError } = await supabase
     .from("team_sessions")
     .select("id, user_id, started_at, last_seen_at, ended_at")
     .gte("last_seen_at", recentCutoff)
     .order("last_seen_at", { ascending: false });
 
-  const sessions = (sessionsData ?? []) as SessionRow[];
+  const sessions = sessionsError ? [] : ((sessionsData ?? []) as SessionRow[]);
   const latestByUser = new Map<string, SessionRow>();
   for (const session of sessions) {
     if (!latestByUser.has(session.user_id)) {
@@ -143,27 +143,33 @@ export default async function OwnerPage({
     }
   }
 
-  const { data: teamProfilesData } = await supabase
+  const { data: teamProfilesData, error: profilesError } = await supabase
     .from("profiles")
     .select("id, full_name, email, role, is_active")
     .in("role", ["owner", "admin", "ops", "staff", "agent", "developer"]);
 
-  const teamProfiles = (teamProfilesData ?? []) as ProfileRow[];
+  const teamProfiles = profilesError ? [] : ((teamProfilesData ?? []) as ProfileRow[]);
 
-  const { data: todayData } = await supabase
+  const { data: todayData, error: todayError } = await supabase
     .from("report_team_time_today")
     .select("user_id, minutes");
-  const { data: weekData } = await supabase
+  const { data: weekData, error: weekError } = await supabase
     .from("report_team_time_7d")
     .select("user_id, minutes");
 
   const todayMap = new Map<string, number>();
-  for (const row of (todayData ?? []) as Array<{ user_id: string; minutes: number }>) {
+  for (const row of (todayError ? [] : todayData ?? []) as Array<{
+    user_id: string;
+    minutes: number;
+  }>) {
     todayMap.set(row.user_id, Number(row.minutes ?? 0));
   }
 
   const weekMap = new Map<string, number>();
-  for (const row of (weekData ?? []) as Array<{ user_id: string; minutes: number }>) {
+  for (const row of (weekError ? [] : weekData ?? []) as Array<{
+    user_id: string;
+    minutes: number;
+  }>) {
     weekMap.set(row.user_id, Number(row.minutes ?? 0));
   }
 
