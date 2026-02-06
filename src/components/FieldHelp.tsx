@@ -154,17 +154,21 @@ export function FieldWrapper({
   children,
   className = "",
   labelClassName = "",
+  htmlFor,
 }: {
   label: string;
   helpKey?: string;
   children: React.ReactNode;
   className?: string;
   labelClassName?: string;
+  htmlFor?: string;
 }) {
   return (
     <div className={`space-y-2 ${className}`}>
       <div className={`flex flex-wrap items-center gap-2 ${labelClassName}`}>
-        <label className="text-sm text-[var(--muted)]">{label}</label>
+        <label htmlFor={htmlFor} className="text-sm text-[var(--muted)]">
+          {label}
+        </label>
         {helpKey ? <FieldHelpIcon helpKey={helpKey} label={label} /> : null}
       </div>
       {children}
@@ -184,10 +188,17 @@ export function FieldInput({
   helpKey?: string;
   wrapperClassName?: string;
 }) {
+  const inputId = props.id ?? props.name;
   return (
-    <FieldWrapper label={label} helpKey={helpKey} className={wrapperClassName}>
+    <FieldWrapper
+      label={label}
+      helpKey={helpKey}
+      className={wrapperClassName}
+      htmlFor={inputId}
+    >
       <input
         {...props}
+        id={inputId}
         className={`h-11 w-full rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] px-4 text-sm text-[var(--text)] placeholder:text-[var(--muted)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition focus:outline-none focus:ring-2 focus:ring-[var(--focus)] ${className}`}
       />
     </FieldWrapper>
@@ -207,10 +218,17 @@ export function FieldSelect({
   wrapperClassName?: string;
   children: React.ReactNode;
 }) {
+  const selectId = props.id ?? props.name;
   return (
-    <FieldWrapper label={label} helpKey={helpKey} className={wrapperClassName}>
+    <FieldWrapper
+      label={label}
+      helpKey={helpKey}
+      className={wrapperClassName}
+      htmlFor={selectId}
+    >
       <select
         {...props}
+        id={selectId}
         className={`h-11 w-full rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] px-4 text-sm text-[var(--text)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition focus:outline-none focus:ring-2 focus:ring-[var(--focus)] ${className}`}
       >
         {children}
@@ -230,10 +248,17 @@ export function FieldTextarea({
   helpKey?: string;
   wrapperClassName?: string;
 }) {
+  const textareaId = props.id ?? props.name;
   return (
-    <FieldWrapper label={label} helpKey={helpKey} className={wrapperClassName}>
+    <FieldWrapper
+      label={label}
+      helpKey={helpKey}
+      className={wrapperClassName}
+      htmlFor={textareaId}
+    >
       <textarea
         {...props}
+        id={textareaId}
         className={`min-h-[120px] w-full rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] placeholder:text-[var(--muted)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05)] transition focus:outline-none focus:ring-2 focus:ring-[var(--focus)] ${className}`}
       />
     </FieldWrapper>

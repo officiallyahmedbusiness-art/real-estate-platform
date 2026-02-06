@@ -1,12 +1,20 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
 import AuthClient from "@/app/auth/AuthClient";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 
 export default async function TeamLoginPage() {
   const locale = await getServerLocale();
   const t = createT(locale);
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.auth.getUser();
+  if (!error && data?.user) {
+    redirect("/team");
+  }
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
@@ -23,6 +31,11 @@ export default async function TeamLoginPage() {
           errorNote={t("team.login.errorNote")}
           embedded
         />
+        <div className="mt-6 text-sm text-[var(--muted)]">
+          <Link href="/team/activate" className="font-semibold text-[var(--accent)]">
+            {t("team.activate.link")}
+          </Link>
+        </div>
       </main>
       <SiteFooter />
     </div>
