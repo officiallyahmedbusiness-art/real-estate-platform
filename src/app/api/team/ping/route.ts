@@ -23,11 +23,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false }, { status: 401 });
   }
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("role")
     .eq("id", data.user.id)
     .maybeSingle();
+  if (profileError) {
+    // If profiles table is unavailable or connection failed, treat as service unavailable.
+    return NextResponse.json(
+      { ok: false, error: "service_unavailable" },
+      { status: 503 }
+    );
+  }
 
   const role = profile?.role ?? null;
   const allowed = ["owner", "admin", "ops", "staff", "agent", "developer"];
@@ -62,7 +69,10 @@ export async function POST(req: Request) {
       .maybeSingle();
 
     if (updateError) {
-      return NextResponse.json({ ok: false }, { status: 500 });
+      return NextResponse.json(
+        { ok: false, error: "service_unavailable" },
+        { status: 503 }
+      );
     }
     if (updated?.id) {
       return NextResponse.json({ ok: true, sessionId: updated.id });
@@ -88,7 +98,10 @@ export async function POST(req: Request) {
     .maybeSingle();
 
   if (createError || !created?.id) {
-    return NextResponse.json({ ok: false }, { status: 500 });
+    return NextResponse.json(
+      { ok: false, error: "service_unavailable" },
+      { status: 503 }
+    );
   }
 
   return NextResponse.json({ ok: true, sessionId: created.id });

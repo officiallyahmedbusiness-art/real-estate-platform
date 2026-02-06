@@ -14,6 +14,11 @@ const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 const describeBlock = hasEnv ? test.describe : test.describe.skip;
 
+test("team ping does not return 500", async ({ request }) => {
+  const res = await request.post("/api/team/ping", { data: {} });
+  expect([401, 403]).toContain(res.status());
+});
+
 describeBlock("Owner presence dashboard", () => {
   test("owner key rejects invalid token", async ({ page }) => {
     await page.goto("/owner");

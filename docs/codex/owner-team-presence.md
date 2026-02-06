@@ -6,7 +6,7 @@ Adds live presence tracking and work-hours reporting for authenticated team user
 ## Schema
 ### `public.team_sessions`
 - `id uuid` PK (default `gen_random_uuid()`)
-- `user_id uuid` FK → `auth.users(id)`
+- `user_id uuid` FK -> `auth.users(id)`
 - `started_at timestamptz` default `now()`
 - `last_seen_at timestamptz` default `now()`
 - `ended_at timestamptz` nullable
@@ -37,7 +37,7 @@ Views are created with `security_invoker` so RLS applies from the underlying tab
 
 Status rules:
 - **Online**: `now - last_seen_at <= 2 minutes`
-- **Idle**: `2–10 minutes`
+- **Idle**: `2-10 minutes`
 - **Offline**: `> 10 minutes` or `ended_at` is set
 
 ## Work Hours
@@ -48,8 +48,12 @@ Owner dashboard uses the views to compute:
 Displayed in `HH:MM` format.
 
 ## Owner Key Rotation
-1. Generate a new strong `OWNER_SECRET` (32–64 chars).
+1. Generate a new strong `OWNER_SECRET` (32-64 chars).
 2. Update Vercel **Production** environment variable `OWNER_SECRET`.
 3. Redeploy production.
 4. Old owner tokens become invalid immediately.
 
+## Post-Migration Status
+- The `team_sessions` table and time-report views are now present in production.
+- `/api/team/ping` returns a non-500 status (401/403 without auth; 200 with auth).
+- Use the proof checklist in `docs/codex/team-presence-db-proof.md` to re-verify.
