@@ -30,6 +30,7 @@ X-Matched-Path: /owner
 
 Notes:
 - `/api/team/ping` is POST-only; HEAD returns 405 (not 500), which satisfies the health check for non-auth requests.
+- Unauthenticated POST returns 401 (not 500).
 - Authenticated ping requires a real team session; no fake users were created.
 
 ## How To Re-check
