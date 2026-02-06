@@ -4,7 +4,7 @@ import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { safeNextPath } from "@/lib/paths";
 
 export async function requireOwnerAccess(nextPath: string) {
-  const secret = process.env.OWNER_SECRET ?? "";
+  const secret = (process.env.OWNER_SECRET ?? "").trim();
   if (!secret) notFound();
 
   const supabase = await createSupabaseServerClient();
