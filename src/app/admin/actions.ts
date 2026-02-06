@@ -93,7 +93,10 @@ export async function updateUserRoleAction(formData: FormData) {
     user_agent: hdrs.get("user-agent"),
   });
   revalidatePath("/admin");
+  revalidatePath("/admin/team/users");
   revalidatePath("/owner/users");
+  revalidatePath("/owner/team/users");
+  revalidatePath("/team/users");
 }
 
 export async function createDeveloperAction(formData: FormData) {
@@ -105,6 +108,9 @@ export async function createDeveloperAction(formData: FormData) {
 
   await supabase.from("developers").insert({ name: parsed.name });
   revalidatePath("/admin");
+  revalidatePath("/admin/partners-supply");
+  revalidatePath("/owner/partners");
+  revalidatePath("/team/partners");
 }
 
 export async function addDeveloperMemberAction(formData: FormData) {
@@ -123,6 +129,9 @@ export async function addDeveloperMemberAction(formData: FormData) {
   });
 
   revalidatePath("/admin");
+  revalidatePath("/admin/partners-supply");
+  revalidatePath("/owner/partners");
+  revalidatePath("/team/partners");
 }
 
 export async function updateListingStatusAction(formData: FormData) {
@@ -176,6 +185,11 @@ export async function updateLeadStatusAction(formData: FormData) {
   });
 
   revalidatePath("/admin");
+  revalidatePath("/admin/crm/requests");
+  revalidatePath(`/admin/crm/requests/${leadId}`);
+  revalidatePath("/owner/crm/requests");
+  revalidatePath(`/owner/crm/requests/${leadId}`);
+  revalidatePath("/crm");
 }
 
 export async function assignLeadAction(formData: FormData) {
@@ -218,6 +232,11 @@ export async function assignLeadAction(formData: FormData) {
   });
 
   revalidatePath("/admin");
+  revalidatePath("/admin/crm/requests");
+  revalidatePath(`/admin/crm/requests/${leadId}`);
+  revalidatePath("/owner/crm/requests");
+  revalidatePath(`/owner/crm/requests/${leadId}`);
+  revalidatePath("/crm");
 }
 
 export async function addLeadNoteAction(formData: FormData) {
@@ -243,6 +262,9 @@ export async function addLeadNoteAction(formData: FormData) {
   });
 
   revalidatePath("/admin");
+  revalidatePath(`/admin/crm/requests/${leadId}`);
+  revalidatePath(`/owner/crm/requests/${leadId}`);
+  revalidatePath("/crm");
 }
 
 export async function updateListingSubmissionStatusAction(formData: FormData) {

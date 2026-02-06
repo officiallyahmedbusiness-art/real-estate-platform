@@ -2355,6 +2355,9 @@ export function getLeadStatusLabelKey(value: string) {
     negotiation: "lead.status.negotiation",
     won: "lead.status.won",
     lost: "lead.status.lost",
+    closed: "lead.status.closed",
+    archived: "lead.status.archived",
+    test: "lead.status.test",
     viewing_scheduled: "lead.status.viewing",
   };
   return map[value] ?? "lead.status.new";

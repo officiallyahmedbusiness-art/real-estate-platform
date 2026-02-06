@@ -31,6 +31,7 @@ export function UserManagementList({ profiles, actorRole }: Props) {
   const t = createT(locale);
   const [rows, setRows] = useState<ProfileRow[]>(profiles);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [error, setError] = useState<string>("");
   const isOwner = actorRole === "owner";
 
@@ -97,6 +98,18 @@ export function UserManagementList({ profiles, actorRole }: Props) {
     }
   }
 
+  async function handleCopyId(userId: string) {
+    try {
+      await navigator.clipboard.writeText(userId);
+      setCopiedId(userId);
+      window.setTimeout(() => {
+        setCopiedId((current) => (current === userId ? null : current));
+      }, 1200);
+    } catch {
+      // ignore copy errors
+    }
+  }
+
   return (
     <Card className="space-y-4">
       {rows.map((profile) => {
@@ -120,6 +133,14 @@ export function UserManagementList({ profiles, actorRole }: Props) {
               <div className="flex flex-wrap items-end gap-3">
                 {isOwnerRow ? <Badge>{t("admin.users.locked")}</Badge> : null}
                 {isInactive ? <Badge>{t("admin.users.disabled")}</Badge> : null}
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  type="button"
+                  onClick={() => handleCopyId(profile.id)}
+                >
+                  {copiedId === profile.id ? t("admin.users.copyIdDone") : t("admin.users.copyId")}
+                </Button>
                 <FieldSelect
                   label={t("admin.users.role")}
                   helpKey="admin.users.role"

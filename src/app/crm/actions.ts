@@ -20,14 +20,36 @@ function canManageLeads(role: string) {
   return role === "owner" || role === "admin";
 }
 
+function isStaffRole(role: string) {
+  return role === "ops" || role === "staff" || role === "agent";
+}
+
+async function canActOnAssignedLead(
+  supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+  leadId: string,
+  userId: string
+) {
+  const { data } = await supabase
+    .from("leads")
+    .select("assigned_to")
+    .eq("id", leadId)
+    .maybeSingle();
+  return data?.assigned_to === userId;
+}
+
 export async function updateLeadStatusAction(formData: FormData) {
   const { user, role } = await requireCrmAccess("/crm");
-  if (!canManageLeads(role)) return;
   const supabase = await createSupabaseServerClient();
 
   const leadId = clean(formData.get("lead_id"));
   const status = parseLeadStatus(formData.get("status"));
   if (!isUuid(leadId) || !status) return;
+
+  if (!canManageLeads(role)) {
+    if (!isStaffRole(role)) return;
+    const assigned = await canActOnAssignedLead(supabase, leadId, user.id);
+    if (!assigned) return;
+  }
 
   const updates: Record<string, unknown> = { status };
   const lostReason = clean(formData.get("lost_reason"));
@@ -95,12 +117,17 @@ export async function assignLeadAction(formData: FormData) {
 
 export async function addLeadNoteAction(formData: FormData) {
   const { user, role } = await requireCrmAccess("/crm");
-  if (!canManageLeads(role)) return;
   const supabase = await createSupabaseServerClient();
 
   const leadId = clean(formData.get("lead_id"));
   const note = clean(formData.get("note"));
   if (!isUuid(leadId) || !note) return;
+
+  if (!canManageLeads(role)) {
+    if (!isStaffRole(role)) return;
+    const assigned = await canActOnAssignedLead(supabase, leadId, user.id);
+    if (!assigned) return;
+  }
 
   await supabase.from("lead_notes").insert({
     lead_id: leadId,
@@ -117,13 +144,18 @@ export async function addLeadNoteAction(formData: FormData) {
 
 export async function updateLeadNextAction(formData: FormData) {
   const { user, role } = await requireCrmAccess("/crm");
-  if (!canManageLeads(role)) return;
   const supabase = await createSupabaseServerClient();
 
   const leadId = clean(formData.get("lead_id"));
   const nextAt = clean(formData.get("next_action_at"));
   const nextNote = clean(formData.get("next_action_note"));
   if (!isUuid(leadId)) return;
+
+  if (!canManageLeads(role)) {
+    if (!isStaffRole(role)) return;
+    const assigned = await canActOnAssignedLead(supabase, leadId, user.id);
+    if (!assigned) return;
+  }
 
   await supabase
     .from("leads")

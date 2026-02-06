@@ -23,6 +23,9 @@ const leadStatusSet = new Set([
   "negotiation",
   "won",
   "lost",
+  "closed",
+  "archived",
+  "test",
   "viewing_scheduled",
 ]);
 const intentSet = new Set(["buy", "rent", "invest"]);
@@ -533,6 +536,9 @@ export function parseLeadStatus(input: unknown) {
         | "negotiation"
         | "won"
         | "lost"
+        | "closed"
+        | "archived"
+        | "test"
         | "viewing_scheduled")
     : null;
 }

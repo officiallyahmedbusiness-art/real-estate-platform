@@ -5,17 +5,10 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Badge, Button, Card, Section, Stat } from "@/components/ui";
 import { FieldInput, FieldSelect } from "@/components/FieldHelp";
-import { LEAD_STATUS_OPTIONS, SUBMISSION_STATUS_OPTIONS } from "@/lib/constants";
-import { createT, getLeadStatusLabelKey, getSubmissionStatusLabelKey } from "@/lib/i18n";
+import { SUBMISSION_STATUS_OPTIONS } from "@/lib/constants";
+import { createT, getSubmissionStatusLabelKey } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
-import { InviteUserForm } from "@/components/InviteUserForm";
-import { UserManagementList } from "@/components/UserManagementList";
 import {
-  addDeveloperMemberAction,
-  addLeadNoteAction,
-  assignLeadAction,
-  createDeveloperAction,
-  updateLeadStatusAction,
   updateListingStatusAction,
   updateListingSubmissionStatusAction,
   updateProjectSubmissionStatusAction,
@@ -90,72 +83,6 @@ export default async function AdminPage() {
     .limit(5);
   const topDevelopers = topDevelopersData ?? [];
 
-  const { data: profilesData } = await supabase
-    .from("profiles")
-    .select("id, full_name, phone, email, role, created_at, is_active")
-    .order("created_at", { ascending: false })
-    .limit(20);
-  const profiles = profilesData ?? [];
-
-  const { data: developersData } = await supabase
-    .from("developers")
-    .select("id, name")
-    .order("name", { ascending: true });
-  const developers = developersData ?? [];
-
-  const leadSelect = canViewFullLeads
-    ? "id, name, phone, email, message, status, assigned_to, created_at, listing_id, listings(title)"
-    : "id, name, phone, email, message, status, assigned_to, created_at, listing_id, listing_title";
-
-  type LeadRow = {
-    id: string;
-    name: string | null;
-    phone: string | null;
-    email: string | null;
-    message: string | null;
-    status: string | null;
-    assigned_to: string | null;
-    created_at: string;
-    listing_id: string | null;
-    listings?: { title: string | null } | { title: string | null }[] | null;
-    listing_title?: string | null;
-  };
-
-  const { data: leadsData } = await supabase
-    .from(leadsTable)
-    .select(leadSelect)
-    .order("created_at", { ascending: false })
-    .limit(20);
-  const leads = (leadsData ?? []) as LeadRow[];
-
-  const leadIds = leads.map((lead) => lead.id);
-  const leadNotesById = new Map<string, { note: string; created_at: string }>();
-  if (leadIds.length > 0) {
-    const { data: notesData } = await supabase
-      .from("lead_notes")
-      .select("lead_id, note, created_at")
-      .in("lead_id", leadIds)
-      .order("created_at", { ascending: false });
-    (notesData ?? []).forEach((note) => {
-      if (!leadNotesById.has(note.lead_id)) {
-        leadNotesById.set(note.lead_id, note);
-      }
-    });
-  }
-
-  const profileNameById = new Map(
-    profiles.map((profile) => [profile.id, profile.full_name ?? profile.id])
-  );
-  const roleLabelKeyMap: Record<string, string> = {
-    owner: "role.owner",
-    developer: "role.developer",
-    admin: "role.admin",
-    ops: "role.ops",
-    staff: "role.staff",
-    agent: "role.agent",
-  };
-  const formatRoleLabel = (value?: string | null) =>
-    t(roleLabelKeyMap[value ?? "staff"] ?? "role.staff");
   const reviewStatusOptions = isAdmin
     ? SUBMISSION_STATUS_OPTIONS
     : SUBMISSION_STATUS_OPTIONS.filter((option) => option.value !== "published");
@@ -197,6 +124,47 @@ export default async function AdminPage() {
           <Stat label={t("admin.stats.leadsToday")} value={leadsToday} />
           <Stat label={t("admin.stats.leadsWeek")} value={leadsWeek} />
         </div>
+
+        <Section title={t("admin.hub.title")} subtitle={t("admin.hub.subtitle")}>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card className="space-y-3">
+              <div>
+                <p className="text-sm font-semibold">{t("admin.hub.crm.title")}</p>
+                <p className="text-xs text-[var(--muted)]">{t("admin.hub.crm.subtitle")}</p>
+              </div>
+              <Link href="/admin/crm/requests">
+                <Button size="sm">{t("admin.hub.crm.cta")}</Button>
+              </Link>
+            </Card>
+            <Card className="space-y-3">
+              <div>
+                <p className="text-sm font-semibold">{t("admin.hub.team.title")}</p>
+                <p className="text-xs text-[var(--muted)]">{t("admin.hub.team.subtitle")}</p>
+              </div>
+              <Link href="/admin/team/users">
+                <Button size="sm">{t("admin.hub.team.cta")}</Button>
+              </Link>
+            </Card>
+            <Card className="space-y-3">
+              <div>
+                <p className="text-sm font-semibold">{t("admin.hub.partners.title")}</p>
+                <p className="text-xs text-[var(--muted)]">{t("admin.hub.partners.subtitle")}</p>
+              </div>
+              <Link href="/admin/partners-supply">
+                <Button size="sm">{t("admin.hub.partners.cta")}</Button>
+              </Link>
+            </Card>
+            <Card className="space-y-3">
+              <div>
+                <p className="text-sm font-semibold">{t("admin.hub.marketing.title")}</p>
+                <p className="text-xs text-[var(--muted)]">{t("admin.hub.marketing.subtitle")}</p>
+              </div>
+              <Link href="/admin/partners">
+                <Button size="sm">{t("admin.hub.marketing.cta")}</Button>
+              </Link>
+            </Card>
+          </div>
+        </Section>
 
         <Section title={t("admin.top.title")} subtitle={t("admin.top.subtitle")}>
           <div className="grid gap-4 md:grid-cols-3">
@@ -360,179 +328,6 @@ export default async function AdminPage() {
           )}
         </Section>
 
-        <Section title={t("admin.leads.title")} subtitle={t("admin.leads.subtitle")}>
-          {leads.length === 0 ? (
-            <Card>
-              <p className="text-sm text-[var(--muted)]">{t("admin.leads.empty")}</p>
-            </Card>
-          ) : (
-            <div className="grid gap-4">
-              {leads.map((lead) => {
-                const listing = canViewFullLeads
-                  ? Array.isArray(lead.listings)
-                    ? lead.listings[0]
-                    : lead.listings
-                  : lead.listing_title
-                    ? { title: lead.listing_title }
-                    : null;
-                const statusLabel = t(getLeadStatusLabelKey(lead.status ?? "new"));
-                const assignedName = lead.assigned_to
-                  ? profileNameById.get(lead.assigned_to) ?? lead.assigned_to
-                  : t("admin.leads.unassigned");
-                const lastNote = leadNotesById.get(lead.id);
-
-                return (
-                  <Card key={lead.id} className="space-y-3">
-                    <div className="flex flex-wrap items-center justify-between gap-2">
-                      <div>
-                        <p className="text-sm text-[var(--muted)]">
-                          {t("account.leads.listing", { title: listing?.title ?? lead.listing_id ?? "" })}
-                        </p>
-                        <p className="text-base font-semibold">{lead.name}</p>
-                      </div>
-                      <Badge>{statusLabel}</Badge>
-                    </div>
-                    <div className="flex flex-wrap gap-3 text-xs text-[var(--muted)]">
-                      <span>{lead.email ?? "-"}</span>
-                      <span>{lead.phone ?? "-"}</span>
-                      <span>{t("admin.leads.assigned", { name: assignedName })}</span>
-                    </div>
-                    {lastNote ? (
-                      <p className="text-xs text-[var(--muted)]">
-                        {t("developer.leads.lastNote", { note: lastNote.note })}
-                      </p>
-                    ) : (
-                      <p className="text-xs text-[var(--muted)]">{t("developer.leads.noNote")}</p>
-                    )}
-                    {isAdmin ? (
-                      <>
-                        <div className="grid gap-3 md:grid-cols-[1fr,1fr]">
-                          <form action={updateLeadStatusAction} className="flex flex-wrap items-end gap-3">
-                            <input type="hidden" name="lead_id" value={lead.id} />
-                            <FieldSelect
-                              label={t("crm.filter.status")}
-                              helpKey="crm.lead.status"
-                              name="status"
-                              defaultValue={lead.status ?? "new"}
-                              wrapperClassName="min-w-[180px]"
-                            >
-                              {LEAD_STATUS_OPTIONS.map((option) => (
-                                <option key={option.value} value={option.value}>
-                                  {t(option.labelKey)}
-                                </option>
-                              ))}
-                            </FieldSelect>
-                            <Button size="sm" variant="secondary" type="submit">
-                              {t("developer.leads.update")}
-                            </Button>
-                          </form>
-                          <form action={assignLeadAction} className="flex flex-wrap items-end gap-3">
-                            <input type="hidden" name="lead_id" value={lead.id} />
-                            <FieldSelect
-                              label={t("crm.filter.assigned")}
-                              helpKey="crm.lead.assigned_to"
-                              name="assigned_to"
-                              defaultValue={lead.assigned_to ?? ""}
-                              wrapperClassName="min-w-[220px]"
-                            >
-                              <option value="">{t("admin.leads.unassigned")}</option>
-                              {profiles.map((profile) => (
-                                <option key={profile.id} value={profile.id}>
-                                  {profile.full_name ?? profile.id} ({formatRoleLabel(profile.role)})
-                                </option>
-                              ))}
-                            </FieldSelect>
-                            <Button size="sm" variant="secondary" type="submit">
-                              {t("admin.leads.assign")}
-                            </Button>
-                          </form>
-                        </div>
-                        <form action={addLeadNoteAction} className="flex flex-wrap items-end gap-3">
-                          <input type="hidden" name="lead_id" value={lead.id} />
-                          <FieldInput
-                            label={t("crm.leads.addNote")}
-                            helpKey="crm.lead.note"
-                            name="note"
-                            placeholder={t("admin.leads.addNote")}
-                            wrapperClassName="flex-1 min-w-[240px]"
-                          />
-                          <Button size="sm" variant="secondary" type="submit">
-                            {t("admin.leads.addNote")}
-                          </Button>
-                        </form>
-                      </>
-                    ) : (
-                      <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-3 text-xs text-[var(--muted)]">
-                        {t("crm.adminOnly")}
-                      </div>
-                    )}
-                  </Card>
-                );
-              })}
-            </div>
-          )}
-        </Section>
-
-        {isAdmin ? (
-          <Section title={t("admin.partners.title")} subtitle={t("admin.partners.subtitle")}>
-            <div className="grid gap-4 md:grid-cols-2">
-              <Card>
-                <h3 className="text-lg font-semibold">{t("admin.partners.add")}</h3>
-                <form action={createDeveloperAction} className="mt-3 space-y-3">
-                  <FieldInput
-                    label={t("admin.partners.name")}
-                    helpKey="admin.partners.name"
-                    name="name"
-                    placeholder={t("admin.partners.add")}
-                    required
-                  />
-                  <Button type="submit">{t("admin.partners.addBtn")}</Button>
-                </form>
-              </Card>
-              <Card>
-                <h3 className="text-lg font-semibold">{t("admin.partners.link")}</h3>
-                <form action={addDeveloperMemberAction} className="mt-3 space-y-3">
-                  <FieldSelect
-                    label={t("admin.partners.selectDeveloper")}
-                    helpKey="admin.partners.developer_id"
-                    name="developer_id"
-                    defaultValue=""
-                  >
-                    <option value="">{t("admin.partners.selectDeveloper")}</option>
-                    {developers.map((dev) => (
-                      <option key={dev.id} value={dev.id}>
-                        {dev.name}
-                      </option>
-                    ))}
-                  </FieldSelect>
-                  <FieldInput
-                    label={t("admin.partners.userId")}
-                    helpKey="admin.partners.user_id"
-                    name="user_id"
-                    placeholder={t("admin.partners.userId")}
-                    required
-                  />
-                  <FieldInput
-                    label={t("admin.partners.role")}
-                    helpKey="admin.partners.role"
-                    name="role"
-                    placeholder={t("admin.partners.roleHint")}
-                  />
-                  <Button type="submit">{t("admin.partners.linkBtn")}</Button>
-                </form>
-              </Card>
-            </div>
-          </Section>
-        ) : null}
-
-        {isAdmin ? (
-          <Section title={t("admin.users.title")} subtitle={t("admin.users.subtitle")}>
-            <div className="space-y-4">
-              <InviteUserForm endpoint="/api/admin/users/invite" />
-              <UserManagementList profiles={profiles} actorRole={role} />
-            </div>
-          </Section>
-        ) : null}
       </main>
       <SiteFooter />
     </div>

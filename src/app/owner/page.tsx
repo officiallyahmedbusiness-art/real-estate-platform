@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { cookies } from "next/headers";
 import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
@@ -206,6 +207,38 @@ export default async function OwnerPage({
           <h1 className="text-2xl font-semibold">{t("owner.dashboard.title")}</h1>
           <p className="text-sm text-[var(--muted)]">{t("owner.dashboard.subtitle")}</p>
         </div>
+
+        <Section title={t("owner.hub.title")} subtitle={t("owner.hub.subtitle")}>
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card className="space-y-3">
+              <div>
+                <p className="text-sm font-semibold">{t("owner.hub.crm.title")}</p>
+                <p className="text-xs text-[var(--muted)]">{t("owner.hub.crm.subtitle")}</p>
+              </div>
+              <Link href="/owner/crm/requests">
+                <Button size="sm">{t("owner.hub.crm.cta")}</Button>
+              </Link>
+            </Card>
+            <Card className="space-y-3">
+              <div>
+                <p className="text-sm font-semibold">{t("owner.hub.team.title")}</p>
+                <p className="text-xs text-[var(--muted)]">{t("owner.hub.team.subtitle")}</p>
+              </div>
+              <Link href="/owner/team/users">
+                <Button size="sm">{t("owner.hub.team.cta")}</Button>
+              </Link>
+            </Card>
+            <Card className="space-y-3">
+              <div>
+                <p className="text-sm font-semibold">{t("owner.hub.partners.title")}</p>
+                <p className="text-xs text-[var(--muted)]">{t("owner.hub.partners.subtitle")}</p>
+              </div>
+              <Link href="/owner/partners">
+                <Button size="sm">{t("owner.hub.partners.cta")}</Button>
+              </Link>
+            </Card>
+          </div>
+        </Section>
 
         <Section title={t("owner.dashboard.presence.title")} subtitle={t("owner.dashboard.presence.subtitle")}>
           <div className="grid gap-4 md:grid-cols-3">

@@ -34,9 +34,13 @@ export const LEAD_STATUS_OPTIONS = [
   { value: "qualified", labelKey: "lead.status.qualified" },
   { value: "meeting_set", labelKey: "lead.status.meeting_set" },
   { value: "follow_up", labelKey: "lead.status.follow_up" },
+  { value: "viewing", labelKey: "lead.status.viewing" },
   { value: "negotiation", labelKey: "lead.status.negotiation" },
   { value: "won", labelKey: "lead.status.won" },
   { value: "lost", labelKey: "lead.status.lost" },
+  { value: "closed", labelKey: "lead.status.closed" },
+  { value: "archived", labelKey: "lead.status.archived" },
+  { value: "test", labelKey: "lead.status.test" },
 ] as const;
 
 export const LEAD_SOURCE_OPTIONS = [

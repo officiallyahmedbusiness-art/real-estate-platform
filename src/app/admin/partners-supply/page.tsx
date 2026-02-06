@@ -1,14 +1,14 @@
 import Link from "next/link";
-import { requireTeamRole } from "@/lib/teamAuth";
+import { requireRole } from "@/lib/auth";
 import { createSupabaseServerClient } from "@/lib/supabaseServer";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
 import { Badge, Button, Card, Section } from "@/components/ui";
 import { FieldInput, FieldSelect } from "@/components/FieldHelp";
+import { UserSearchSelect } from "@/components/UserSearchSelect";
 import { createT } from "@/lib/i18n";
 import { getServerLocale } from "@/lib/i18n.server";
 import { createDeveloperAction, addDeveloperMemberAction } from "@/app/admin/actions";
-import { UserSearchSelect } from "@/components/UserSearchSelect";
 
 type DeveloperRow = {
   id: string;
@@ -28,13 +28,11 @@ type ProfileRow = {
   phone: string | null;
 };
 
-export default async function TeamPartnersPage() {
-  const { role } = await requireTeamRole(["owner", "admin", "ops", "staff"], "/team/partners");
+export default async function AdminPartnersSupplyPage() {
+  const { role } = await requireRole(["owner", "admin"], "/admin/partners-supply");
   const supabase = await createSupabaseServerClient();
   const locale = await getServerLocale();
   const t = createT(locale);
-
-  const isAdmin = role === "owner" || role === "admin";
 
   const { data: developersData } = await supabase
     .from("developers")
@@ -74,77 +72,77 @@ export default async function TeamPartnersPage() {
     .order("full_name", { ascending: true });
   const teamUsers = (teamUsersData ?? []) as ProfileRow[];
 
+  const badgeRoleKey = role === "owner" ? "role.owner" : "role.admin";
+
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <SiteHeader />
       <main className="mx-auto w-full max-w-6xl space-y-8 px-6 py-10">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-semibold">{t("team.partners.title")}</h1>
-            <p className="text-sm text-[var(--muted)]">{t("team.partners.subtitle")}</p>
+            <h1 className="text-2xl font-semibold">{t("admin.hub.partners.title")}</h1>
+            <p className="text-sm text-[var(--muted)]">{t("admin.hub.partners.subtitle")}</p>
           </div>
           <div className="flex items-center gap-2">
-            <Link href="/team">
+            <Link href="/admin">
               <Button size="sm" variant="secondary">
-                {t("team.portal.back")}
+                {t("admin.homepage.back")}
               </Button>
             </Link>
-            <Badge>{t(isAdmin ? "role.admin" : "role.staff")}</Badge>
+            <Badge>{t(badgeRoleKey)}</Badge>
           </div>
         </div>
 
-        {isAdmin ? (
-          <Section title={t("team.partners.create.title")} subtitle={t("team.partners.create.subtitle")}>
-            <div className="grid gap-4 md:grid-cols-2">
-              <Card>
-                <h3 className="text-lg font-semibold">{t("team.partners.create.org")}</h3>
-                <form action={createDeveloperAction} className="mt-3 space-y-3">
-                  <FieldInput
-                    label={t("team.partners.create.name")}
-                    helpKey="admin.partners.name"
-                    name="name"
-                    placeholder={t("team.partners.create.name")}
-                    required
-                  />
-                  <Button type="submit">{t("team.partners.create.submit")}</Button>
-                </form>
-              </Card>
-              <Card>
-                <h3 className="text-lg font-semibold">{t("team.partners.create.member")}</h3>
-                <form action={addDeveloperMemberAction} className="mt-3 space-y-3">
-                  <FieldSelect
-                    label={t("team.partners.create.selectOrg")}
-                    helpKey="admin.partners.developer_id"
-                    name="developer_id"
-                    defaultValue=""
-                  >
-                    <option value="">{t("team.partners.create.selectOrg")}</option>
-                    {developers.map((dev) => (
-                      <option key={dev.id} value={dev.id}>
-                        {dev.name}
-                      </option>
-                    ))}
-                  </FieldSelect>
-                  <UserSearchSelect
-                    users={teamUsers}
-                    name="user_id"
-                    label={t("admin.partners.searchUser")}
-                    helpKey="admin.partners.user_id"
-                    placeholder={t("admin.partners.searchPlaceholder")}
-                    required
-                  />
-                  <FieldInput
-                    label={t("team.partners.create.role")}
-                    helpKey="admin.partners.role"
-                    name="role"
-                    placeholder={t("team.partners.create.role")}
-                  />
-                  <Button type="submit">{t("team.partners.create.submit")}</Button>
-                </form>
-              </Card>
-            </div>
-          </Section>
-        ) : null}
+        <Section title={t("admin.partners.title")} subtitle={t("admin.partners.subtitle")}>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card>
+              <h3 className="text-lg font-semibold">{t("admin.partners.add")}</h3>
+              <form action={createDeveloperAction} className="mt-3 space-y-3">
+                <FieldInput
+                  label={t("admin.partners.name")}
+                  helpKey="admin.partners.name"
+                  name="name"
+                  placeholder={t("admin.partners.add")}
+                  required
+                />
+                <Button type="submit">{t("admin.partners.addBtn")}</Button>
+              </form>
+            </Card>
+            <Card>
+              <h3 className="text-lg font-semibold">{t("admin.partners.link")}</h3>
+              <form action={addDeveloperMemberAction} className="mt-3 space-y-3">
+                <FieldSelect
+                  label={t("admin.partners.selectDeveloper")}
+                  helpKey="admin.partners.developer_id"
+                  name="developer_id"
+                  defaultValue=""
+                >
+                  <option value="">{t("admin.partners.selectDeveloper")}</option>
+                  {developers.map((dev) => (
+                    <option key={dev.id} value={dev.id}>
+                      {dev.name}
+                    </option>
+                  ))}
+                </FieldSelect>
+                <UserSearchSelect
+                  users={teamUsers}
+                  name="user_id"
+                  label={t("admin.partners.searchUser")}
+                  helpKey="admin.partners.user_id"
+                  placeholder={t("admin.partners.searchPlaceholder")}
+                  required
+                />
+                <FieldInput
+                  label={t("admin.partners.role")}
+                  helpKey="admin.partners.role"
+                  name="role"
+                  placeholder={t("admin.partners.roleHint")}
+                />
+                <Button type="submit">{t("admin.partners.linkBtn")}</Button>
+              </form>
+            </Card>
+          </div>
+        </Section>
 
         <Section title={t("team.partners.list.title")} subtitle={t("team.partners.list.subtitle")}>
           {developers.length === 0 ? (
